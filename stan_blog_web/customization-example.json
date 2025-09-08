@@ -1,0 +1,14 @@
+{
+  "projectName": "STAN-BLOG",
+  "title": "Stan Blog",
+  "baseUrl": "https://host/stan-blog",
+  "image": "https://host/image/stan_blog_logo.png",
+  "slogan": "Think, Record, Grow",
+  "description": "A personal blog website",
+  "keywords": "Blog, Stan, STAN-BLOG, Stan Blog",
+  "githubLink": "https://github.com/",
+  "gitlabLink": "https://gitlab.com/",
+  "googleAnalyticsId": "G-",
+  "defaultContentCoverImgUrl": "https://images.pexels.com/photos/1764702/pexels-photo-1764702.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  "defaultPersonalProfileCoverImgUrl": "https://images.pexels.com/photos/39811/pexels-photo-39811.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+}

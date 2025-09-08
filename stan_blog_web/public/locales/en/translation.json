@@ -1,0 +1,708 @@
+{
+  "breadcrumbs": {
+    "content": "Content",
+    "home": "Home",
+    "topic": "Topic"
+  },
+  "components": {
+    "relevant-contents": "Relevant Contents",
+    "recent-contents": "Recent Contents",
+    "upload-pics": "Upload Pictures",
+    "edit-icon-button": {
+      "save": "Save",
+      "edit": "Edit"
+    },
+    "info-icon-button": {
+      "tooltip": "View content statistics"
+    },
+    "visibility-switch": {
+      "release": "Draft, click to release",
+      "retract": "Released, click to retract"
+    },
+    "save-btn-panel": {
+      "save": "Save",
+      "back": "Back"
+    },
+    "standard-button": {
+      "detail": "Detail",
+      "delete": "Delete",
+      "create": "Create",
+      "release": "Release",
+      "retract": "Retract",
+      "ban": "Ban",
+      "recommend": "Recommend",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "rich-editor": {
+      "placeholder": "Please input content..."
+    },
+    "tag-select": {
+      "placeholder": "Search tags...",
+      "msg": {
+        "success": "Tag created!",
+        "error": "Operation failed",
+        "warning": "Tag name is too long"
+      }
+    },
+    "meta-bar": {
+      "view": "Views",
+      "like": "Likes",
+      "edit-btn": "Edit",
+      "comment": "Comments"
+    },
+    "author-panel": {
+      "public-creation-count": "Public Creations",
+      "view-count": "Total Views",
+      "visit-blog": "Visit Blog"
+    },
+    "general-card-view": {
+      "published": "Published",
+      "draft": "Draft",
+      "public": "Public",
+      "private": "Private",
+      "recommended-tip": "The cream always rises to the top",
+      "banned-tip": "Due to the potential discomfort or controversy that this content might cause, we have decided to impose a restriction",
+      "title": {
+        "open": "Visible to everyone",
+        "private": "Only visible to yourself"
+      }
+    }
+  },
+  "home-page": {
+    "plans": "Plans",
+    "articles": "Articles",
+    "vocabularies": "Vocabularies",
+    "collections": "Collections",
+    "view-count": "View",
+    "like-count": "Like",
+    "end-line": "No more content",
+    "load-more": "Load more",
+    "no-content": "No available content",
+    "tag-statistics": "Featured tags",
+    "content-type-filter": {
+      "title": "Content Categories"
+    },
+    "slogan": "Record growth and share every little bit",
+    "speed-dial": {
+      "create-article": "Create Article",
+      "create-plan": "Create Plan",
+      "create-vocabulary": "Create Vocabulary",
+      "create-collection": "Create Collection"
+    },
+    "advantages": {
+      "title": "Why Choose Stan Blog",
+      "items": {
+        "ai": {
+          "title": "AI-Powered Technology",
+          "description": "Our blog platform is powered by AI technology, accelerating iteration and updates, continuously optimizing user experience. The AI system also provides creative assistance and smart indexing, making it easy to build personal or team knowledge bases."
+        },
+        "community": {
+          "title": "Vibrant Community",
+          "description": "Join Stan Blog and become part of a vibrant creative community. We bring together exceptional creators from various industries, with content covering technology, reading, lifestyle, and language learning. We ensure that every article you read is worth your time and attention."
+        },
+        "copyright": {
+          "title": "Respect for Creators",
+          "description": "At Stan Blog, we firmly believe that creators' rights should be fully respected. All content you publish belongs entirely to you. We provide comprehensive copyright protection mechanisms, allowing you to create with peace of mind, share freely, and receive the respect and rewards you deserve."
+        }
+      }
+    },
+    "categories": {
+      "TECHNICAL": {
+        "title": "Tech Blog",
+        "description": "Stay updated with tech trends and insights"
+      },
+      "READING": {
+        "title": "Book Notes",
+        "description": "Read the classic and record your thoughts"
+      },
+      "LIFE": {
+        "title": "Life Tips",
+        "description": "Record beautiful moments and share life wisdom"
+      },
+      "LANGUAGE": {
+        "title": "Language Learning",
+        "description": "Share language learning experiences and resources"
+      }
+    }
+  },
+  "sign-in": {
+    "title": "Sign In",
+    "sign-in-btn": "Sign In",
+    "forget-pw-btn": "Forget password?",
+    "sign-up-btn": "Sign up",
+    "remember-me-btn": "Remember me",
+    "description": {
+      "email": "Email Address",
+      "password": "Password"
+    },
+    "msg": {
+      "success": "Sign in successfully",
+      "error": "Please double check your password and username",
+      "email-not-verified": "Email not verified. Please check your email and complete the verification before logging in",
+      "invalid-email": "Please enter a valid email address",
+      "password-reset-sent": "Password reset link has been sent to your email",
+      "password-reset-error": "Failed to send password reset email. Please try again."
+    },
+    "reset-password-title": "Reset Password",
+    "reset-password-message": "Enter your email address and we will send you an email to reset your password.",
+    "cancel-btn": "Cancel",
+    "send-reset-btn": "Send"
+  },
+  "reset-password": {
+    "title": "Reset Your Password",
+    "subtitle": "Enter a new password for your account",
+    "new-password": "New Password",
+    "confirm-password": "Confirm New Password",
+    "submit-btn": "Reset Password",
+    "back-to-login": "Back to Login",
+    "msg": {
+      "success": "Password has been reset successfully",
+      "error": "Failed to reset password. Please try again or request a new reset link.",
+      "token-expired": "Your reset link has expired. Please request a new one.",
+      "passwords-not-match": "Passwords do not match",
+      "invalid-password-length": "Password must be at least 6 characters long"
+    }
+  },
+  "sign-up": {
+    "title": "Welcome to Join",
+    "description": {
+      "first-name": "First Name",
+      "last-name": "Last Name",
+      "email": "Email Address",
+      "password": "Password"
+    },
+    "sign-up-btn": "Sign Up",
+    "sign-in-btn": "Already have an account? Sign In",
+    "fields": {
+      "first-name": "First name",
+      "last-name": "Last name",
+      "email": "Email Address",
+      "password": "Password",
+      "password-confirm": "Confirm Password"
+    },
+    "msg": {
+      "success": "Sign up successfully, let's sign in",
+      "success-verification-required": "Registration successful! We have sent a verification email to your inbox. Please check and verify before logging in.",
+      "error": "Sign up failed",
+      "email-exists": "This email is already registered. Please sign in or use a different email",
+      "warning": {
+        "invalid-email-format": "Invalid email format",
+        "two-password-dismatch": "Two passwords are not same",
+        "invalid-password-length": "Password length should between 6-8 digits"
+      }
+    }
+  },
+  "email-verification": {
+    "title": "Email Verification",
+    "subtitle": "Please verify your email address to complete registration",
+    "loading": "Verifying your email...",
+    "success": {
+      "title": "Email Verification Successful!",
+      "description": "Your email has been successfully verified. You can now log in and use our services."
+    },
+    "already-verified": {
+      "title": "Email Already Verified",
+      "description": "Your email has already been verified. You can log in using your credentials."
+    },
+    "error": {
+      "title": "Verification Failed",
+      "invalid-link": "Verification link is invalid, missing required parameters",
+      "verification-failed": "Verification failed, link may be expired or invalid",
+      "verification-error": "An error occurred during verification",
+      "unknown": "Unknown error"
+    },
+    "btn": {
+      "go-to-login": "Go to Login",
+      "resend": "Resend Verification Email",
+      "back-to-login": "Back to Login"
+    },
+    "msg": {
+      "success": "Email verification successful! You can now log in",
+      "resend-success": "Verification email sent successfully",
+      "resend-error": "Failed to send verification email",
+      "sending": "Sending..."
+    }
+  },
+  "app-header": {
+    "sign-in-btn": "Login",
+    "pages": {
+      "home": "Home",
+      "news": "News",
+      "about": "About",
+      "article": "Article",
+      "vocabulary": "Vocabulary",
+      "collection": "Collection"
+    },
+    "settings": {
+      "btn-tooltip": "Open settings",
+      "profile": "User Profile",
+      "analytics": "Analytics",
+      "plans": "Plans",
+      "articles": "Articles",
+      "vocabularies": "Vocabularies",
+      "collections": "Collections",
+      "sign-out": "Sign Out"
+    },
+    "language": {
+      "btn-tooltip": "Switch language",
+      "options": {
+        "en": "EN",
+        "tc": "繁中",
+        "zh": "简中"
+      }
+    }
+  },
+  "profile-setting": {
+    "form-title": "Your Profile",
+    "fields": {
+      "first-name": "First name",
+      "last-name": "Last name",
+      "phone-number": "Phone number",
+      "email": "Email",
+      "address": "Address",
+      "blog": "Blog home",
+      "blog-placeholder": "https://xxx.blog.com",
+      "introduction": "Introduction",
+      "introduction-placeholder": "Let others know more about you...",
+      "profession": "Profession",
+      "personal-portal": "Personal Portal",
+      "customized-settings": "Customized settings",
+      "module-switch": "Module switch",
+      "background-img": "Portal background image URL",
+      "background-img-placeholder": "Enter image URL here...",
+      "photo-img": "Personal photo image URL",
+      "photo-img-placeholder": "Enter image URL here...",
+      "articles": "Notes",
+      "plans": "Plans",
+      "vocabularies": "Vocabularies",
+      "collections": "Collections"
+    },
+    "view-btn": "View",
+    "msg": {
+      "success": "Updated",
+      "error": "Update failed"
+    }
+  },
+  "user-table": {
+    "title": "Users",
+    "total-count": "Total: {{count}} users",
+    "delete-success": "User deleted successfully",
+    "search-placeholder": "Search users...",
+    "label": {
+      "id": "ID",
+      "email": "Email",
+      "username": "User Name",
+      "first-name": "First Name",
+      "last-name": "Last Name",
+      "phone-number": "Phone Number",
+      "operation": "Operation"
+    }
+  },
+  "user-tabs": {
+    "all": "All",
+    "verified": "Verified",
+    "unverified": "Unverified",
+    "count-tooltip": "Number of users found"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "mark-all-read": "Mark All Read",
+    "marking-all-read": "Marking as read...",
+    "mark-all-read-success": "All notifications marked as read",
+    "mark-as-read": "Mark as read",
+    "view-details": "View Details",
+    "no-notifications": "No notifications found",
+    "count-tooltip": "Total number of notifications",
+    "from": "From",
+    "content": {
+      "reply-label": "Reply",
+      "original-comment-label": "Your Original Comment",
+      "deleted-comment-label": "Deleted Comment",
+      "deleted-reply-label": "Deleted Reply",
+      "from-label": "From"
+    },
+    "actions": {
+      "mark-as-read": "Mark as read",
+      "view-details": "View Details"
+    },
+    "tabs": {
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read"
+    },
+    "types": {
+      "CONTENT_RECOMMENDED": "Recommended",
+      "CONTENT_BANNED": "Banned",
+      "CONTENT_COMMENTED": "Comment",
+      "COMMENT_REPLIED": "Reply",
+      "COMMENT_DELETED": "Comment Deleted",
+      "REPLY_DELETED": "Reply Deleted",
+      "SYSTEM_ANNOUNCEMENT": "System"
+    },
+    "messages": {
+      "content-recommended": {
+        "title": "Content Recommended",
+        "message": "Your {{contentType}} \"{{contentTitle}}\" has been recommended by an administrator"
+      },
+      "content-banned": {
+        "title": "Content Banned",
+        "message": "Your {{contentType}} \"{{contentTitle}}\" has been banned by an administrator"
+      },
+      "content-commented": {
+        "title": "New Comment",
+        "message": "{{commenterName}} commented on your {{contentType}} \"{{contentTitle}}\""
+      },
+      "comment-replied": {
+        "title": "New Reply",
+        "message": "{{replierName}} replied to your comment on \"{{contentTitle}}\""
+      },
+      "comment-deleted": {
+        "title": "Comment Deleted",
+        "message": "A comment on your {{contentType}} \"{{contentTitle}}\" was deleted"
+      },
+      "reply-deleted": {
+        "title": "Reply Deleted",
+        "message": "A reply to your comment on \"{{contentTitle}}\" was deleted"
+      }
+    }
+  },
+  "user-detail": {
+    "title": "User Details",
+    "basic-info": "Basic Information",
+    "introduction": "Introduction",
+    "visit-portal": "Visit Portal",
+    "roles": "User Roles",
+    "select-roles": "Select Roles",
+    "update-roles": "Update Roles",
+    "updating-roles": "Updating roles...",
+    "role-update-success": "Roles updated successfully",
+    "required": "Required",
+    "role-labels": {
+      "basic": "Basic User",
+      "admin": "Administrator"
+    },
+    "fields": {
+      "author": "Author",
+      "email": "Email",
+      "phone-number": "Phone Number",
+      "address": "Address",
+      "profession": "Profession",
+      "blog": "Blog",
+      "create-time": "Create Time",
+      "update-time": "Update Time"
+    },
+    "no-data": "No data available"
+  },
+  "admin-table": {
+    "title": "Audit",
+    "label": {
+      "title": "Title",
+      "owner-name": "Owner",
+      "content-type": "Content Type",
+      "banned": "Banned",
+      "recommended": "Recommended",
+      "reason": "Reason",
+      "operation": "Operation"
+    },
+    "content-types": {
+      "article": "Article",
+      "plan": "Plan",
+      "vocabulary": "Vocabulary",
+      "collection": "Collection"
+    }
+  },
+  "content-admin": {
+    "title": "Content Administration",
+    "search-placeholder": "Search content...",
+    "total-count-tooltip": "Total content found",
+    "no-description": "No description available",
+    "tabs": {
+      "all": "All",
+      "banned": "Banned",
+      "recommended": "Recommended"
+    },
+    "status": {
+      "banned": "Banned",
+      "recommended": "Recommended",
+      "draft": "Draft"
+    },
+    "actions": {
+      "view-details": "View Details",
+      "view-on-portal": "View on Portal",
+      "ban": "Ban",
+      "unban": "Unban",
+      "recommend": "Recommend",
+      "unrecommend": "Unrecommend",
+      "delete": "Delete"
+    },
+    "ban-success": "Content has been banned successfully",
+    "unban-success": "Content has been unbanned successfully",
+    "recommend-success": "Content has been recommended successfully",
+    "unrecommend-success": "Content recommendation has been removed",
+    "delete-success": "Content has been deleted successfully",
+    "delete-confirm": "Are you sure you want to delete this content? This action cannot be undone."
+  },
+  "contents-page": {
+    "filter": {
+      "all": "All",
+      "published": "Published",
+      "draft": "Draft"
+    },
+    "record-found": "Number of records found",
+    "msg": {
+      "error": "Failed to fetch contents"
+    }
+  },
+  "msg": {
+    "success": "Operation successful",
+    "error": "Operation failed, please try again"
+  },
+  "admin-pages-title": {
+    "plans": "Plans",
+    "articles": "Articles",
+    "collections": "Collections",
+    "vocabularies": "Vocabularies",
+    "article-edit": "Edit article"
+  },
+  "plan-creation-page": {
+    "form-title": "Create a new plan",
+    "fields": {
+      "name": "Plan Name",
+      "description": "Description",
+      "target-start-time": "Target start time",
+      "target-end-time": "Target end time",
+      "cover-img-url": "Cover image URL"
+    },
+    "msg": {
+      "warning": {
+        "name-empty": "Plan name cannot be empty",
+        "target-start-time-empty": "Target start time cannot be empty",
+        "target-end-time-empty": "Target end time cannot be empty",
+        "target-invalid-start-end-time": "Target start time cannot behind end time"
+      }
+    }
+  },
+  "plan-detail-page": {
+    "fields": {
+      "name": "Plan name",
+      "description": "Description",
+      "target-start-time": "Target start time",
+      "target-end-time": "Target end time",
+      "cover-img-url": "Cover image URL"
+    }
+  },
+  "plan-progress": {
+    "title": "Progresses",
+    "add-new-tip": "Any fresh news to share?",
+    "send-btn": "Send",
+    "msg": {
+      "warning": "Please type in valid context"
+    }
+  },
+  "dashboard-nav": {
+    "pages": {
+      "analytics": "Analytics",
+      "users": "Users",
+      "plans": "Plans",
+      "articles": "Articles",
+      "vocabularies": "Vocabularies",
+      "collections": "Collections",
+      "admin": "Administration"
+    }
+  },
+  "analytics-page": {
+    "page-main-title": "Analytics",
+    "content": {
+      "title": {
+        "plan": "Plan",
+        "article": "Article",
+        "vocabulary": "Vocabulary",
+        "collection": "Collection"
+      },
+      "public": "Public count",
+      "all": "Total count",
+      "view-count": "View count(k)",
+      "like-count": "Like count(k)"
+    },
+    "msg": {
+      "error": "Failed to fetch data"
+    }
+  },
+  "article-creation-page": {
+    "page-main-title": "Create a new article",
+    "expand-label": "Other secondary info",
+    "fields": {
+      "title": "Title",
+      "sub-title": "Subtitle",
+      "cover-img-url": "Cover image URL",
+      "description": "Description",
+      "tag": "Tag",
+      "content-protected": "Only logged in users can read the full content"
+    }
+  },
+  "article-reading-page": {
+    "content-protected": "Please log in to read the full content",
+    "msg": {
+      "error": "Failed to fetch data"
+    },
+    "content-nav": "Content Navigation"
+  },
+  "collection-creation-page": {
+    "page-main-title": "Create a new collection",
+    "fields": {
+      "name": "Collection Name",
+      "description": "Description",
+      "cover-img-url": "Cover image URL",
+      "tag": "Tag"
+    },
+    "msg": {
+      "warning": {
+        "name-empty": "Collection name cannot be empty"
+      }
+    }
+  },
+  "collection-detail-page": {
+    "btn": {
+      "add": "Add",
+      "delete": "Delete"
+    }
+  },
+  "collection-reading-page": {
+    "tip": {
+      "tba": "To be continued"
+    },
+    "msg": {
+      "error": "Failed to fetch data"
+    }
+  },
+  "collection-preview": {
+    "title": "Preview",
+    "loading": "Loading preview...",
+    "tip": {
+      "no-data": "No collection data available",
+      "tba": "To be continued"
+    }
+  },
+  "vocabulary-creation-page": {
+    "page-main-title": "Create a new vocabulary",
+    "fields": {
+      "title": "Title",
+      "description": "Description",
+      "language": "Language",
+      "cover-img-url": "Cover image URL",
+      "tags": "Tags",
+      "topic": "Topic"
+    }
+  },
+  "word-dialog": {
+    "add": "Add",
+    "title": "Edit a word",
+    "fields": {
+      "word": "Text",
+      "partOfSpeech": "Part of Speech",
+      "meaningInChinese": "Meaning in Chinese",
+      "meaningInEnglish": "Meaning in English"
+    },
+    "save": "Save",
+    "back": "Back",
+    "delete": "Delete"
+  },
+  "dialog": {
+    "delete": {
+      "title": "Confirm Action",
+      "content": "Are you sure you want to proceed with this action? This action cannot be undone."
+    },
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "topic": {
+    "label": "Tags",
+    "READING": "Books",
+    "LANGUAGE": "Lang",
+    "TECHNICAL": "Tech",
+    "LIFE": "Life",
+    "OTHER": "Other"
+  },
+  "content-stats": {
+    "title": "Statistics",
+    "view-count": "View Count",
+    "like-count": "Like Count",
+    "status": "Status",
+    "draft": "Draft",
+    "recommended": "Recommended",
+    "banned": "Banned",
+    "normal": "Normal",
+    "portal-link": "Portal Link",
+    "view-on-portal": "View on Portal",
+    "dates": "Timeline",
+    "created-date": "Created Date",
+    "published-date": "Published Date",
+    "last-updated": "Last Updated"
+  },
+  "content-redirector": {
+    "content-not-found": "Content not found",
+    "content-not-available": "Content is not available or has been removed"
+  },
+  "admin": {},
+  "comments": {
+    "section": {
+      "title": "Comments",
+      "no-comments": "No comments yet. Be the first to comment!",
+      "loading": "Loading comments...",
+      "load-more": "Load more comments",
+      "sign-in-to-comment": "Please sign in to comment",
+      "sign-in-prompt": "Please",
+      "sign-in-link": "sign in",
+      "to-comment": "to comment"
+    },
+    "form": {
+      "placeholder": "Write a comment...",
+      "reply-placeholder": "Reply to {{userName}}...",
+      "submit": "Comment",
+      "cancel": "Cancel",
+      "submitting": "Posting...",
+      "sign-in-required": "Please sign in to comment",
+      "add-emoji": "Add emoji",
+      "select-emoji": "Select emoji"
+    },
+    "item": {
+      "just-now": "Just now",
+      "minutes-ago": "{{count}}m ago",
+      "hours-ago": "{{count}}h ago",
+      "days-ago": "{{count}}d ago",
+      "reply": "Reply",
+      "reply-to": "Reply to",
+      "like": "Like",
+      "delete": "Delete",
+      "show-replies": "Show {{count}} replies",
+      "hide-replies": "Hide replies",
+      "show-reply": "Show {{count}} reply",
+      "hide-reply": "Hide reply"
+    },
+    "actions": {
+      "like-success": "Comment liked",
+      "unlike-success": "Comment unliked",
+      "delete-success": "Comment deleted successfully",
+      "create-success": "Comment posted successfully",
+      "reply-success": "Reply posted successfully"
+    },
+    "errors": {
+      "sign-in-required": "Please sign in to {{action}}",
+      "like-failed": "Failed to update like",
+      "delete-failed": "Failed to delete comment",
+      "create-failed": "Failed to post comment",
+      "load-failed": "Failed to load comments",
+      "empty-content": "Comment cannot be empty"
+    },
+    "menu": {
+      "delete-confirm": "Are you sure you want to delete this comment?",
+      "delete-confirm-content": "This action cannot be undone."
+    }
+  },
+  "article-detail-page": {
+    "msg": {
+      "restore-draft-confirm": "A local draft was found. Do you want to restore it?"
+    }
+  }
+}

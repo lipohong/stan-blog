@@ -1,0 +1,33 @@
+# --- Node / Package Manager ---
+node_modules
+npm-debug.log
+pnpm-lock.yaml
+.pnpm-store/
+
+# --- Build output ---
+dist
+coverage
+*.log
+
+# --- Vite / React Hot Update cache ---
+.vite/
+
+# --- Env files：僅複製需要的 production env（在 Dockerfile COPY） ---
+.env*
+!env/.env.production
+
+# --- Source control / CI ---
+.git
+.github
+.gitlab
+.gitignore
+.gitattributes
+.idea/
+.vscode/
+.eslint*
+.prettier*
+
+# --- Docs / Misc ---
+docs/
+*.md
+LICENSE

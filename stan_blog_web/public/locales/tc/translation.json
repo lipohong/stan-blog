@@ -1,0 +1,696 @@
+{
+  "breadcrumbs": {
+    "content": "正文",
+    "home": "首頁",
+    "topic": "專題"
+  },
+  "components": {
+    "relevant-contents": "相關內容",
+    "recent-contents": "近期內容",
+    "upload-pics": "上傳圖片",
+    "visibility-switch": {
+      "release": "草稿，點擊發布",
+      "retract": "已發佈，點擊撤回"
+    },
+    "edit-icon-button": {
+      "save": "保存",
+      "edit": "修改"
+    },
+    "info-icon-button": {
+      "tooltip": "查看內容統計"
+    },
+    "save-btn-panel": {
+      "save": "保存",
+      "back": "返回"
+    },
+    "standard-button": {
+      "detail": "詳情",
+      "delete": "刪除",
+      "create": "新增",
+      "release": "公開",
+      "retract": "撤回",
+      "ban": "封禁",
+      "recommend": "推薦",
+      "cancel": "取消",
+      "confirm": "確認"
+    },
+    "rich-editor": {
+      "placeholder": "請輸入內容..."
+    },
+    "tag-select": {
+      "placeholder": "搜尋標籤...",
+      "msg": {
+        "success": "添加成功",
+        "error": "添加失敗",
+        "warning": "名稱長度過長"
+      }
+    },
+    "meta-bar": {
+      "view": "瀏覽",
+      "like": "點贊",
+      "edit-btn": "編輯",
+      "comment": "評論"
+    },
+    "author-panel": {
+      "public-creation-count": "公開內容",
+      "view-count": "總瀏覽量",
+      "visit-blog": "訪問博客"
+    },
+    "general-card-view": {
+      "published": "已發佈",
+      "draft": "草稿",
+      "public": "公開",
+      "private": "私有",
+      "recommended-tip": "是金子總會發光",
+      "banned-tip": "鑑於該內容可能會引發不適或爭議，現決定進行封禁處理",
+      "title": {
+        "open": "所有人可見",
+        "private": "僅自己可見"
+      }
+    }
+  },
+  "home-page": {
+    "plans": "計劃",
+    "articles": "筆記",
+    "vocabularies": "詞彙",
+    "view-count": "閱讀",
+    "like-count": "點贊",
+    "collections": "合集",
+    "end-line": "實在是沒有了。。。",
+    "load-more": "加載更多",
+    "no-content": "找不到相關內容",
+    "tag-statistics": "標籤篩選",
+    "content-type-filter": {
+      "title": "分類篩選"
+    },
+    "slogan": "記錄成長，分享點滴",
+    "speed-dial": {
+      "create-article": "創建筆記",
+      "create-plan": "創建計劃",
+      "create-vocabulary": "創建詞彙",
+      "create-collection": "創建合集"
+    },
+    "advantages": {
+      "title": "為什麼選擇 Stan Blog",
+      "items": {
+        "ai": {
+          "title": "AI 技術加持",
+          "description": "我們的博客平台由AI技術加持，加速迭代和更新，不斷優化用戶體驗。同時，AI系統將為創作者提供創作輔助，以及更加智能的索引，輕鬆打造個人或團隊的知識庫。"
+        },
+        "community": {
+          "title": "社區完善",
+          "description": "Stan Blog，您將成為一個充滿活力的創作社區的一員。我們匯集了各行各業的優秀創作者，內容涵蓋科技、閱讀、生活和語言學習等多個領域。保證您閱讀到的每一篇文章都值得您的時間和關注。"
+        },
+        "copyright": {
+          "title": "尊重創作",
+          "description": "在Stan Blog，我們堅信創作者的權益應當得到充分尊重。您發布的所有內容版權完全歸您所有，我們提供完善的版權保護機制，讓您可以安心創作，自由分享，同時獲得應有的尊重與回報。"
+        }
+      }
+    },
+    "categories": {
+      "TECHNICAL": {
+        "title": "技術寶典",
+        "description": "緊跟科技前沿，傳播最新動態"
+      },
+      "READING": {
+        "title": "讀書筆記",
+        "description": "品讀傳世經典，記錄思考感悟"
+      },
+      "LIFE": {
+        "title": "生活點滴",
+        "description": "體會美好生活，分享人生智慧"
+      },
+      "LANGUAGE": {
+        "title": "外語學習",
+        "description": "著眼廣闊世界，共享經驗資源"
+      }
+    }
+  },
+  "sign-in": {
+    "title": "歡迎登入",
+    "sign-in-btn": "登入",
+    "forget-pw-btn": "忘記密碼？",
+    "sign-up-btn": "註冊帳號",
+    "remember-me-btn": "記住登入",
+    "description": {
+      "email": "郵箱地址",
+      "password": "密碼"
+    },
+    "msg": {
+      "success": "登入成功",
+      "error": "登入失敗，請再次確認您的用戶名密碼",
+      "email-not-verified": "郵箱尚未驗證，請查收驗證郵件並完成驗證後再登入",
+      "invalid-email": "請輸入有效的郵箱地址",
+      "password-reset-sent": "密碼重置連結已發送到您的郵箱",
+      "password-reset-error": "發送密碼重置郵件失敗，請重試"
+    },
+    "reset-password-title": "重置密碼",
+    "reset-password-message": "請輸入您的郵箱地址，我們將向您發送密碼重置郵件",
+    "cancel-btn": "取消",
+    "send-reset-btn": "發送"
+  },
+  "reset-password": {
+    "title": "重置您的密碼",
+    "subtitle": "為您的帳戶設定新密碼",
+    "new-password": "新密碼",
+    "confirm-password": "確認新密碼",
+    "submit-btn": "重置密碼",
+    "back-to-login": "返回登入",
+    "msg": {
+      "success": "密碼重置成功",
+      "error": "密碼重置失敗，請重試或請求新的重置連結",
+      "token-expired": "您的重置連結已過期，請重新獲取",
+      "passwords-not-match": "兩次輸入的密碼不一致",
+      "invalid-password-length": "密碼長度至少為6個字符"
+    }
+  },
+  "sign-up": {
+    "title": "歡迎加入",
+    "sign-up-btn": "註冊",
+    "sign-in-btn": "已有帳號？登入",
+    "fields": {
+      "first-name": "名字",
+      "last-name": "姓氏",
+      "email": "郵箱地址",
+      "password": "密碼",
+      "password-confirm": "再次確認密碼"
+    },
+    "msg": {
+      "success": "註冊成功",
+      "success-verification-required": "註冊成功！我們已向您的郵箱發送驗證郵件，請查收並完成驗證後再登入。",
+      "error": "註冊失敗",
+      "email-exists": "此郵箱已註冊，請直接登入或使用其他郵箱",
+      "warning": {
+        "invalid-email-format": "郵件格式異常",
+        "two-password-dismatch": "兩次輸入的密碼不一致",
+        "invalid-password-length": "密碼長度應為6至64位"
+      }
+    }
+  },
+  "email-verification": {
+    "title": "郵箱驗證",
+    "subtitle": "請驗證您的郵箱地址以完成註冊",
+    "loading": "正在驗證您的郵箱...",
+    "success": {
+      "title": "郵箱驗證成功！",
+      "description": "您的郵箱已成功驗證，現在可以登入並使用我們的服務了。"
+    },
+    "already-verified": {
+      "title": "郵箱已驗證",
+      "description": "您的郵箱已經驗證過了，可以使用您的郵箱登入。"
+    },
+    "error": {
+      "title": "驗證失敗",
+      "invalid-link": "驗證連結無效，缺少必要參數",
+      "verification-failed": "驗證失敗，連結可能已過期或無效",
+      "verification-error": "驗證過程中發生錯誤",
+      "unknown": "未知錯誤"
+    },
+    "btn": {
+      "go-to-login": "前往登入",
+      "resend": "重發驗證郵件",
+      "back-to-login": "返回登入"
+    },
+    "msg": {
+      "success": "郵箱驗證成功！現在可以登入了",
+      "resend-success": "驗證郵件發送成功",
+      "resend-error": "驗證郵件發送失敗",
+      "sending": "發送中..."
+    }
+  },
+  "app-header": {
+    "sign-in-btn": "登入",
+    "pages": {
+      "home": "首頁",
+      "news": "近期動態",
+      "about": "關於",
+      "article": "筆記",
+      "vocabulary": "單詞",
+      "collection": "合集"
+    },
+    "settings": {
+      "btn-tooltip": "打開設置",
+      "profile": "用戶資訊",
+      "analytics": "分析",
+      "plans": "計劃",
+      "articles": "筆記",
+      "vocabularies": "單詞",
+      "collections": "合集",
+      "sign-out": "登出系統"
+    },
+    "language": {
+      "btn-tooltip": "切換語言",
+      "options": {
+        "en": "EN",
+        "tc": "繁中",
+        "zh": "简中"
+      }
+    }
+  },
+  "profile-setting": {
+    "form-title": "編輯您的檔案",
+    "fields": {
+      "first-name": "名字",
+      "last-name": "姓氏",
+      "phone-number": "聯絡電話",
+      "email": "郵箱地址",
+      "address": "聯絡地址",
+      "blog": "部落格地址",
+      "blog-placeholder": "https://xxx.blog.com",
+      "introduction": "個人介紹",
+      "introduction-placeholder": "讓大家更了解你...",
+      "profession": "職業",
+      "personal-portal": "個人主頁設定",
+      "customized-settings": "定製化設定",
+      "module-switch": "模組開關設定",
+      "background-img": "主頁背景圖片連結",
+      "background-img-placeholder": "請輸入圖片連結...",
+      "photo-img": "個人頭像圖片連結",
+      "photo-img-placeholder": "請輸入圖片連結...",
+      "articles": "筆記",
+      "plans": "計劃",
+      "vocabularies": "詞彙",
+      "collections": "合集"
+    },
+    "view-btn": "瀏覽",
+    "msg": {
+      "success": "更新成功",
+      "error": "更新失敗"
+    }
+  },
+  "user-table": {
+    "title": "用戶",
+    "total-count": "共 {{count}} 位用戶",
+    "delete-success": "用戶刪除成功",
+    "search-placeholder": "搜尋用戶..."
+  },
+  "user-tabs": {
+    "all": "全部",
+    "verified": "已驗證",
+    "unverified": "未驗證",
+    "count-tooltip": "找到的用戶數量"
+  },
+  "notifications": {
+    "title": "通知",
+    "mark-all-read": "全部標記為已讀",
+    "marking-all-read": "正在標記為已讀...",
+    "mark-all-read-success": "所有通知已標記為已讀",
+    "mark-as-read": "標記為已讀",
+    "view-details": "查看詳情",
+    "no-notifications": "暫無通知",
+    "count-tooltip": "通知總數",
+    "from": "來自",
+    "content": {
+      "reply-label": "回覆",
+      "original-comment-label": "您的原評論",
+      "deleted-comment-label": "已刪除的評論",
+      "deleted-reply-label": "已刪除的回覆",
+      "from-label": "來自"
+    },
+    "actions": {
+      "mark-as-read": "標記為已讀",
+      "view-details": "查看詳情"
+    },
+    "tabs": {
+      "all": "全部",
+      "unread": "未讀",
+      "read": "已讀"
+    },
+    "types": {
+      "CONTENT_RECOMMENDED": "推薦",
+      "CONTENT_BANNED": "封禁",
+      "CONTENT_COMMENTED": "評論",
+      "COMMENT_REPLIED": "回覆",
+      "COMMENT_DELETED": "評論已刪除",
+      "REPLY_DELETED": "回覆已刪除",
+      "SYSTEM_ANNOUNCEMENT": "系統"
+    },
+    "messages": {
+      "content-recommended": {
+        "title": "內容推薦",
+        "message": "您的{{contentType}}「{{contentTitle}}」已被管理員推薦"
+      },
+      "content-banned": {
+        "title": "內容封禁",
+        "message": "您的{{contentType}}「{{contentTitle}}」已被管理員封禁"
+      },
+      "content-commented": {
+        "title": "新評論",
+        "message": "{{commenterName}} 評論了您的{{contentType}}「{{contentTitle}}」"
+      },
+      "comment-replied": {
+        "title": "新回覆",
+        "message": "{{replierName}} 回覆了您在「{{contentTitle}}」的評論"
+      },
+      "comment-deleted": {
+        "title": "評論已刪除",
+        "message": "您在{{contentType}}「{{contentTitle}}」的一條評論已被刪除"
+      },
+      "reply-deleted": {
+        "title": "回覆已刪除",
+        "message": "您在「{{contentTitle}}」的一條回覆已被刪除"
+      }
+    }
+  },
+  "user-detail": {
+    "title": "用戶詳情",
+    "basic-info": "基本資訊",
+    "introduction": "個人介紹",
+    "visit-portal": "訪問主頁",
+    "roles": "用戶角色",
+    "select-roles": "選擇角色",
+    "update-roles": "更新角色",
+    "updating-roles": "正在更新角色...",
+    "role-update-success": "角色更新成功",
+    "required": "必需",
+    "role-labels": {
+      "admin": "管理員",
+      "basic": "基礎用戶"
+    },
+    "fields": {
+      "author": "作者",
+      "email": "郵箱",
+      "phone-number": "電話號碼",
+      "address": "地址",
+      "profession": "職業",
+      "blog": "部落格",
+      "create-time": "創建時間",
+      "update-time": "更新時間"
+    },
+    "no-data": "暫無資料"
+  },
+  "admin-table": {
+    "title": "監管",
+    "label": {
+      "title": "標題",
+      "owner-name": "作者",
+      "content-type": "內容類型",
+      "banned": "封禁",
+      "recommended": "推薦",
+      "reason": "原因",
+      "operation": "操作"
+    },
+    "content-types": {
+      "article": "筆記",
+      "plan": "計劃",
+      "vocabulary": "詞彙",
+      "collection": "合集"
+    }
+  },
+  "content-admin": {
+    "title": "內容監管",
+    "search-placeholder": "搜尋內容...",
+    "total-count-tooltip": "找到的內容數量",
+    "no-description": "暫無描述",
+    "tabs": {
+      "all": "全部",
+      "banned": "已封禁",
+      "recommended": "已推薦"
+    },
+    "status": {
+      "banned": "已封禁",
+      "recommended": "已推薦",
+      "draft": "草稿"
+    },
+    "actions": {
+      "view-details": "查看詳情",
+      "view-on-portal": "在門戶查看",
+      "ban": "封禁",
+      "unban": "解封",
+      "recommend": "推薦",
+      "unrecommend": "取消推薦",
+      "delete": "刪除"
+    },
+    "ban-success": "內容已成功封禁",
+    "unban-success": "內容已成功解封",
+    "recommend-success": "內容已成功推薦",
+    "unrecommend-success": "內容推薦已取消",
+    "delete-success": "內容已成功刪除",
+    "delete-confirm": "確定要刪除此內容嗎？此操作不可撤銷。"
+  },
+  "contents-page": {
+    "filter": {
+      "all": "全部",
+      "published": "已發佈",
+      "draft": "草稿"
+    },
+    "record-found": "找到的內容數量",
+    "msg": {
+      "error": "未能獲取內容"
+    }
+  },
+  "msg": {
+    "success": "操作成功",
+    "error": "操作失敗，請重試"
+  },
+  "admin-pages-title": {
+    "plans": "計劃",
+    "articles": "筆記",
+    "collections": "合集",
+    "vocabularies": "詞彙",
+    "article-edit": "編輯筆記"
+  },
+  "plan-creation-page": {
+    "form-title": "創建新的計劃",
+    "fields": {
+      "name": "計劃名稱",
+      "description": "計劃描述",
+      "target-start-time": "計劃開始時間",
+      "target-end-time": "計劃結束時間",
+      "cover-img-url": "封面連結"
+    },
+    "msg": {
+      "warning": {
+        "name-empty": "項目名稱不能為空",
+        "target-start-time-empty": "計劃開始時間不可為空",
+        "target-end-time-empty": "計劃結束時間不可為空",
+        "target-invalid-start-end-time": "計劃開始時間不可晚於結束時間"
+      }
+    }
+  },
+  "plan-detail-page": {
+    "fields": {
+      "name": "計劃名稱",
+      "description": "計劃描述",
+      "target-start-time": "計劃開始時間",
+      "target-end-time": "計劃結束時間",
+      "cover-img-url": "封面連結"
+    }
+  },
+  "plan-progress": {
+    "title": "進展",
+    "add-new-tip": "有任何進展可以分享嗎？",
+    "send-btn": "發布",
+    "msg": {
+      "warning": "請輸入有效內容"
+    }
+  },
+  "dashboard-nav": {
+    "pages": {
+      "analytics": "分析",
+      "users": "用戶",
+      "plans": "計劃",
+      "articles": "筆記",
+      "vocabularies": "詞彙",
+      "collections": "合集",
+      "admin": "監管"
+    },
+    "msg": {
+      "error": "獲取資料失敗"
+    }
+  },
+  "analytics-page": {
+    "page-main-title": "分析",
+    "content": {
+      "title": {
+        "plan": "計劃總覽",
+        "article": "筆記總覽",
+        "vocabulary": "詞彙總覽",
+        "collection": "合集總覽"
+      },
+      "public": "發表量",
+      "all": "內容量",
+      "view-count": "閱讀量（千）",
+      "like-count": "點贊量（千）"
+    },
+    "msg": {
+      "error": "獲取資料失敗"
+    }
+  },
+  "article-creation-page": {
+    "page-main-title": "創建新的筆記",
+    "expand-label": "其他補充資訊",
+    "fields": {
+      "title": "標題",
+      "sub-title": "副標題",
+      "cover-img-url": "封面連結",
+      "description": "簡述",
+      "tag": "標籤",
+      "content-protected": "該篇筆記只有登入用戶才能看到完整內容"
+    }
+  },
+  "article-reading-page": {
+    "content-protected": "請登入以閱讀此文",
+    "msg": {
+      "error": "加載資料失敗"
+    },
+    "content-nav": "內容導航"
+  },
+  "collection-creation-page": {
+    "page-main-title": "創建一個合集",
+    "fields": {
+      "name": "標題",
+      "description": "描述",
+      "cover-img-url": "封面連結",
+      "tag": "標籤"
+    },
+    "msg": {
+      "warning": {
+        "name-empty": "標題不能為空"
+      }
+    }
+  },
+  "collection-detail-page": {
+    "btn": {
+      "add": "新增",
+      "delete": "刪除"
+    }
+  },
+  "collection-reading-page": {
+    "tip": {
+      "tba": "敬請期待"
+    },
+    "msg": {
+      "error": "加載資料失敗"
+    }
+  },
+  "collection-preview": {
+    "title": "預覽",
+    "loading": "正在加載預覽...",
+    "tip": {
+      "no-data": "暫無合集資料",
+      "tba": "敬請期待"
+    }
+  },
+  "vocabulary-creation-page": {
+    "page-main-title": "詞彙",
+    "fields": {
+      "title": "標題",
+      "description": "描述",
+      "language": "語言",
+      "cover-img-url": "封面連結",
+      "tags": "標籤",
+      "topic": "主題"
+    }
+  },
+  "word-dialog": {
+    "add": "新增",
+    "title": "編輯單詞",
+    "fields": {
+      "word": "文本",
+      "partOfSpeech": "詞性",
+      "meaningInChinese": "中文含義",
+      "meaningInEnglish": "英文含義"
+    },
+    "save": "保存",
+    "back": "返回",
+    "delete": "刪除"
+  },
+  "dialog": {
+    "delete": {
+      "title": "確認操作",
+      "content": "確定要執行此操作嗎？此操作不可撤銷。"
+    },
+    "cancel": "取消",
+    "confirm": "確認"
+  },
+  "topic": {
+    "label": "標籤",
+    "READING": "讀書",
+    "LANGUAGE": "外語",
+    "TECHNICAL": "科技",
+    "LIFE": "生活",
+    "OTHER": "其他"
+  },
+  "content-stats": {
+    "title": "統計資訊",
+    "view-count": "瀏覽量",
+    "like-count": "點贊量",
+    "status": "狀態",
+    "draft": "草稿",
+    "recommended": "已推薦",
+    "banned": "已封禁",
+    "normal": "正常",
+    "portal-link": "門戶連結",
+    "view-on-portal": "在門戶查看",
+    "dates": "時間資訊",
+    "created-date": "創建時間",
+    "published-date": "發佈時間",
+    "last-updated": "最後更新"
+  },
+  "content-redirector": {
+    "content-not-found": "內容未找到",
+    "content-not-available": "內容不可用或已被移除"
+  },
+  "admin": {},
+  "comments": {
+    "section": {
+      "title": "評論",
+      "no-comments": "暫無評論，快來搶沙發吧！",
+      "loading": "加載評論中...",
+      "load-more": "加載更多評論",
+      "sign-in-to-comment": "請登入後發表評論",
+      "sign-in-prompt": "請",
+      "sign-in-link": "登入",
+      "to-comment": "後發表評論"
+    },
+    "form": {
+      "placeholder": "寫下你的評論...",
+      "reply-placeholder": "回覆 {{userName}}...",
+      "submit": "發表評論",
+      "cancel": "取消",
+      "submitting": "發表中...",
+      "sign-in-required": "請登入後發表評論",
+      "add-emoji": "添加表情",
+      "select-emoji": "選擇表情"
+    },
+    "item": {
+      "just-now": "剛剛",
+      "minutes-ago": "{{count}}分鐘前",
+      "hours-ago": "{{count}}小時前",
+      "days-ago": "{{count}}天前",
+      "reply": "回覆",
+      "reply-to": "回覆",
+      "like": "點贊",
+      "delete": "刪除",
+      "show-replies": "顯示{{count}}條回覆",
+      "hide-replies": "隱藏回覆",
+      "show-reply": "顯示{{count}}條回覆",
+      "hide-reply": "隱藏回覆"
+    },
+    "actions": {
+      "like-success": "已點贊",
+      "unlike-success": "已取消點贊",
+      "delete-success": "評論刪除成功",
+      "create-success": "評論發表成功",
+      "reply-success": "回覆發表成功"
+    },
+    "errors": {
+      "sign-in-required": "請登入後{{action}}",
+      "like-failed": "點贊失敗",
+      "delete-failed": "刪除評論失敗",
+      "create-failed": "發表評論失敗",
+      "load-failed": "加載評論失敗",
+      "empty-content": "評論內容不能為空"
+    },
+    "menu": {
+      "delete-confirm": "確定要刪除這條評論嗎？",
+      "delete-confirm-content": "此操作無法撤銷。"
+    }
+  },
+  "article-detail-page": {
+    "msg": {
+      "restore-draft-confirm": "檢測到未保存草稿，是否恢復？"
+    }
+  }
+}

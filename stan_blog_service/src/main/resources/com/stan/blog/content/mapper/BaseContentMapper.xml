@@ -1,0 +1,93 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stan.blog.content.mapper.BaseContentMapper">
+    <sql id="base_content_select_by_filter">
+        <if test="filter.tags != null and filter.tags.length > 0">
+          WITH TAG_FILTERED_TABLE AS (
+              SELECT DISTINCT tct.CONTENT_ID AS ID FROM stan_blog_content_tag tct
+              JOIN stan_blog_tag_info tti ON tti.ID = tct.TAG_ID
+              WHERE 1=1
+              AND tti.DELETED=0
+              AND tti.ID IN
+              <foreach item="tag" collection="filter.tags" open="(" separator="," close=")">#{tag}</foreach>
+          )
+        </if>
+        <include refid="com.stan.blog.content.mapper.BaseContentMapper.select_clause"></include>
+        <if test="filter.tags != null and filter.tags.length > 0">
+            JOIN TAG_FILTERED_TABLE tfat ON tfat.ID = tcgi.ID
+        </if>
+        WHERE 1=1
+        <if test="userId != null and userId != ''" >
+            AND tcu.ID = #{userId}
+        </if>
+        <choose>
+          <when test="filter.status == 'DRAFT'">
+            AND tcgi.PUBLIC_TO_ALL = false
+          </when>
+          <when test="filter.status == 'PUBLISHED'">
+            AND tcgi.PUBLIC_TO_ALL = true
+          </when>
+          <otherwise>
+            <!-- DO NOTHING -->
+          </otherwise>
+        </choose>
+        <if test="filter.topic != null" >
+            AND tcgi.topic = #{filter.topic}
+        </if>
+        <if test="filter.createFrom != null" >
+            AND tcgi.CREATE_TIME &gt;= #{filter.createFrom}
+        </if>
+        <if test="filter.createTo != null" >
+            AND tcgi.CREATE_TIME &lt;= #{filter.createTo}
+        </if>
+        <if test="filter.updateFrom != null" >
+            AND tcgi.UPDATE_TIME &gt;= #{filter.updateFrom}
+        </if>
+        <if test="filter.updateTo != null" >
+            AND tcgi.UPDATE_TIME &lt;= #{filter.updateTo}
+        </if>
+        <if test="filter.keyword != null and filter.keyword != ''" >
+            AND (
+                tcgi.TITLE LIKE CONCAT('%', #{filter.keyword}, '%')
+                OR tcgi.DESCRIPTION LIKE CONCAT('%', #{filter.keyword}, '%')
+            )
+        </if>
+        ORDER BY tcgi.CREATE_TIME DESC
+    </sql>
+
+    <sql id="base_content_select_by_id">
+        <include refid="com.stan.blog.content.mapper.BaseContentMapper.select_clause"></include>
+        WHERE 1=1
+        AND tcgi.ID = #{id}
+    </sql>
+
+    <sql id="select_clause">
+        SELECT
+            tcgi.*,
+            tcci.*,
+            CONCAT(tcu.FIRST_NAME, ' ', tcu.LAST_NAME) as OWNER_NAME,
+            tcu.ID as OWNER_ID,
+            tcu.AVATAR_URL as AVATAR_URL,
+            tca.*
+        FROM stan_blog_content_general_info tcgi
+        JOIN ${tableName} tcci ON tcci.CONTENT_ID = tcgi.ID AND tcgi.DELETED = 0
+        JOIN stan_blog_core_user tcu ON tcgi.OWNER_ID = tcu.ID AND tcgi.DELETED = 0
+        JOIN stan_blog_content_admin tca ON tca.CONTENT_ID = tcgi.ID AND tcgi.DELETED = 0
+    </sql>
+
+    <resultMap id="general_dto_result_map" type="com.stan.blog.beans.dto.content.BaseContentDTO">
+        <id column="ID" property="id" />
+        <collection property="tags" javaType="java.util.ArrayList"
+                    ofType="com.stan.blog.beans.dto.tag.TagInfoDTO"
+                    column="ID"
+                    select="getTagsBySourceId">
+        </collection>
+    </resultMap>
+
+    <select id="getTagsBySourceId" resultType="com.stan.blog.beans.dto.tag.TagInfoDTO">
+        SELECT tti.ID AS VALUE, tti.KEYWORD AS LABEL
+        FROM stan_blog_content_tag tct
+        LEFT JOIN stan_blog_tag_info tti ON tct.TAG_ID = tti.ID
+        WHERE tct.CONTENT_ID = #{ID}
+    </select>
+</mapper>

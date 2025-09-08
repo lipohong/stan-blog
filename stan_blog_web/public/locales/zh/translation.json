@@ -1,0 +1,696 @@
+{
+  "breadcrumbs": {
+    "content": "正文",
+    "home": "首页",
+    "topic": "专题"
+  },
+  "components": {
+    "relevant-contents": "相关内容",
+    "recent-contents": "近期内容",
+    "upload-pics": "上传图片",
+    "visibility-switch": {
+      "release": "草稿，点击发布",
+      "retract": "已发布，点击撤回"
+    },
+    "edit-icon-button": {
+      "save": "保存",
+      "edit": "修改"
+    },
+    "info-icon-button": {
+      "tooltip": "查看内容统计"
+    },
+    "save-btn-panel": {
+      "save": "保存",
+      "back": "返回"
+    },
+    "standard-button": {
+      "detail": "详情",
+      "delete": "删除",
+      "create": "新增",
+      "release": "公开",
+      "retract": "撤回",
+      "ban": "封禁",
+      "recommend": "推荐",
+      "cancel": "取消",
+      "confirm": "确认"
+    },
+    "rich-editor": {
+      "placeholder": "请输入内容..."
+    },
+    "tag-select": {
+      "placeholder": "搜索标签...",
+      "msg": {
+        "success": "添加成功",
+        "error": "添加失败",
+        "warning": "名字长度过长"
+      }
+    },
+    "meta-bar": {
+      "view": "浏览",
+      "like": "点赞",
+      "edit-btn": "编辑",
+      "comment": "评论"
+    },
+    "author-panel": {
+      "public-creation-count": "公开内容",
+      "view-count": "总浏览量",
+      "visit-blog": "访问博客"
+    },
+    "general-card-view": {
+      "published": "已发布",
+      "draft": "草稿",
+      "public": "公开",
+      "private": "私有",
+      "recommended-tip": "是金子总会发光",
+      "banned-tip": "鉴于该内容可能会引发不适或争议，现决定进行封禁处理",
+      "title": {
+        "open": "所有人可见",
+        "private": "仅自己可见"
+      }
+    }
+  },
+  "home-page": {
+    "plans": "计划",
+    "articles": "笔记",
+    "vocabularies": "词汇",
+    "view-count": "阅读",
+    "like-count": "点赞",
+    "collections": "合集",
+    "end-line": "实在是没有了。。。",
+    "load-more": "加载更多",
+    "no-content": "找不到相关内容",
+    "tag-statistics": "标签筛选",
+    "content-type-filter": {
+      "title": "分类筛选"
+    },
+    "slogan": "记录成长，分享点滴",
+    "speed-dial": {
+      "create-article": "创建笔记",
+      "create-plan": "创建计划",
+      "create-vocabulary": "创建词汇",
+      "create-collection": "创建合集"
+    },
+    "advantages": {
+      "title": "为什么选择 Stan Blog",
+      "items": {
+        "ai": {
+          "title": "AI 技术加持",
+          "description": "我们的博客平台由AI技术加持，加速迭代和更新，不断优化用户体验。同时，AI系统将为创作者提供创作辅助，以及更加智能的索引，轻松打造个人或团队的知识库。"
+        },
+        "community": {
+          "title": "社区完善",
+          "description": "加入Stan Blog，您将成为一个充满活力的创作社区的一员。我们汇集了各行各业的优秀创作者，内容覆盖科技、阅读、生活和语言学习等多个领域。保证您阅读到的每一篇文章都值得您的时间和关注。"
+        },
+        "copyright": {
+          "title": "尊重创作",
+          "description": "在Stan Blog，我们坚信创作者的权益应当得到充分尊重。您发布的所有内容版权完全归您所有，我们提供完善的版权保护机制，让您可以安心创作，自由分享，同时获得应有的尊重与回报。"
+        }
+      }
+    },
+    "categories": {
+      "TECHNICAL": {
+        "title": "技术宝典",
+        "description": "紧跟科技前沿，传播最新动态"
+      },
+      "READING": {
+        "title": "读书笔记",
+        "description": "品读传世经典，记录思考感悟"
+      },
+      "LIFE": {
+        "title": "生活点滴",
+        "description": "体会美好生活，分享人生智慧"
+      },
+      "LANGUAGE": {
+        "title": "外语学习",
+        "description": "着眼广阔世界，共享经验资源"
+      }
+    }
+  },
+  "sign-in": {
+    "title": "欢迎登陆",
+    "sign-in-btn": "登录",
+    "forget-pw-btn": "忘记密码?",
+    "sign-up-btn": "注册账号",
+    "remember-me-btn": "记住登录",
+    "description": {
+      "email": "邮箱地址",
+      "password": "密码"
+    },
+    "msg": {
+      "success": "登录成功",
+      "error": "登录失败，请再次确认您的用户名密码",
+      "email-not-verified": "邮箱尚未验证，请查收验证邮件并完成验证后再登录",
+      "invalid-email": "请输入有效的邮箱地址",
+      "password-reset-sent": "密码重置链接已发送到您的邮箱",
+      "password-reset-error": "发送密码重置邮件失败，请重试"
+    },
+    "reset-password-title": "重置密码",
+    "reset-password-message": "请输入您的邮箱地址，我们将向您发送密码重置邮件",
+    "cancel-btn": "取消",
+    "send-reset-btn": "发送"
+  },
+  "reset-password": {
+    "title": "重置您的密码",
+    "subtitle": "为您的账户设置新密码",
+    "new-password": "新密码",
+    "confirm-password": "确认新密码",
+    "submit-btn": "重置密码",
+    "back-to-login": "返回登录",
+    "msg": {
+      "success": "密码重置成功",
+      "error": "密码重置失败，请重试或请求新的重置链接",
+      "token-expired": "您的重置链接已过期，请重新获取",
+      "passwords-not-match": "两次输入的密码不一致",
+      "invalid-password-length": "密码长度至少为6个字符"
+    }
+  },
+  "sign-up": {
+    "title": "欢迎加入",
+    "sign-up-btn": "注册",
+    "sign-in-btn": "已有账号? 登录",
+    "fields": {
+      "first-name": "名字",
+      "last-name": "姓氏",
+      "email": "邮箱地址",
+      "password": "密码",
+      "password-confirm": "再次确认密码"
+    },
+    "msg": {
+      "success": "注册成功",
+      "success-verification-required": "注册成功！我们已向您的邮箱发送验证邮件，请查收并完成验证后登录。",
+      "error": "注册失败",
+      "email-exists": "此邮箱已注册，请直接登录或使用其他邮箱",
+      "warning": {
+        "invalid-email-format": "邮件格式异常",
+        "two-password-dismatch": "两次输入的密码不一致",
+        "invalid-password-length": "密码长度应为6至64位"
+      }
+    }
+  },
+  "email-verification": {
+    "title": "邮箱验证",
+    "subtitle": "请验证您的邮箱地址以完成注册",
+    "loading": "正在验证您的邮箱...",
+    "success": {
+      "title": "邮箱验证成功！",
+      "description": "您的邮箱已成功验证，现在可以登录并使用我们的服务了。"
+    },
+    "already-verified": {
+      "title": "邮箱已验证",
+      "description": "您的邮箱已经验证过了，可以使用您的邮箱登录。"
+    },
+    "error": {
+      "title": "验证失败",
+      "invalid-link": "验证链接无效，缺少必要参数",
+      "verification-failed": "验证失败，链接可能已过期或无效",
+      "verification-error": "验证过程中发生错误",
+      "unknown": "未知错误"
+    },
+    "btn": {
+      "go-to-login": "前往登录",
+      "resend": "重发验证邮件",
+      "back-to-login": "返回登录"
+    },
+    "msg": {
+      "success": "邮箱验证成功！现在可以登录了",
+      "resend-success": "验证邮件发送成功",
+      "resend-error": "验证邮件发送失败",
+      "sending": "发送中..."
+    }
+  },
+  "app-header": {
+    "sign-in-btn": "登录",
+    "pages": {
+      "home": "首页",
+      "news": "近期动态",
+      "about": "关于",
+      "article": "笔记",
+      "vocabulary": "单词",
+      "collection": "合集"
+    },
+    "settings": {
+      "btn-tooltip": "打开设置",
+      "profile": "用户信息",
+      "analytics": "分析",
+      "plans": "计划",
+      "articles": "笔记",
+      "vocabularies": "单词",
+      "collections": "合集",
+      "sign-out": "登出系统"
+    },
+    "language": {
+      "btn-tooltip": "切换语言",
+      "options": {
+        "en": "EN",
+        "tc": "繁中",
+        "zh": "简中"
+      }
+    }
+  },
+  "profile-setting": {
+    "form-title": "编辑您的档案",
+    "fields": {
+      "first-name": "名字",
+      "last-name": "姓氏",
+      "phone-number": "联系电话",
+      "email": "邮箱地址",
+      "address": "联系地址",
+      "blog": "博客地址",
+      "blog-placeholder": "https://xxx.blog.com",
+      "introduction": "个人介绍",
+      "introduction-placeholder": "让大家更了解你...",
+      "profession": "职业",
+      "personal-portal": "个人主页设置",
+      "customized-settings": "定制化设置",
+      "module-switch": "模块开关设置",
+      "background-img": "主页背景图片链接",
+      "background-img-placeholder": "请输入图片链接...",
+      "photo-img": "个人头像图片链接",
+      "photo-img-placeholder": "请输入图片链接...",
+      "articles": "笔记",
+      "plans": "计划",
+      "vocabularies": "词汇",
+      "collections": "合集"
+    },
+    "view-btn": "浏览",
+    "msg": {
+      "success": "更新成功",
+      "error": "更新失败"
+    }
+  },
+  "user-table": {
+    "title": "用户",
+    "total-count": "共 {{count}} 位用户",
+    "delete-success": "用户删除成功",
+    "search-placeholder": "搜索用户..."
+  },
+  "user-tabs": {
+    "all": "全部",
+    "verified": "已验证",
+    "unverified": "未验证",
+    "count-tooltip": "找到的用户数量"
+  },
+  "notifications": {
+    "title": "通知",
+    "mark-all-read": "全部标记为已读",
+    "marking-all-read": "正在标记为已读...",
+    "mark-all-read-success": "所有通知已标记为已读",
+    "mark-as-read": "标记为已读",
+    "view-details": "查看详情",
+    "no-notifications": "暂无通知",
+    "count-tooltip": "通知总数",
+    "from": "来自",
+    "content": {
+      "reply-label": "回复",
+      "original-comment-label": "您的原评论",
+      "deleted-comment-label": "已删除的评论",
+      "deleted-reply-label": "已删除的回复",
+      "from-label": "来自"
+    },
+    "actions": {
+      "mark-as-read": "标记为已读",
+      "view-details": "查看详情"
+    },
+    "tabs": {
+      "all": "全部",
+      "unread": "未读",
+      "read": "已读"
+    },
+    "types": {
+      "CONTENT_RECOMMENDED": "推荐",
+      "CONTENT_BANNED": "封禁",
+      "CONTENT_COMMENTED": "评论",
+      "COMMENT_REPLIED": "回复",
+      "COMMENT_DELETED": "评论已删除",
+      "REPLY_DELETED": "回复已删除",
+      "SYSTEM_ANNOUNCEMENT": "系统"
+    },
+    "messages": {
+      "content-recommended": {
+        "title": "内容推荐",
+        "message": "您的{{contentType}}「{{contentTitle}}」已被管理员推荐"
+      },
+      "content-banned": {
+        "title": "内容封禁",
+        "message": "您的{{contentType}}「{{contentTitle}}」已被管理员封禁"
+      },
+      "content-commented": {
+        "title": "新评论",
+        "message": "{{commenterName}} 评论了您的{{contentType}}「{{contentTitle}}」"
+      },
+      "comment-replied": {
+        "title": "新回复",
+        "message": "{{replierName}} 回复了您在「{{contentTitle}}」的评论"
+      },
+      "comment-deleted": {
+        "title": "评论已删除",
+        "message": "您在{{contentType}}「{{contentTitle}}」的一条评论已被删除"
+      },
+      "reply-deleted": {
+        "title": "回复已删除",
+        "message": "您在「{{contentTitle}}」的一条回复已被删除"
+      }
+    }
+  },
+  "user-detail": {
+    "title": "用户详情",
+    "basic-info": "基本信息",
+    "introduction": "个人介绍",
+    "visit-portal": "访问主页",
+    "roles": "用户角色",
+    "select-roles": "选择角色",
+    "update-roles": "更新角色",
+    "updating-roles": "正在更新角色...",
+    "role-update-success": "角色更新成功",
+    "required": "必需",
+    "role-labels": {
+      "admin": "管理员",
+      "basic": "基础用户"
+    },
+    "fields": {
+      "author": "作者",
+      "email": "邮箱",
+      "phone-number": "电话号码",
+      "address": "地址",
+      "profession": "职业",
+      "blog": "博客",
+      "create-time": "创建时间",
+      "update-time": "更新时间"
+    },
+    "no-data": "暂无数据"
+  },
+  "admin-table": {
+    "title": "监管",
+    "label": {
+      "title": "标题",
+      "owner-name": "作者",
+      "content-type": "内容类型",
+      "banned": "封禁",
+      "recommended": "推荐",
+      "reason": "原因",
+      "operation": "操作"
+    },
+    "content-types": {
+      "article": "笔记",
+      "plan": "计划",
+      "vocabulary": "词汇",
+      "collection": "合集"
+    }
+  },
+  "content-admin": {
+    "title": "内容监管",
+    "search-placeholder": "搜索内容...",
+    "total-count-tooltip": "找到的内容数量",
+    "no-description": "暂无描述",
+    "tabs": {
+      "all": "全部",
+      "banned": "已封禁",
+      "recommended": "已推荐"
+    },
+    "status": {
+      "banned": "已封禁",
+      "recommended": "已推荐",
+      "draft": "草稿"
+    },
+    "actions": {
+      "view-details": "查看详情",
+      "view-on-portal": "在门户查看",
+      "ban": "封禁",
+      "unban": "解封",
+      "recommend": "推荐",
+      "unrecommend": "取消推荐",
+      "delete": "删除"
+    },
+    "ban-success": "内容已成功封禁",
+    "unban-success": "内容已成功解封",
+    "recommend-success": "内容已成功推荐",
+    "unrecommend-success": "内容推荐已取消",
+    "delete-success": "内容已成功删除",
+    "delete-confirm": "确定要删除此内容吗？此操作不可撤销。"
+  },
+  "contents-page": {
+    "filter": {
+      "all": "全部",
+      "published": "已发布",
+      "draft": "草稿"
+    },
+    "record-found": "找到的内容数量",
+    "msg": {
+      "error": "未能获取内容"
+    }
+  },
+  "msg": {
+    "success": "操作成功",
+    "error": "操作失败，请重试"
+  },
+  "admin-pages-title": {
+    "plans": "计划",
+    "articles": "笔记",
+    "collections": "合集",
+    "vocabularies": "词汇",
+    "article-edit": "编辑笔记"
+  },
+  "plan-creation-page": {
+    "form-title": "创建新的计划",
+    "fields": {
+      "name": "计划名称",
+      "description": "计划描述",
+      "target-start-time": "计划开始时间",
+      "target-end-time": "计划结束时间",
+      "cover-img-url": "封面链接"
+    },
+    "msg": {
+      "warning": {
+        "name-empty": "项目名称不能为空",
+        "target-start-time-empty": "计划开始时间不可以为空",
+        "target-end-time-empty": "计划结束时间不可以为空",
+        "target-invalid-start-end-time": "计划开始时间不可以晚于结束时间"
+      }
+    }
+  },
+  "plan-detail-page": {
+    "fields": {
+      "name": "计划名称",
+      "description": "计划描述",
+      "target-start-time": "计划开始时间",
+      "target-end-time": "计划结束时间",
+      "cover-img-url": "封面链接"
+    }
+  },
+  "plan-progress": {
+    "title": "进展",
+    "add-new-tip": "有任何进展可以分享么？",
+    "send-btn": "发布",
+    "msg": {
+      "warning": "请输入有效内容"
+    }
+  },
+  "dashboard-nav": {
+    "pages": {
+      "analytics": "分析",
+      "users": "用户",
+      "plans": "计划",
+      "articles": "笔记",
+      "vocabularies": "词汇",
+      "collections": "合集",
+      "admin": "监管"
+    },
+    "msg": {
+      "error": "获取数据失败"
+    }
+  },
+  "analytics-page": {
+    "page-main-title": "分析",
+    "content": {
+      "title": {
+        "plan": "计划总览",
+        "article": "笔记总览",
+        "vocabulary": "词汇总览",
+        "collection": "合集总览"
+      },
+      "public": "发表量",
+      "all": "内容量",
+      "view-count": "阅读量（千）",
+      "like-count": "点赞量（千）"
+    },
+    "msg": {
+      "error": "获取数据失败"
+    }
+  },
+  "article-creation-page": {
+    "page-main-title": "创建新的笔记",
+    "expand-label": "其他补充信息",
+    "fields": {
+      "title": "标题",
+      "sub-title": "副标题",
+      "cover-img-url": "封面链接",
+      "description": "简述",
+      "tag": "标签",
+      "content-protected": "该篇笔记只有登录用户才能看到完整内容"
+    }
+  },
+  "article-reading-page": {
+    "content-protected": "请登录以阅读此文",
+    "msg": {
+      "error": "加载数据失败"
+    },
+    "content-nav": "内容导航"
+  },
+  "collection-creation-page": {
+    "page-main-title": "创建一个合集",
+    "fields": {
+      "name": "标题",
+      "description": "描述",
+      "cover-img-url": "封面链接",
+      "tag": "标签"
+    },
+    "msg": {
+      "warning": {
+        "name-empty": "标题不能为空"
+      }
+    }
+  },
+  "collection-detail-page": {
+    "btn": {
+      "add": "新增",
+      "delete": "删除"
+    }
+  },
+  "collection-reading-page": {
+    "tip": {
+      "tba": "敬请期待"
+    },
+    "msg": {
+      "error": "加载数据失败"
+    }
+  },
+  "collection-preview": {
+    "title": "预览",
+    "loading": "正在加载预览...",
+    "tip": {
+      "no-data": "暂无合集数据",
+      "tba": "敬请期待"
+    }
+  },
+  "vocabulary-creation-page": {
+    "page-main-title": "词汇",
+    "fields": {
+      "title": "标题",
+      "description": "描述",
+      "language": "语言",
+      "cover-img-url": "封面链接",
+      "tags": "标签",
+      "topic": "主题"
+    }
+  },
+  "word-dialog": {
+    "add": "新增",
+    "title": "编辑单词",
+    "fields": {
+      "word": "文本",
+      "partOfSpeech": "词性",
+      "meaningInChinese": "中文含义",
+      "meaningInEnglish": "英文含义"
+    },
+    "save": "保存",
+    "back": "返回",
+    "delete": "删除"
+  },
+  "dialog": {
+    "delete": {
+      "title": "确认操作",
+      "content": "确定要执行此操作吗？此操作不可撤销。"
+    },
+    "cancel": "取消",
+    "confirm": "确认"
+  },
+  "topic": {
+    "label": "标签",
+    "READING": "读书",
+    "LANGUAGE": "外语",
+    "TECHNICAL": "科技",
+    "LIFE": "生活",
+    "OTHER": "其他"
+  },
+  "content-stats": {
+    "title": "统计信息",
+    "view-count": "浏览量",
+    "like-count": "点赞量",
+    "status": "状态",
+    "draft": "草稿",
+    "recommended": "已推荐",
+    "banned": "已封禁",
+    "normal": "正常",
+    "portal-link": "门户链接",
+    "view-on-portal": "在门户查看",
+    "dates": "时间信息",
+    "created-date": "创建时间",
+    "published-date": "发布时间",
+    "last-updated": "最后更新"
+  },
+  "content-redirector": {
+    "content-not-found": "内容未找到",
+    "content-not-available": "内容不可用或已被移除"
+  },
+  "admin": {},
+  "comments": {
+    "section": {
+      "title": "评论",
+      "no-comments": "暂无评论，快来抢沙发吧！",
+      "loading": "加载评论中...",
+      "load-more": "加载更多评论",
+      "sign-in-to-comment": "请登录后发表评论",
+      "sign-in-prompt": "请",
+      "sign-in-link": "登录",
+      "to-comment": "后发表评论"
+    },
+    "form": {
+      "placeholder": "写下你的评论...",
+      "reply-placeholder": "回复 {{userName}}...",
+      "submit": "发表评论",
+      "cancel": "取消",
+      "submitting": "发表中...",
+      "sign-in-required": "请登录后发表评论",
+      "add-emoji": "添加表情",
+      "select-emoji": "选择表情"
+    },
+    "item": {
+      "just-now": "刚刚",
+      "minutes-ago": "{{count}}分钟前",
+      "hours-ago": "{{count}}小时前",
+      "days-ago": "{{count}}天前",
+      "reply": "回复",
+      "reply-to": "回复",
+      "like": "点赞",
+      "delete": "删除",
+      "show-replies": "显示{{count}}条回复",
+      "hide-replies": "隐藏回复",
+      "show-reply": "显示{{count}}条回复",
+      "hide-reply": "隐藏回复"
+    },
+    "actions": {
+      "like-success": "已点赞",
+      "unlike-success": "已取消点赞",
+      "delete-success": "评论删除成功",
+      "create-success": "评论发表成功",
+      "reply-success": "回复发表成功"
+    },
+    "errors": {
+      "sign-in-required": "请登录后{{action}}",
+      "like-failed": "点赞失败",
+      "delete-failed": "删除评论失败",
+      "create-failed": "发表评论失败",
+      "load-failed": "加载评论失败",
+      "empty-content": "评论内容不能为空"
+    },
+    "menu": {
+      "delete-confirm": "确定要删除这条评论吗？",
+      "delete-confirm-content": "此操作无法撤销。"
+    }
+  },
+  "article-detail-page": {
+    "msg": {
+      "restore-draft-confirm": "检测到未保存草稿，是否恢复？"
+    }
+  }
+}

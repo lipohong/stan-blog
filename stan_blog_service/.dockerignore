@@ -1,0 +1,36 @@
+# Maven build output
+target/
+
+# IDE related
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Git
+.git/
+.gitignore
+
+# Operation system cached files
+*.DS_Store
+Thumbs.db
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.bak
+
+# Test data
+src/test/
+coverage/
+jacoco.exec
+
+# Docs
+docs/
+*.md
+
+# Docker
+Dockerfile
+.dockerignore
