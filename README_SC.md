@@ -224,5 +224,5 @@ npm run build:analyze  # 打包分析
 
 - **在线体验**: [https://stan-blog.stanli.site](https://stan-blog.stanli.site)
 - **API 文档**: [Swagger UI](http://localhost:8080/swagger-ui/index.html)
-- **项目看板**: [Gitlab Projects](https://stanli.site:8888/stanli/stan-blog)
-- **问题反馈**: [Gitlab Issues](https://stanli.site:8888/stanli/stan-blog/-/issues)
+- **项目看板**: [Gitlab Projects](https://gitlab.stanli.site/stanli/stan-blog)
+- **问题反馈**: [Gitlab Issues](https://gitlab.stanli.site/stanli/stan-blog/-/issues)
