@@ -6,7 +6,7 @@
 
 一个基于 Spring Boot 和 React 的现代化开源博客平台，支持多语言、多端适配，提供完整的内容管理和数据分析功能。
 
-[English](README.md) | [繁體中文](README_TC.md)
+[English](README.md) | [繁體中文](README_TC.md) | 简体中文
 
 ## ✨ 主要特性
 
@@ -222,7 +222,7 @@ npm run build:analyze  # 打包分析
 
 ## 🔗 相关链接
 
-- **在线体验**: [https://stanli.site/stan-blog](https://stanli.site/stan-blog)
+- **在线体验**: [https://stan-blog.stanli.site](https://stan-blog.stanli.site)
 - **API 文档**: [Swagger UI](http://localhost:8080/swagger-ui/index.html)
 - **项目看板**: [Gitlab Projects](https://stanli.site:8888/stanli/stan-blog)
 - **问题反馈**: [Gitlab Issues](https://stanli.site:8888/stanli/stan-blog/-/issues)
