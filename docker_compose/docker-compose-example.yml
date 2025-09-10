@@ -1,0 +1,25 @@
+services:
+  stan-blog-service:
+    image: stan-blog-service
+    container_name: stan-blog-service
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - TZ=Asia/Hong_Kong
+    networks:
+      - stan_blog_network
+    restart: always
+  stan-blog-web:
+    image: stan-blog-web
+    container_name: stan-blog-web
+    ports:
+      - "127.0.0.1:3000:80"
+    environment:
+      - TZ=Asia/Hong_Kong
+    networks:
+      - stan_blog_network
+    restart: always
+
+networks:
+  stan_blog_network:
