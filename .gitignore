@@ -1,3 +1,6 @@
+# Backup files
+*.bak
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -12,9 +15,11 @@
 *.sw?
 
 # Env Config
-
 .env
 .env.production
 
 # Docker Config
 docker-compose.yml
+
+# Jenkins Config
+Jenkinsfile_production

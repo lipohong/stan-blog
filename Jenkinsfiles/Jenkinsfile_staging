@@ -1,0 +1,144 @@
+pipeline {
+  agent any
+  options {
+    // Don’t waste time checking out twice
+    skipDefaultCheckout(true)
+    // Avoid overlapping builds if pushes are frequent
+    disableConcurrentBuilds()
+    // Keep a clean workspace between runs
+    cleanWs()
+  }
+
+  environment {
+    FRONTEND_DIR = 'stan_blog_web'
+    BACKEND_DIR  = 'stan_blog_service'
+    EMAIL_TO     = 'lipohong@hotmail.com'
+  }
+
+  triggers {
+    // Every 5 mins; Jenkins will only build when it detects a change on the configured branch
+    pollSCM('H/5 * * * *')
+  }
+
+  stages {
+    stage('Checkout staging') {
+      steps {
+        checkout scm
+        sh '''
+          # Ensure we are on staging and up to date
+          git fetch origin staging
+          # If current branch is not staging, switch to it
+          CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+          if [ "$CURRENT_BRANCH" != "staging" ]; then
+            git checkout -B staging origin/staging
+          else
+            git reset --hard origin/staging
+          fi
+          git status --short --branch
+        '''
+      }
+    }
+
+    stage('Detect changes') {
+      steps {
+        script {
+          // Use previous successful commit if available; otherwise, compare last commit
+          def base = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'HEAD~1'
+          def range = "${base}..HEAD"
+
+          // Count changed files under each directory
+          def feCount = sh(script: "git diff --name-only ${range} -- '${env.FRONTEND_DIR}' | wc -l", returnStdout: true).trim()
+          def beCount = sh(script: "git diff --name-only ${range} -- '${env.BACKEND_DIR}'  | wc -l", returnStdout: true).trim()
+
+          env.FE_CHANGED = (feCount != '0').toString()
+          env.BE_CHANGED = (beCount != '0').toString()
+
+          echo "Change detection vs ${base}: FRONTEND=${env.FE_CHANGED} (files: ${feCount}), BACKEND=${env.BE_CHANGED} (files: ${beCount})"
+        }
+      }
+    }
+
+    stage('Frontend Test') {
+      when {
+        beforeAgent true
+        expression { env.FE_CHANGED == 'true' }
+        branch 'staging'
+      }
+      steps {
+        dir("${FRONTEND_DIR}") {
+          echo "🔍 [Frontend] testing (changes detected on staging)…"
+          sh '''
+            set -eux
+            npm ci || npm install
+            npm run lint
+          '''
+        }
+      }
+    }
+
+    stage('Backend Test') {
+      when {
+        beforeAgent true
+        expression { env.BE_CHANGED == 'true' }
+        branch 'staging'
+      }
+      steps {
+        dir("${BACKEND_DIR}") {
+          echo "🔍 [Backend] testing (changes detected on staging)…"
+          sh '''
+            set -eux
+            ./mvnw -q -DskipTests=false test || mvn -q -DskipTests=false test
+          '''
+        }
+      }
+      post {
+        always {
+          // Publish JUnit results if present
+          junit allowEmptyResults: true, testResults: "${BACKEND_DIR}/**/target/surefire-reports/*.xml"
+        }
+      }
+    }
+
+    stage('No-op (nothing changed)') {
+      when {
+        beforeAgent true
+        expression { env.FE_CHANGED != 'true' && env.BE_CHANGED != 'true' }
+        branch 'staging'
+      }
+      steps {
+        echo "✅ No changes detected under '${FRONTEND_DIR}' or '${BACKEND_DIR}' on staging. Skipping tests."
+      }
+    }
+  }
+
+  post {
+    always {
+      script {
+        // Build a quick summary for email
+        def summary = """
+            Job: ${env.JOB_NAME}
+            Build: #${env.BUILD_NUMBER}
+            Branch: staging
+            Result: ${currentBuild.currentResult}
+
+            Changed (since ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'HEAD~1'}):
+            - Frontend (${env.FRONTEND_DIR}): ${env.FE_CHANGED}
+            - Backend  (${env.BACKEND_DIR}): ${env.BE_CHANGED}
+
+            Console: ${env.BUILD_URL}console
+            Test Report: ${env.BUILD_URL}testReport
+            Artifacts: ${env.BUILD_URL}artifact
+          """.stripIndent()
+
+        emailext(
+          to: env.EMAIL_TO,
+          subject: "[${env.JOB_NAME}] #${env.BUILD_NUMBER} ${currentBuild.currentResult} — staging CI report",
+          body: """<pre>${hudson.Functions.htmlEscape(summary)}</pre>""",
+          mimeType: 'text/html',
+          attachmentsPattern: "${BACKEND_DIR}/**/target/surefire-reports/*.xml",
+          compressBuildLog: true
+        )
+      }
+    }
+  }
+}
