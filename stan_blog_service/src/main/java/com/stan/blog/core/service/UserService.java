@@ -47,8 +47,7 @@ public class UserService extends ServiceImpl<UserMapper, UserEntity> {
     public UserGeneralDTO getUser(long id) {
         UserEntity userEntity = this.getById(id);
         if (Objects.isNull(userEntity)) {
-            log.warn("user doesn't exist, id: " + id);
-            return new UserGeneralDTO();
+            return null;
         }
         UserGeneralDTO result = BasicConverter.convert(userEntity, UserGeneralDTO.class);
         
@@ -211,6 +210,10 @@ public class UserService extends ServiceImpl<UserMapper, UserEntity> {
 
     @Transactional
     public void deleteUser(long id) {
+        userFeatureService.remove(
+            new LambdaQueryWrapper<UserFeatureEntity>()
+                .eq(UserFeatureEntity::getUserId, id)
+        );
         this.removeById(id);
     }
 
@@ -231,7 +234,7 @@ public class UserService extends ServiceImpl<UserMapper, UserEntity> {
 
     private List<UserRoleEntity> createDefaultRole(Long userId) {
         return List.of(
-                new UserRoleEntity(Const.Role.BASIC.getValue(), userId));
+                new UserRoleEntity(Const.Role.BASIC.name(), userId));
     }
 
     private UserFeatureEntity createDefaultFeature(Long userId) {
