@@ -15,8 +15,8 @@ default:
   image: node:${NODE_VERSION:-18.20.2}
   before_script:
     - node --version
-    - echo "Target branch: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
-    - echo "Package manager: npm"
+    - 'echo "Target branch: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME"'
+    - 'echo "Package manager: npm"'
 
 # Share computed variables between jobs via dotenv
 prepare:dotenv:
