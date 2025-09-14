@@ -1,0 +1,62 @@
+stages:
+  - premerge
+  - test
+  - report
+
+# Run only for MRs targeting staging or production
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" &&
+        ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "production")'
+      when: always
+    - when: never
+
+default:
+  image: node:${NODE_VERSION:-18.20.2}
+  before_script:
+    - node --version
+    - echo "Target branch: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+    - echo "Package manager: npm"
+
+# Share computed variables between jobs via dotenv
+prepare:dotenv:
+  stage: premerge
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - |
+      echo "ENV_NAME=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" >> build.env
+  artifacts:
+    reports:
+      dotenv: build.env
+
+# Frontend tests. Reads commands from env vars set in GitLab UI.
+test:frontend:
+  stage: test
+  needs: ["prepare:dotenv"]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - npm ci
+    - npm run lint
+    - npm run build:no-sitemap
+
+# Backend tests (example). Can use a different image with services if needed.
+test:backend:
+  image: maven:3.9-eclipse-temurin-17
+  stage: test
+  needs: ["prepare:dotenv"]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - ${BACKEND_TEST_CMD:-mvn -B -DskipITs=false test}
+
+# Merge gate / summary
+report:gate:
+  stage: report
+  needs: ["test:frontend", "test:backend"]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - echo "Frontend build & backend tests finished."
+  allow_failure: false
