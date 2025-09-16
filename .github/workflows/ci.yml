@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [staging, production]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.head.repo.full_name }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  test_frontend:
+    name: test:frontend
+    environment: CI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: stan_blog_web
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ vars.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: stan_blog_web/package-lock.json
+
+      - name: Before script (parity with GitLab)
+        run: |
+          node --version
+          echo "Target branch (ENV_NAME): ${{ github.event.pull_request.base.ref }}"
+          echo "Package manager: $PACKAGE_MANAGER"
+
+      - run: npm ci
+      - run: npm run lint
+
+  test_backend:
+    name: test:backend
+    environment: CI
+    runs-on: ubuntu-latest
+    container:
+      image: maven:3.9-eclipse-temurin-17
+    env:
+      ENV_NAME: ${{ github.event.pull_request.base.ref }}
+      BACKEND_TEST_CMD: ${{ vars.BACKEND_TEST_CMD }}
+      JWT_SECRET_ACCESS: ${{ secrets.JWT_SECRET_ACCESS }}
+      JWT_SECRET_REFRESH: ${{ secrets.JWT_SECRET_REFRESH }}
+    defaults:
+      run:
+        working-directory: stan_blog_service
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Maven repository
+        uses: actions/cache@v4
+        with:
+          path: /root/.m2/repository
+          key: maven-${{ hashFiles('stan_blog_service/pom.xml') }}
+          restore-keys: maven-
+
+      - name: Run backend tests
+        shell: bash
+        run: |
+          echo "Target branch (ENV_NAME): $ENV_NAME"
+          ${BACKEND_TEST_CMD:-mvn test}
+
+  report_gate:
+    name: report:gate
+    needs: [test_frontend, test_backend]
+    runs-on: ubuntu-latest
+    if: ${{ needs.test_frontend.result == 'success' && needs.test_backend.result == 'success' }}
+    steps:
+      - run: echo "Frontend build & backend tests finished."
+
+  notify_email:
+    name: notify:email
+    environment: CI
+    needs: [test_frontend, test_backend, report_gate]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send CI result mail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ vars.SMTP_SERVER }}
+          server_port: ${{ vars.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          from: ${{ vars.EMAIL_FROM }}
+          to: ${{ vars.EMAIL_TO }}
+          subject: "[CI] Build #${{ github.run_number }} - ${{ job.status }}"
+          body: |
+            Repository : ${{ github.repository }}
+            Workflow   : ${{ github.workflow }}
+            Run        : https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            ─ Summary ─
+            test_frontend : ${{ needs.test_frontend.result }}
+            test_backend  : ${{ needs.test_backend.result }}
+            report_gate   : ${{ needs.report_gate.result }}
+
+            Commit SHA : ${{ github.sha }}
+            Branch     : ${{ github.ref }}
+            Actor      : ${{ github.actor }}

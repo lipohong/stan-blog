@@ -1,5 +1,6 @@
 import { Grid } from '@mui/material';
 import '@wangeditor/editor/dist/css/style.css';
+import './RichContentReader.css';
 
 function RichContentReader(props: Readonly<{ htmlValue: string }>) {
   return (

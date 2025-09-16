@@ -1,0 +1,6 @@
+.w-e-text-container ul,
+.w-e-text-container ol {
+  list-style: initial;
+  margin-left: 1.5rem;
+  padding-left: 0;
+}

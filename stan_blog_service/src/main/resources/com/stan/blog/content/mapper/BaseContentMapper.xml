@@ -85,7 +85,8 @@
     </resultMap>
 
     <select id="getTagsBySourceId" resultType="com.stan.blog.beans.dto.tag.TagInfoDTO">
-        SELECT tti.ID AS VALUE, tti.KEYWORD AS LABEL
+        SELECT tti.ID AS &quot;VALUE&quot;,
+               tti.KEYWORD AS &quot;LABEL&quot;
         FROM stan_blog_content_tag tct
         LEFT JOIN stan_blog_tag_info tti ON tct.TAG_ID = tti.ID
         WHERE tct.CONTENT_ID = #{ID}
