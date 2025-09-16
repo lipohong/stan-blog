@@ -13,32 +13,11 @@ concurrency:
   group: ci-${{ github.event.pull_request.head.repo.full_name }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
-env:
-  NODE_VERSION: ${{ vars.NODE_VERSION || '18.20.2' }}
-  PACKAGE_MANAGER: npm
-
 jobs:
-  vars:
-    runs-on: ubuntu-latest
-    outputs:
-      backend_test_cmd: ${{ env.BACKEND_TEST_CMD }}
-      node_version: ${{ env.NODE_VERSION }}
-      email_from: ${{ env.EMAIL_FROM }}
-      email_to: ${{ env.EMAIL_TO }}
-      smtp_server: ${{ env.SMTP_SERVER }}
-      smtp_port: ${{ env.SMTP_PORT }}
-      jwt_secret_access: ${{ secrets.JWT_SECRET_ACCESS }}
-      jwt_secret_refresh: ${{ secrets.JWT_SECRET_REFRESH }}
-      smtp_username: ${{ secrets.SMTP_USERNAME }}
-      smtp_password: ${{ secrets.SMTP_PASSWORD }}
-    steps:
-      - run: echo "Exposing env vars"
   test_frontend:
     name: test:frontend
-    needs: [vars]
+    environment: CI
     runs-on: ubuntu-latest
-    env:
-      ENV_NAME: ${{ github.event.pull_request.base.ref }}
     defaults:
       run:
         working-directory: stan_blog_web
@@ -48,14 +27,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ needs.vars.outputs.node_version }}
+          node-version: ${{ vars.NODE_VERSION }}
           cache: npm
           cache-dependency-path: stan_blog_web/package-lock.json
 
       - name: Before script (parity with GitLab)
         run: |
           node --version
-          echo "Target branch (ENV_NAME): $ENV_NAME"
+          echo "Target branch (ENV_NAME): ${{ github.event.pull_request.base.ref }}"
           echo "Package manager: $PACKAGE_MANAGER"
 
       - run: npm ci
@@ -63,15 +42,15 @@ jobs:
 
   test_backend:
     name: test:backend
-    needs: [vars]
+    environment: CI
     runs-on: ubuntu-latest
     container:
       image: maven:3.9-eclipse-temurin-17
     env:
       ENV_NAME: ${{ github.event.pull_request.base.ref }}
-      BACKEND_TEST_CMD: ${{ needs.vars.outputs.backend_test_cmd }}
-      JWT_SECRET_ACCESS: ${{ needs.vars.outputs.jwt_secret_access }}
-      JWT_SECRET_REFRESH: ${{ needs.vars.outputs.jwt_secret_refresh }}
+      BACKEND_TEST_CMD: ${{ vars.BACKEND_TEST_CMD }}
+      JWT_SECRET_ACCESS: ${{ secrets.JWT_SECRET_ACCESS }}
+      JWT_SECRET_REFRESH: ${{ secrets.JWT_SECRET_REFRESH }}
     defaults:
       run:
         working-directory: stan_blog_service
@@ -101,6 +80,7 @@ jobs:
 
   notify_email:
     name: notify:email
+    environment: CI
     needs: [test_frontend, test_backend, report_gate]
     if: always()
     runs-on: ubuntu-latest
@@ -108,12 +88,12 @@ jobs:
       - name: Send CI result mail
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: ${{ needs.vars.outputs.smtp_server }}
-          server_port: ${{ needs.vars.outputs.smtp_port }}
-          username: ${{ needs.vars.outputs.smtp_username }}
-          password: ${{ needs.vars.outputs.smtp_password }}
-          from: ${{ needs.vars.outputs.email_from }}
-          to: ${{ needs.vars.outputs.email_to }}
+          server_address: ${{ vars.SMTP_SERVER }}
+          server_port: ${{ vars.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          from: ${{ vars.EMAIL_FROM }}
+          to: ${{ vars.EMAIL_TO }}
           subject: "[CI] Build #${{ github.run_number }} - ${{ job.status }}"
           body: |
             Repository : ${{ github.repository }}
