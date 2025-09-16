@@ -1,7 +1,7 @@
 name: CI
 
 on:
-  pull_request:
+  pull_request_target:
     branches: [staging, production]
     types: [opened, synchronize, reopened, ready_for_review]
 
@@ -32,6 +32,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: stan_blog_web/package-lock.json
@@ -64,6 +65,7 @@ jobs:
       - name: Cache Maven repository
         uses: actions/cache@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           path: /root/.m2/repository
           key: maven-${{ hashFiles('stan_blog_service/pom.xml') }}
           restore-keys: maven-
@@ -95,7 +97,6 @@ jobs:
           server_port: ${{ vars.SMTP_PORT }}
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          from: ${{ vars.EMAIL_FROM }}
           to: ${{ vars.EMAIL_TO }}
           subject: "[CI] Build #${{ github.run_number }} - ${{ job.status }}"
           body: |
