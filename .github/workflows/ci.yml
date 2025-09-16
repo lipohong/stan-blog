@@ -53,6 +53,8 @@ jobs:
     env:
       ENV_NAME: ${{ github.event.pull_request.base.ref }}
       BACKEND_TEST_CMD: ${{ vars.BACKEND_TEST_CMD }}
+      JWT_SECRET_ACCESS: ${{ secrets.JWT_SECRET_ACCESS }}
+      JWT_SECRET_REFRESH: ${{ secrets.JWT_SECRET_REFRESH }}
     defaults:
       run:
         working-directory: stan_blog_service
