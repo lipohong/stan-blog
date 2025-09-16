@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [staging, production]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.head.repo.full_name }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: ${{ vars.NODE_VERSION || '18.20.2' }}
+  PACKAGE_MANAGER: npm
+
+jobs:
+  test_frontend:
+    name: test:frontend
+    runs-on: ubuntu-latest
+    env:
+      ENV_NAME: ${{ github.event.pull_request.base.ref }}
+    # 所有 run 步骤默认在 stan_blog_web 目录下执行
+    defaults:
+      run:
+        working-directory: stan_blog_web
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: stan_blog_web/package-lock.json
+
+      - name: Before script (parity with GitLab)
+        run: |
+          node --version
+          echo "Target branch (ENV_NAME): $ENV_NAME"
+          echo "Package manager: $PACKAGE_MANAGER"
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build:no-sitemap
+
+  test_backend:
+    name: test:backend
+    runs-on: ubuntu-latest
+    container:
+      image: maven:3.9-eclipse-temurin-17
+    env:
+      ENV_NAME: ${{ github.event.pull_request.base.ref }}
+      BACKEND_TEST_CMD: ${{ vars.BACKEND_TEST_CMD }}
+    defaults:
+      run:
+        working-directory: stan_blog_service
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Maven repository
+        uses: actions/cache@v4
+        with:
+          path: /root/.m2/repository
+          key: maven-${{ hashFiles('stan_blog_service/pom.xml') }}
+          restore-keys: maven-
+
+      - name: Run backend tests
+        shell: bash
+        run: |
+          echo "Target branch (ENV_NAME): $ENV_NAME"
+          ${BACKEND_TEST_CMD:-mvn -B -DskipITs=false test}
+
+  report_gate:
+    name: report:gate
+    needs: [test_frontend, test_backend]
+    runs-on: ubuntu-latest
+    if: ${{ needs.test_frontend.result == 'success' && needs.test_backend.result == 'success' }}
+    steps:
+      - run: echo "Frontend build & backend tests finished."
