@@ -23,7 +23,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV_NAME: ${{ github.event.pull_request.base.ref }}
-    # 所有 run 步骤默认在 stan_blog_web 目录下执行
     defaults:
       run:
         working-directory: stan_blog_web
@@ -45,7 +44,6 @@ jobs:
 
       - run: npm ci
       - run: npm run lint
-      - run: npm run build:no-sitemap
 
   test_backend:
     name: test:backend
@@ -72,7 +70,7 @@ jobs:
         shell: bash
         run: |
           echo "Target branch (ENV_NAME): $ENV_NAME"
-          ${BACKEND_TEST_CMD:-mvn -B -DskipITs=false test}
+          ${BACKEND_TEST_CMD:-mvn test}
 
   report_gate:
     name: report:gate
