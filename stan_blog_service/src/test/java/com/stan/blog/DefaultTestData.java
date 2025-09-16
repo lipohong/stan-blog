@@ -18,9 +18,9 @@ public class DefaultTestData {
         public static final String LAST_NAME = "LI";
         public static final String USERNAME = "stan_blog_admin";
         public static final String EMAIL = "stan_blog_admin@gmail.com";
-        public static final String ADDRESS = "Shenzhen China";
+        public static final String ADDRESS = "Hong Kong";
         public static final String AVATAR = "https://avatar.com";
-        public static final String PHONE_NUM = "13145801234";
+        public static final String PHONE_NUM = "12312341234";
         public static final String INTRODUCTION = "Hello world";
         public static final String BLOG = "https://blog.com";
         public static final String BACKGROUND_IMG = "https://bg.com";

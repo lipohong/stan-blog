@@ -11,7 +11,7 @@ COPY mvnw pom.xml ./
 COPY src ./src
 
 # Make Maven wrapper executable and build
-RUN chmod +x ./mvnw && ./mvnw clean package -DskipTests
+RUN chmod +x ./mvnw && ./mvnw clean package
 
 # Runtime stage
 FROM openjdk:17-jdk-slim
