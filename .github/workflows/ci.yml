@@ -81,3 +81,33 @@ jobs:
     if: ${{ needs.test_frontend.result == 'success' && needs.test_backend.result == 'success' }}
     steps:
       - run: echo "Frontend build & backend tests finished."
+
+  notify_email:
+    name: notify:email
+    needs: [test_frontend, test_backend, report_gate]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send CI result mail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ vars.SMTP_SERVER }}
+          server_port: ${{ vars.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          from: ${{ vars.EMAIL_FROM }}
+          to: ${{ vars.EMAIL_TO }}
+          subject: "[CI] Build #${{ github.run_number }} - ${{ job.status }}"
+          body: |
+            Repository : ${{ github.repository }}
+            Workflow   : ${{ github.workflow }}
+            Run        : https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            ─ Summary ─
+            test_frontend : ${{ needs.test_frontend.result }}
+            test_backend  : ${{ needs.test_backend.result }}
+            report_gate   : ${{ needs.report_gate.result }}
+
+            Commit SHA : ${{ github.sha }}
+            Branch     : ${{ github.ref }}
+            Actor      : ${{ github.actor }}
