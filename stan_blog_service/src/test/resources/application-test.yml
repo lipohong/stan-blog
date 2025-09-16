@@ -23,8 +23,8 @@ mybatis-plus:
       logic-not-delete-value: 0
 jwt:
   secret:
-    access: access
-    refresh: refresh
+    access: ${JWT_SECRET_ACCESS}
+    refresh: ${JWT_SECRET_REFRESH}
   expire:
     access: 86400000
     refresh: 864000000
