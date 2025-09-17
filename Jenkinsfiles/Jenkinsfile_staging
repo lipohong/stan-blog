@@ -4,9 +4,7 @@ pipeline {
     // Don’t waste time checking out twice
     skipDefaultCheckout(true)
     // Avoid overlapping builds if pushes are frequent
-    disableConcurrentBuilds()
-    // Keep a clean workspace between runs
-    cleanWs()
+    disableConcurrentBuilds()    
   }
 
   environment {
@@ -158,6 +156,7 @@ pipeline {
           mimeType: 'text/html'
         )
       }
+      cleanWs()
     }
   }
 }
