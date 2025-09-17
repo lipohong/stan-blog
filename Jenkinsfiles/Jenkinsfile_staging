@@ -13,11 +13,9 @@ pipeline {
     FRONTEND_DIR = 'stan_blog_web'
     BACKEND_DIR  = 'stan_blog_service'
     EMAIL_TO     = 'lipohong@hotmail.com'
-  }
-
-  triggers {
-    // Every 5 mins; Jenkins will only build when it detects a change on the configured branch
-    pollSCM('H/5 * * * *')
+    HARBOR_URL      = 'harbor.stanli.site'
+    HARBOR_PROJECT  = 'stan-blog-staging'
+    IMAGE_TAG       = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.take(7)}"
   }
 
   stages {
@@ -36,25 +34,6 @@ pipeline {
           fi
           git status --short --branch
         '''
-      }
-    }
-
-    stage('Detect changes') {
-      steps {
-        script {
-          // Use previous successful commit if available; otherwise, compare last commit
-          def base = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'HEAD~1'
-          def range = "${base}..HEAD"
-
-          // Count changed files under each directory
-          def feCount = sh(script: "git diff --name-only ${range} -- '${env.FRONTEND_DIR}' | wc -l", returnStdout: true).trim()
-          def beCount = sh(script: "git diff --name-only ${range} -- '${env.BACKEND_DIR}'  | wc -l", returnStdout: true).trim()
-
-          env.FE_CHANGED = (feCount != '0').toString()
-          env.BE_CHANGED = (beCount != '0').toString()
-
-          echo "Change detection vs ${base}: FRONTEND=${env.FE_CHANGED} (files: ${feCount}), BACKEND=${env.BE_CHANGED} (files: ${beCount})"
-        }
       }
     }
 
@@ -87,56 +66,94 @@ pipeline {
           echo "🔍 [Backend] testing (changes detected on staging)…"
           sh '''
             set -eux
-            ./mvnw -q -DskipTests=false test || mvn -q -DskipTests=false test
+            mvn test
           '''
-        }
-      }
-      post {
-        always {
-          // Publish JUnit results if present
-          junit allowEmptyResults: true, testResults: "${BACKEND_DIR}/**/target/surefire-reports/*.xml"
         }
       }
     }
 
-    stage('No-op (nothing changed)') {
-      when {
-        beforeAgent true
-        expression { env.FE_CHANGED != 'true' && env.BE_CHANGED != 'true' }
-        branch 'staging'
+    stage('Build & Push Backend Image') {
+        when {
+          beforeAgent true
+          expression { env.BE_CHANGED == 'true' }
+          branch 'staging'
+        }
+        steps {
+          dir("${BACKEND_DIR}") {
+            withCredentials([usernamePassword(usernameVariable: 'HARBOR_USER',
+                                              passwordVariable: 'HARBOR_PASS')]) {
+              sh '''
+                set -eux
+                IMG_BACKEND=${HARBOR_URL}/${HARBOR_PROJECT}/stan-blog-backend:${IMAGE_TAG}
+
+                echo "[Docker] Login Harbor"
+                echo "${HARBOR_PASS}" | docker login ${HARBOR_URL} -u "${HARBOR_USER}" --password-stdin
+
+                echo "[Docker] Build backend image ${IMG_BACKEND}"
+                docker build -t ${IMG_BACKEND} -f Dockerfile .
+
+                echo "[Docker] Push backend image"
+                docker push ${IMG_BACKEND}
+              '''
+            }
+          }
+        }
       }
-      steps {
-        echo "✅ No changes detected under '${FRONTEND_DIR}' or '${BACKEND_DIR}' on staging. Skipping tests."
+
+      stage('Build & Push Frontend Image') {
+        when {
+          beforeAgent true
+          expression { env.FE_CHANGED == 'true' }
+          branch 'staging'
+        }
+        steps {
+          dir("${FRONTEND_DIR}") {
+            withCredentials([usernamePassword(credentialsId: env.HARBOR_CRED_ID,
+                                              usernameVariable: 'HARBOR_USER',
+                                              passwordVariable: 'HARBOR_PASS')]) {
+              sh '''
+                set -eux
+                IMG_FRONTEND=${HARBOR_URL}/${HARBOR_PROJECT}/stan-blog-web:${IMAGE_TAG}
+
+                echo "[Docker] Login Harbor"
+                echo "${HARBOR_PASS}" | docker login ${HARBOR_URL} -u "${HARBOR_USER}" --password-stdin
+
+                echo "[Docker] Build frontend image ${IMG_FRONTEND}"
+                docker build -t ${IMG_FRONTEND} -f Dockerfile .
+
+                echo "[Docker] Push frontend image"
+                docker push ${IMG_FRONTEND}
+              '''
+            }
+          }
+        }
       }
-    }
   }
 
   post {
     always {
       script {
-        // Build a quick summary for email
         def summary = """
-            Job: ${env.JOB_NAME}
-            Build: #${env.BUILD_NUMBER}
-            Branch: staging
-            Result: ${currentBuild.currentResult}
+          Job: ${env.JOB_NAME}
+          Build: #${env.BUILD_NUMBER}
+          Branch: staging
+          Result: ${currentBuild.currentResult}
 
-            Changed (since ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'HEAD~1'}):
-            - Frontend (${env.FRONTEND_DIR}): ${env.FE_CHANGED}
-            - Backend  (${env.BACKEND_DIR}): ${env.BE_CHANGED}
+          Backend changed: ${env.BE_CHANGED}
+          Frontend changed: ${env.FE_CHANGED}
 
-            Console: ${env.BUILD_URL}console
-            Test Report: ${env.BUILD_URL}testReport
-            Artifacts: ${env.BUILD_URL}artifact
-          """.stripIndent()
+          Image Tags:
+            BE -> ${HARBOR_URL}/${HARBOR_PROJECT}/stan_blog_service:${IMAGE_TAG}
+            FE -> ${HARBOR_URL}/${HARBOR_PROJECT}/stan_blog_web:${IMAGE_TAG}
+
+          Console: ${env.BUILD_URL}console
+        """.stripIndent()
 
         emailext(
           to: env.EMAIL_TO,
-          subject: "[${env.JOB_NAME}] #${env.BUILD_NUMBER} ${currentBuild.currentResult} — staging CI report",
+          subject: "[${env.JOB_NAME}] #${env.BUILD_NUMBER} ${currentBuild.currentResult}",
           body: """<pre>${hudson.Functions.htmlEscape(summary)}</pre>""",
-          mimeType: 'text/html',
-          attachmentsPattern: "${BACKEND_DIR}/**/target/surefire-reports/*.xml",
-          compressBuildLog: true
+          mimeType: 'text/html'
         )
       }
     }
