@@ -1,6 +1,6 @@
 pipeline {
   agent any
-  tools { nodejs 'node18', jdk 'temurin17'; maven 'mvn3.9.9' }
+  tools { nodejs 'node18'; jdk 'temurin17'; }
   options {
     // Don’t waste time checking out twice
     skipDefaultCheckout(true)
