@@ -17,6 +17,8 @@ pipeline {
     HARBOR_CRED_ID  = 'SELF_HOSTED_HARBOR'
     REMOTE_REPO_URL = 'https://gitlab.stanli.site/stanli/stan-blog'
     REMOTE_REPO_CRED_ID = 'a214f604-c207-4464-8d6f-f8b3bbfdb4e3'
+    JWT_SECRET_ACCESS = credentials('JWT_SECRET_ACCESS')
+    JWT_SECRET_REFRESH = credentials('JWT_SECRET_REFRESH')
   }
 
   stages {
