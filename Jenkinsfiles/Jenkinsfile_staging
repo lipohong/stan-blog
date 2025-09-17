@@ -35,11 +35,6 @@ pipeline {
     }
 
     stage('Frontend Test') {
-      when {
-        beforeAgent true
-        expression { env.FE_CHANGED == 'true' }
-        branch 'staging'
-      }
       steps {
         dir("${FRONTEND_DIR}") {
           echo "🔍 [Frontend] testing (changes detected on staging)…"
@@ -53,11 +48,6 @@ pipeline {
     }
 
     stage('Backend Test') {
-      when {
-        beforeAgent true
-        expression { env.BE_CHANGED == 'true' }
-        branch 'staging'
-      }
       steps {
         dir("${BACKEND_DIR}") {
           echo "🔍 [Backend] testing (changes detected on staging)…"
@@ -70,62 +60,52 @@ pipeline {
     }
 
     stage('Build & Push Backend Image') {
-        when {
-          beforeAgent true
-          expression { env.BE_CHANGED == 'true' }
-          branch 'staging'
-        }
-        steps {
-          dir("${BACKEND_DIR}") {
-            withCredentials([usernamePassword(credentialsId: "${env.HARBOR_CRED_ID}",
-                                              usernameVariable: 'HARBOR_USER',
-                                              passwordVariable: 'HARBOR_PASS')]) {
-              sh '''
-                set -eux
-                IMG_BACKEND=${env.HARBOR_URL}/${HARBOR_PROJECT}/stan-blog-backend:${env.IMAGE_TAG}
+      steps {
+        dir("${BACKEND_DIR}") {
+          withCredentials([usernamePassword(credentialsId: "${env.HARBOR_CRED_ID}",
+                                            usernameVariable: 'HARBOR_USER',
+                                            passwordVariable: 'HARBOR_PASS')]) {
+            sh '''
+              set -eux
+              IMG_BACKEND=${env.HARBOR_URL}/${HARBOR_PROJECT}/stan-blog-backend:${env.IMAGE_TAG}
 
-                echo "[Docker] Login Harbor"
-                echo "${HARBOR_PASS}" | docker login ${env.HARBOR_URL} -u "${HARBOR_USER}" --password-stdin
+              echo "[Docker] Login Harbor"
+              echo "${HARBOR_PASS}" | docker login ${env.HARBOR_URL} -u "${HARBOR_USER}" --password-stdin
 
-                echo "[Docker] Build backend image ${env.IMAGE_TAG}"
-                docker build -t ${IMG_BACKEND} -f Dockerfile .
+              echo "[Docker] Build backend image ${env.IMAGE_TAG}"
+              docker build -t ${IMG_BACKEND} -f Dockerfile .
 
-                echo "[Docker] Push backend image"
-                docker push ${IMG_BACKEND}
-              '''
-            }
+              echo "[Docker] Push backend image"
+              docker push ${IMG_BACKEND}
+            '''
           }
         }
       }
+    }
 
-      stage('Build & Push Frontend Image') {
-        when {
-          beforeAgent true
-          expression { env.FE_CHANGED == 'true' }
-          branch 'staging'
-        }
-        steps {
-          dir("${FRONTEND_DIR}") {
-            withCredentials([usernamePassword(credentialsId: env.HARBOR_CRED_ID,
-                                              usernameVariable: 'HARBOR_USER',
-                                              passwordVariable: 'HARBOR_PASS')]) {
-              sh '''
-                set -eux
-                IMG_FRONTEND=${env.HARBOR_URL}/${env.HARBOR_PROJECT}/stan-blog-web:${env.IMAGE_TAG}
+    stage('Build & Push Frontend Image') {
+      steps {
+        dir("${FRONTEND_DIR}") {
+          withCredentials([usernamePassword(credentialsId: env.HARBOR_CRED_ID,
+                                            usernameVariable: 'HARBOR_USER',
+                                            passwordVariable: 'HARBOR_PASS')]) {
+            sh '''
+              set -eux
+              IMG_FRONTEND=${env.HARBOR_URL}/${env.HARBOR_PROJECT}/stan-blog-web:${env.IMAGE_TAG}
 
-                echo "[Docker] Login Harbor"
-                echo "${HARBOR_PASS}" | docker login ${env.HARBOR_URL} -u "${HARBOR_USER}" --password-stdin
+              echo "[Docker] Login Harbor"
+              echo "${HARBOR_PASS}" | docker login ${env.HARBOR_URL} -u "${HARBOR_USER}" --password-stdin
 
-                echo "[Docker] Build frontend image ${IMG_FRONTEND}"
-                docker build -t ${IMG_FRONTEND} -f Dockerfile .
+              echo "[Docker] Build frontend image ${IMG_FRONTEND}"
+              docker build -t ${IMG_FRONTEND} -f Dockerfile .
 
-                echo "[Docker] Push frontend image"
-                docker push ${IMG_FRONTEND}
-              '''
-            }
+              echo "[Docker] Push frontend image"
+              docker push ${IMG_FRONTEND}
+            '''
           }
         }
       }
+    }
   }
 
   post {
@@ -136,10 +116,6 @@ pipeline {
           Build: #${env.BUILD_NUMBER}
           Branch: staging
           Result: ${currentBuild.currentResult}
-
-          Backend changed: ${env.BE_CHANGED}
-          Frontend changed: ${env.FE_CHANGED}
-
           Image Tags:
             BE -> ${env.HARBOR_URL}/${env.HARBOR_PROJECT}/stan_blog_service:${env.IMAGE_TAG}
             FE -> ${env.HARBOR_URL}/${env.HARBOR_PROJECT}/stan_blog_web:${env.IMAGE_TAG}
@@ -150,8 +126,8 @@ pipeline {
         emailext(
           to: env.EMAIL_TO,
           subject: "[${env.JOB_NAME}] #${env.BUILD_NUMBER} ${currentBuild.currentResult}",
-          body: """<pre>${hudson.Functions.htmlEscape(summary)}</pre>""",
-          mimeType: 'text/html'
+          body: summary,
+          mimeType: 'text/plain'
         )
       }
       cleanWs()
