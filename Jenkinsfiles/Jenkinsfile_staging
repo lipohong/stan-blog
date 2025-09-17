@@ -15,6 +15,7 @@ pipeline {
     EMAIL_TO     = 'lipohong@hotmail.com'
     HARBOR_URL      = 'harbor.stanli.site'
     HARBOR_PROJECT  = 'stan-blog-staging'
+    HARBOR_CRED_ID  = 'SELF_HOSTED_HARBOR'
     IMAGE_TAG       = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.take(7)}"
   }
 
@@ -80,7 +81,8 @@ pipeline {
         }
         steps {
           dir("${BACKEND_DIR}") {
-            withCredentials([usernamePassword(usernameVariable: 'HARBOR_USER',
+            withCredentials([usernamePassword(credentialsId: env.HARBOR_CRED_ID,
+                                              usernameVariable: 'HARBOR_USER',
                                               passwordVariable: 'HARBOR_PASS')]) {
               sh '''
                 set -eux
