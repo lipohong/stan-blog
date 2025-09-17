@@ -1,6 +1,6 @@
 pipeline {
   agent any
-  tools { nodejs 'node18'; jdk 'temurin17'; }
+  tools { nodejs 'nodejs18.20.2'; jdk 'jdk87221'; maven 'maven3.9.11' } // set from jenkins -> Mange Jenkins -> Tools
   options {
     // Don’t waste time checking out twice
     skipDefaultCheckout(true)
