@@ -14,25 +14,23 @@ pipeline {
     HARBOR_URL      = 'harbor.stanli.site'
     HARBOR_PROJECT  = 'stan-blog-staging'
     HARBOR_CRED_ID  = 'SELF_HOSTED_HARBOR'
-    IMAGE_TAG       = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.take(7)}"
+    REMOTE_REPO_URL = 'https://gitlab.stanli.site/stanli/stan-blog'
+    REMOTE_REPO_CRED_ID = 'a214f604-c207-4464-8d6f-f8b3bbfdb4e3'
   }
 
   stages {
     stage('Checkout staging') {
       steps {
-        checkout scm
-        sh '''
-          # Ensure we are on staging and up to date
-          git fetch origin staging
-          # If current branch is not staging, switch to it
-          CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-          if [ "$CURRENT_BRANCH" != "staging" ]; then
-            git checkout -B staging origin/staging
-          else
-            git reset --hard origin/staging
-          fi
-          git status --short --branch
-        '''
+        checkout([$class: 'GitSCM',
+          branches: [[name: '*/staging']],
+          userRemoteConfigs: [[url: "${env.REMOTE_REPO_URL}", credentialsId: "${env.REMOTE_REPO_CRED_ID}"]]
+        ])
+        script {
+          def shortSha = (env.GIT_COMMIT ?: 'local').take(7)
+          env.IMAGE_TAG = "${env.BUILD_NUMBER}-${shortSha}"
+          // Optional: DEBUG
+          echo "IMAGE_TAG resolved to ${env.IMAGE_TAG}"
+        }
       }
     }
 
@@ -79,17 +77,17 @@ pipeline {
         }
         steps {
           dir("${BACKEND_DIR}") {
-            withCredentials([usernamePassword(credentialsId: env.HARBOR_CRED_ID,
+            withCredentials([usernamePassword(credentialsId: "${env.HARBOR_CRED_ID}",
                                               usernameVariable: 'HARBOR_USER',
                                               passwordVariable: 'HARBOR_PASS')]) {
               sh '''
                 set -eux
-                IMG_BACKEND=${HARBOR_URL}/${HARBOR_PROJECT}/stan-blog-backend:${IMAGE_TAG}
+                IMG_BACKEND=${env.HARBOR_URL}/${HARBOR_PROJECT}/stan-blog-backend:${env.IMAGE_TAG}
 
                 echo "[Docker] Login Harbor"
-                echo "${HARBOR_PASS}" | docker login ${HARBOR_URL} -u "${HARBOR_USER}" --password-stdin
+                echo "${HARBOR_PASS}" | docker login ${env.HARBOR_URL} -u "${HARBOR_USER}" --password-stdin
 
-                echo "[Docker] Build backend image ${IMG_BACKEND}"
+                echo "[Docker] Build backend image ${env.IMAGE_TAG}"
                 docker build -t ${IMG_BACKEND} -f Dockerfile .
 
                 echo "[Docker] Push backend image"
@@ -113,10 +111,10 @@ pipeline {
                                               passwordVariable: 'HARBOR_PASS')]) {
               sh '''
                 set -eux
-                IMG_FRONTEND=${HARBOR_URL}/${HARBOR_PROJECT}/stan-blog-web:${IMAGE_TAG}
+                IMG_FRONTEND=${env.HARBOR_URL}/${env.HARBOR_PROJECT}/stan-blog-web:${env.IMAGE_TAG}
 
                 echo "[Docker] Login Harbor"
-                echo "${HARBOR_PASS}" | docker login ${HARBOR_URL} -u "${HARBOR_USER}" --password-stdin
+                echo "${HARBOR_PASS}" | docker login ${env.HARBOR_URL} -u "${HARBOR_USER}" --password-stdin
 
                 echo "[Docker] Build frontend image ${IMG_FRONTEND}"
                 docker build -t ${IMG_FRONTEND} -f Dockerfile .
@@ -143,8 +141,8 @@ pipeline {
           Frontend changed: ${env.FE_CHANGED}
 
           Image Tags:
-            BE -> ${HARBOR_URL}/${HARBOR_PROJECT}/stan_blog_service:${IMAGE_TAG}
-            FE -> ${HARBOR_URL}/${HARBOR_PROJECT}/stan_blog_web:${IMAGE_TAG}
+            BE -> ${env.HARBOR_URL}/${env.HARBOR_PROJECT}/stan_blog_service:${env.IMAGE_TAG}
+            FE -> ${env.HARBOR_URL}/${env.HARBOR_PROJECT}/stan_blog_web:${env.IMAGE_TAG}
 
           Console: ${env.BUILD_URL}console
         """.stripIndent()
