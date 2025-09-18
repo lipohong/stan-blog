@@ -109,6 +109,7 @@ pipeline {
               // Inject .env.production as file credential
               withCredentials([
                 file(credentialsId: 'FRONTEND_ENV', variable: 'FRONTEND_ENV_FILE'),
+                file(credentialsId: 'FRONTEND_CUSTOMIZATION_FILE', variable: 'FRONTEND_CUSTOMIZATION_FILE'),
                 usernamePassword(credentialsId: "${env.HARBOR_CRED_ID}",
                                  usernameVariable: 'HARBOR_USER',
                                  passwordVariable: 'HARBOR_PASS')
@@ -118,8 +119,9 @@ pipeline {
                     set -eux
                     # Ensure env directory exists
                     mkdir -p env
-                    # Copy .env.production to build context
+                    # Copy .env.production and customization file to build context
                     cp "\$FRONTEND_ENV_FILE" env/.env.production
+                    cp "\$FRONTEND_CUSTOMIZATION_FILE" env/front-end-customization.yml
 
                     echo "[Docker] Login Harbor"
                     echo "\$HARBOR_PASS" | docker login ${env.HARBOR_URL} -u "\$HARBOR_USER" --password-stdin
