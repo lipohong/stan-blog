@@ -166,8 +166,8 @@ pipeline {
             ssh -p ${env.SSH_PORT} ${env.SSH_USER}@${env.SSH_HOST}\\
             "
               cd "${env.SERVER_DOCKER_COMPOSE_PATH}"
-              sudo docker-compose --env-file /tmp/stan-blog-image.env pull
-              sudo docker-compose --env-file /tmp/stan-blog-image.env up -d
+              sudo docker compose --env-file /tmp/stan-blog-image.env pull
+              sudo docker compose --env-file /tmp/stan-blog-image.env up -d
             "
           """
         }
