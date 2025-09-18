@@ -151,18 +151,24 @@ pipeline {
         sshagent(credentials: ['SERVER_SSH_KEY']) {
           sh """
             set -eux
+            
+            mkdir -p ~/.ssh
+            touch ~/.ssh/known_hosts
+            chmod 600 ~/.ssh/known_hosts
+            ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+
             # Use IMAGE_TAG as temp env file and pass to compose
             echo "IMAGE_TAG=${env.IMAGE_TAG}" > image_tag.env
             scp -P ${env.SSH_PORT} image_tag.env ${env.SSH_USER}@${env.SSH_HOST}:/tmp/stan-blog-image.env
             rm image_tag.env
 
             # Remotely run compose pull/up
-            ssh -P ${env.SSH_PORT} ${env.SSH_USER}@${env.SSH_HOST}'
-              export COMPOSE_PROJECT_NAME=stan-blog-staging
+            ssh -p ${env.SSH_PORT} ${env.SSH_USER}@${env.SSH_HOST}\\
+            "
               cd "${env.SERVER_DOCKER_COMPOSE_PATH}"
               docker compose --env-file /tmp/stan-blog-image.env pull
               docker compose --env-file /tmp/stan-blog-image.env up -d
-            '
+            "
           """
         }
       }
