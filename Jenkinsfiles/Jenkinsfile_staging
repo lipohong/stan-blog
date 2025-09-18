@@ -51,15 +51,15 @@ pipeline {
               '''
             }
           }
-          stage('Backend Test') {
-            steps {
-              dir("${BACKEND_DIR}") {
-                echo "🔍 [Backend] testing (changes detected on staging)…"
-                sh '''
-                  set -eux
-                  mvn test
-                '''
-              }
+        }
+        stage('Backend Test') {
+          steps {
+            dir("${BACKEND_DIR}") {
+              echo "🔍 [Backend] testing (changes detected on staging)…"
+              sh '''
+                set -eux
+                mvn test
+              '''
             }
           }
         }
