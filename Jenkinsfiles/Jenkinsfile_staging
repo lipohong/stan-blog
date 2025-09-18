@@ -11,7 +11,7 @@ pipeline {
   environment {
     FRONTEND_DIR = 'stan_blog_web'
     BACKEND_DIR  = 'stan_blog_service'
-    EMAIL_TO     = 'lipohong@hotmail.com'
+    EMAIL_TO     = credentials('CD_STAGING_EMAIL_TO')
     HARBOR_URL      = 'harbor.stanli.site'
     HARBOR_PROJECT  = 'stan-blog-staging'
     HARBOR_CRED_ID  = 'SELF_HOSTED_HARBOR'
@@ -19,6 +19,10 @@ pipeline {
     REMOTE_REPO_CRED_ID = 'a214f604-c207-4464-8d6f-f8b3bbfdb4e3'
     JWT_SECRET_ACCESS = credentials('JWT_SECRET_ACCESS')
     JWT_SECRET_REFRESH = credentials('JWT_SECRET_REFRESH')
+    SSH_USER = credentials('SERVER_SSH_USER')
+    SSH_HOST = credentials('SERVER_SSH_HOST')
+    SSH_PORT = credentials('SERVER_SSH_PORT')
+    SERVER_DOCKER_COMPOSE_PATH = credentials('SERVER_DOCKER_COMPOSE_PATH')
   }
 
   stages {
@@ -121,7 +125,7 @@ pipeline {
                     mkdir -p env
                     # Copy .env.production and customization file to build context
                     cp "\$FRONTEND_ENV_FILE" env/.env.production
-                    cp "\$FRONTEND_CUSTOMIZATION_FILE" env/front-end-customization.yml
+                    cp "\$FRONTEND_CUSTOMIZATION_FILE" customization.json
 
                     echo "[Docker] Login Harbor"
                     echo "\$HARBOR_PASS" | docker login ${env.HARBOR_URL} -u "\$HARBOR_USER" --password-stdin
@@ -139,6 +143,27 @@ pipeline {
               }
             }
           }
+        }
+      }
+    }
+    stage('Deploy to Staging') {
+      steps {
+        sshagent(credentials: ['SERVER_SSH_KEY']) {
+          sh """
+            set -eux
+            # Use IMAGE_TAG as temp env file and pass to compose
+            echo "IMAGE_TAG=${env.IMAGE_TAG}" > image_tag.env
+            scp -P ${env.SSH_PORT} image_tag.env ${env.SSH_USER}@${env.SSH_HOST}:/tmp/stan-blog-image.env
+            rm image_tag.env
+
+            # Remotely run compose pull/up
+            ssh -P ${env.SSH_PORT} ${env.SSH_USER}@${env.SSH_HOST}'
+              export COMPOSE_PROJECT_NAME=stan-blog-staging
+              cd "${env.SERVER_DOCKER_COMPOSE_PATH}"
+              docker compose --env-file /tmp/stan-blog-image.env pull
+              docker compose --env-file /tmp/stan-blog-image.env up -d
+            '
+          """
         }
       }
     }
