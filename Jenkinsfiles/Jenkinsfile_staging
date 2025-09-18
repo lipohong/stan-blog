@@ -40,6 +40,18 @@ pipeline {
 
     stage('Tests') {
       parallel {
+        stage('Backend Test') {
+          steps {
+            dir("${BACKEND_DIR}") {
+              echo "🔍 [Backend] testing (changes detected on staging)…"
+              sh '''
+                set -eux
+                mvn test
+              '''
+            }
+          }
+        }
+
         stage('Frontend Test') {
           steps {
             dir("${FRONTEND_DIR}") {
@@ -52,31 +64,27 @@ pipeline {
             }
           }
         }
-        stage('Backend Test') {
-          steps {
-            dir("${BACKEND_DIR}") {
-              echo "🔍 [Backend] testing (changes detected on staging)…"
-              sh '''
-                set -eux
-                mvn test
-              '''
-            }
-          }
-        }
       }
     }
+
     stage('Build & Push Images') {
       parallel {
         stage('Build & Push Backend Image') {
           steps {
             dir("${BACKEND_DIR}") {
               // Build & Push Backend Image
-              withCredentials([usernamePassword(credentialsId: "${env.HARBOR_CRED_ID}",
-                                                usernameVariable: 'HARBOR_USER',
-                                                passwordVariable: 'HARBOR_PASS')]) {
+              withCredentials([
+                file(credentialsId: 'SPRING_PROFILES', variable: 'BACKEND_PROFILES_FILE'),
+                usernamePassword(credentialsId: "${env.HARBOR_CRED_ID}",
+                                 usernameVariable: 'HARBOR_USER',
+                                 passwordVariable: 'HARBOR_PASS')
+              ]) {
                 script {
                   sh """
                     set -eux
+                    # Copy application-prod.yml to build context
+                    cp "\$BACKEND_PROFILES_FILE" src/main/resources/application-prod.yml
+
                     echo "[Docker] Login Harbor"
                     echo "\$HARBOR_PASS" | docker login ${env.HARBOR_URL} -u "\$HARBOR_USER" --password-stdin
                   
@@ -85,6 +93,9 @@ pipeline {
                   
                     echo "[Docker] Push backend image"
                     docker push \$IMG_BACKEND
+
+                    # Remove sensitive files after build
+                    rm -f src/main/resources/application-prod.yml
                   """
                 }
               }
@@ -95,21 +106,32 @@ pipeline {
         stage('Build & Push Frontend Image') {
           steps {
             dir("${FRONTEND_DIR}") {
-              // Build & Push Frontend Image
-              withCredentials([usernamePassword(credentialsId: "${env.HARBOR_CRED_ID}",
-                                                usernameVariable: 'HARBOR_USER',
-                                                passwordVariable: 'HARBOR_PASS')]) {
+              // Inject .env.production as file credential
+              withCredentials([
+                file(credentialsId: 'FRONTEND_ENV', variable: 'FRONTEND_ENV_FILE'),
+                usernamePassword(credentialsId: "${env.HARBOR_CRED_ID}",
+                                 usernameVariable: 'HARBOR_USER',
+                                 passwordVariable: 'HARBOR_PASS')
+              ]) {
                 script {
                   sh """
                     set -eux
+                    # Ensure env directory exists
+                    mkdir -p env
+                    # Copy .env.production to build context
+                    cp "\$FRONTEND_ENV_FILE" env/.env.production
+
                     echo "[Docker] Login Harbor"
                     echo "\$HARBOR_PASS" | docker login ${env.HARBOR_URL} -u "\$HARBOR_USER" --password-stdin
-                  
+
                     echo "[Docker] Build frontend image \$IMG_FRONTEND"
                     docker build -t \$IMG_FRONTEND -f Dockerfile .
-                  
+
                     echo "[Docker] Push frontend image"
                     docker push \$IMG_FRONTEND
+
+                    # Remove sensitive files after build
+                    rm -f env/.env.production
                   """
                 }
               }
