@@ -4,7 +4,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Box, Button, Container, Grid, IconButton, Menu, MenuItem, SxProps, Toolbar, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-
+import GitHubIcon from '@mui/icons-material/GitHub';
 import config from '../../../../customization.json';
 import { useCommonUtils } from '../../../commons/index.ts';
 import StrokeText from '../../../components/common/StrokeText.tsx';
@@ -183,6 +183,19 @@ const HeaderContent = () => {
             </Button>
           ))}
         </Box>
+
+        {config.githubLink && (
+          <Box sx={{ flexGrow: 0 }}>
+            <IconButton
+              size="large"
+              title="Github"
+              sx={{ color: theme.palette.primary.main }}
+              href={config.githubLink}
+            >
+              <GitHubIcon sx={{ color: theme.palette.primary.main }} />
+            </IconButton>
+          </Box>
+        )}
 
         {config.gitlabLink && (
           <Box sx={{ flexGrow: 0 }}>
