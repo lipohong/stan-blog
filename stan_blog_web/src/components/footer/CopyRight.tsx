@@ -4,6 +4,8 @@ import Typography from '@mui/material/Typography';
 import { Link as RouterLink } from 'react-router-dom';
 import config from '../../../customization.json';
 import { URL } from '../../routes';
+import packageJson from '../../../package.json';
+const packageVersion = packageJson.version;
 
 function Copyright() {
   const { title } = config;
@@ -23,6 +25,8 @@ function Copyright() {
         >
           <strong>{title.toUpperCase()}</strong>
         </Link>
+        {` Version:`}
+        <strong>{` v${packageVersion}`}</strong>
       </Typography>
     </Grid>
   );
