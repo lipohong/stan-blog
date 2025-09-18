@@ -29,10 +29,11 @@ pipeline {
           userRemoteConfigs: [[url: "${env.REMOTE_REPO_URL}", credentialsId: "${env.REMOTE_REPO_CRED_ID}"]]
         ])
         script {
-          def shortSha = (env.GIT_COMMIT ?: 'local').take(7)
+          def shortSha = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
           env.IMAGE_TAG = "${env.BUILD_NUMBER}-${shortSha}"
-          // Optional: DEBUG
           echo "IMAGE_TAG resolved to ${env.IMAGE_TAG}"
+          env.IMG_BACKEND = "${env.HARBOR_URL}/${env.HARBOR_PROJECT}/stan-blog-backend:${env.IMAGE_TAG}" 
+          env.IMG_FRONTEND = "${env.HARBOR_URL}/${env.HARBOR_PROJECT}/stan-blog-frontend:${env.IMAGE_TAG}" 
         }
       }
     }
@@ -69,22 +70,23 @@ pipeline {
         stage('Build & Push Backend Image') {
           steps {
             dir("${BACKEND_DIR}") {
+              // Build & Push Backend Image
               withCredentials([usernamePassword(credentialsId: "${env.HARBOR_CRED_ID}",
                                                 usernameVariable: 'HARBOR_USER',
                                                 passwordVariable: 'HARBOR_PASS')]) {
-                sh '''
-                  set -eux
-                  IMG_BACKEND=${env.HARBOR_URL}/${HARBOR_PROJECT}/stan-blog-backend:${env.IMAGE_TAG}
-
-                  echo "[Docker] Login Harbor"
-                  echo "${HARBOR_PASS}" | docker login ${env.HARBOR_URL} -u "${HARBOR_USER}" --password-stdin
-
-                  echo "[Docker] Build backend image ${env.IMAGE_TAG}"
-                  docker build -t ${IMG_BACKEND} -f Dockerfile .
-
-                  echo "[Docker] Push backend image"
-                  docker push ${IMG_BACKEND}
-                '''
+                script {
+                  sh """
+                    set -eux
+                    echo "[Docker] Login Harbor"
+                    echo "\$HARBOR_PASS" | docker login ${env.HARBOR_URL} -u "\$HARBOR_USER" --password-stdin
+                  
+                    echo "[Docker] Build backend image \$IMG_BACKEND"
+                    docker build -t \$IMG_BACKEND -f Dockerfile .
+                  
+                    echo "[Docker] Push backend image"
+                    docker push \$IMG_BACKEND
+                  """
+                }
               }
             }
           }
@@ -93,22 +95,23 @@ pipeline {
         stage('Build & Push Frontend Image') {
           steps {
             dir("${FRONTEND_DIR}") {
-              withCredentials([usernamePassword(credentialsId: env.HARBOR_CRED_ID,
-                                              usernameVariable: 'HARBOR_USER',
-                                              passwordVariable: 'HARBOR_PASS')]) {
-                sh '''
-                  set -eux
-                  IMG_FRONTEND=${env.HARBOR_URL}/${env.HARBOR_PROJECT}/stan-blog-web:${env.IMAGE_TAG}
-
-                  echo "[Docker] Login Harbor"
-                  echo "${HARBOR_PASS}" | docker login ${env.HARBOR_URL} -u "${HARBOR_USER}" --password-stdin
-
-                  echo "[Docker] Build frontend image ${IMG_FRONTEND}"
-                  docker build -t ${IMG_FRONTEND} -f Dockerfile .
-
-                  echo "[Docker] Push frontend image"
-                  docker push ${IMG_FRONTEND}
-                '''
+              // Build & Push Frontend Image
+              withCredentials([usernamePassword(credentialsId: "${env.HARBOR_CRED_ID}",
+                                                usernameVariable: 'HARBOR_USER',
+                                                passwordVariable: 'HARBOR_PASS')]) {
+                script {
+                  sh """
+                    set -eux
+                    echo "[Docker] Login Harbor"
+                    echo "\$HARBOR_PASS" | docker login ${env.HARBOR_URL} -u "\$HARBOR_USER" --password-stdin
+                  
+                    echo "[Docker] Build frontend image \$IMG_FRONTEND"
+                    docker build -t \$IMG_FRONTEND -f Dockerfile .
+                  
+                    echo "[Docker] Push frontend image"
+                    docker push \$IMG_FRONTEND
+                  """
+                }
               }
             }
           }
