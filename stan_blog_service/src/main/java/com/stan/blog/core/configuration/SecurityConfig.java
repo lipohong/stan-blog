@@ -2,6 +2,7 @@ package com.stan.blog.core.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @EnableWebMvc
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@ConditionalOnProperty(value = "security-context.enable", havingValue = "true", matchIfMissing = true)
 public class SecurityConfig implements WebMvcConfigurer {
 
     private final TokenFilter tokenFilter;
@@ -53,6 +55,8 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v1/auth/**").permitAll()
                         .requestMatchers("/v1/api/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v1/files/*/download").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v1/files/*/view").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/users/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/comments").permitAll()
                         .anyRequest().authenticated())

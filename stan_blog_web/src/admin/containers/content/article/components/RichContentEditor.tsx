@@ -1,7 +1,7 @@
 import '@wangeditor/editor/dist/css/style.css';
 
 import { Grid, useMediaQuery } from '@mui/material';
-import { IDomEditor, IEditorConfig, IToolbarConfig, SlateElement, i18nGetResources } from '@wangeditor/editor';
+import { IDomEditor, IEditorConfig, IToolbarConfig, SlateElement, i18nChangeLanguage } from '@wangeditor/editor';
 import { Editor, Toolbar } from '@wangeditor/editor-for-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useCommonUtils } from '../../../../../commons';
 import { EditorStyle } from '../../../../../components';
 import theme from '../../../../../theme';
+import { buildFileViewUrl, uploadPublicImage } from '../../../../../services/FileService';
 
 type ImageElement = SlateElement & {
   src: string;
@@ -26,15 +27,16 @@ function RichContentEditor(props: Readonly<{ htmlValue: string; setHtmlValue: (v
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // Function to get current locale for WangEditor
-  const getCurrentLocale = useCallback((): 'en' | 'zh-CN' | 'zh-HK' => {
+  const getCurrentLocale = useCallback((): 'en' | 'zh-CN' | 'zh-TW' => {
     const i18nLanguage = i18n.language;
-    return i18nLanguage === 'en' ? 'en' : i18nLanguage === 'zh' ? 'zh-CN' : 'zh-HK';
+    return i18nLanguage === 'en' ? 'en' : i18nLanguage === 'zh' ? 'zh-CN' : 'zh-TW';
   }, [i18n.language]);
 
   // Effect 1: Handle language changes and update editor locale
   useEffect(() => {
     const currentLocale = getCurrentLocale();
-    i18nGetResources(currentLocale);
+    // Switch WangEditor language to match app i18n
+    i18nChangeLanguage(currentLocale);
   }, [getCurrentLocale]);
 
   // Effect 2: Cleanup editor instance when component unmounts or editable changes
@@ -64,12 +66,19 @@ function RichContentEditor(props: Readonly<{ htmlValue: string; setHtmlValue: (v
         },
       },
       uploadImage: {
-        // server: '/api/upload',
-        base64LimitSize: 20 * 1024, // 20kb,
-        fieldName: 'your-custom-name',
+        base64LimitSize: 0, // force using server upload for all images
         maxFileSize: 10 * 1024 * 1024, // 10M
         maxNumberOfFiles: 10,
         allowedFileTypes: ['image/*'],
+        customUpload: async (file: File, insertFn: (url: string, alt?: string, href?: string) => void) => {
+          try {
+            const dto = await uploadPublicImage(file, true);
+            const viewUrl = buildFileViewUrl(dto.id);
+            insertFn(viewUrl, dto.originalFilename ?? '', viewUrl);
+          } catch (err) {
+            console.error('Image upload failed', err);
+          }
+        },
       },
     },
     placeholder: t('components.rich-editor.placeholder'),
