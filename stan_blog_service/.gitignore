@@ -56,3 +56,8 @@ Alicloud.md
 
 application-prod.yml
 application-dev.yml
+
+# Files
+
+uploads/
+files/
