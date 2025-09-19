@@ -313,5 +313,27 @@ CREATE TABLE IF NOT EXISTS `stan_blog_notification` (
     INDEX `idx_recipient_read` (`recipient_id`, `is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- File resource table for uploads
+CREATE TABLE IF NOT EXISTS `stan_blog_file_resource` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `original_filename` VARCHAR(255) NOT NULL,
+  `stored_filename` VARCHAR(255) NOT NULL,
+  `storage_path` VARCHAR(1000) NOT NULL,
+  `size_in_bytes` BIGINT NOT NULL,
+  `content_type` VARCHAR(255) NULL,
+  `owner_id` BIGINT NOT NULL,
+  `public_to_all` TINYINT(1) NOT NULL DEFAULT 0,
+  `checksum` VARCHAR(128) NULL,
+  `create_time` DATETIME NULL,
+  `create_by` VARCHAR(64) NULL,
+  `update_time` DATETIME NULL,
+  `update_by` VARCHAR(64) NULL,
+  `deleted` TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  INDEX `idx_owner_id` (`owner_id`),
+  INDEX `idx_public` (`public_to_all`),
+  INDEX `idx_deleted` (`deleted`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- data.sql content
 -- end of sql 

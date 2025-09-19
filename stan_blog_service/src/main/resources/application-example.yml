@@ -24,6 +24,10 @@ spring:
       auto-commit: true
       max-lifetime: 1800000
       connection-timeout: 30000
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
   mail:
     host: smtp.gmail.com # Change to actual SMTP server
     port: 587 # Common SMTP port
@@ -66,3 +70,6 @@ mybatis-plus:
       logic-not-delete-value: 0
 mail:
   mail-from: username@example.com
+storage:
+  baseDir: uploads
+  publicBaseUrl: /files
