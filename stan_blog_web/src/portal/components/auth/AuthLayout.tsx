@@ -2,13 +2,14 @@ import HomeIcon from '@mui/icons-material/Home';
 import { Box, Container, Grid, IconButton, Paper, Typography } from '@mui/material';
 import { ReactNode } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-
+import GitHubIcon from '@mui/icons-material/GitHub';
 import config from '../../../../customization.json';
 import { Loading } from '../../../components';
 import { HeaderLanguageMenu } from '../../../components/layout';
 import FloatingElementContainer from '../../components/FloatingElementContainer.tsx';
 import { HeroSection, LogoText, PageContainer } from '../../components/StyledComponents.tsx';
 import { GitLabIcon } from '../layout/PortalHeader.tsx';
+import theme from '../../../theme.ts';
 
 interface AuthLayoutProps {
   title: string;
@@ -62,6 +63,17 @@ export default function AuthLayout({ title, subtitle, loading, children }: Reado
                   <HomeIcon color="primary" />
                 </IconButton>
               </Grid>
+              {config.githubLink && (
+                <Grid item>
+                  <IconButton
+                    href={config.githubLink}
+                    title="Github"
+                    size="large"
+                  >
+                    <GitHubIcon sx={{ color: theme.palette.primary.main }} />
+                  </IconButton>
+                </Grid>
+              )}
               {config.gitlabLink && (
                 <Grid item>
                   <IconButton
