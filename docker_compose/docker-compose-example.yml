@@ -1,6 +1,6 @@
 services:
   stan-blog-service:
-    image: stan-blog-service
+    image: stan-blog-service:${IMAGE_TAG}
     container_name: stan-blog-service
     ports:
       - "127.0.0.1:8080:8080"
@@ -11,7 +11,7 @@ services:
       - stan_blog_network
     restart: always
   stan-blog-web:
-    image: stan-blog-web
+    image: stan-blog-web:${IMAGE_TAG}
     container_name: stan-blog-web
     ports:
       - "127.0.0.1:3000:80"
