@@ -7,9 +7,12 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - TZ=Asia/Hong_Kong
+      - STORAGE_BASEDIR=/app/uploads
     networks:
       - stan_blog_network
     restart: always
+    volumes:
+      - stan_blog_uploads:/app/uploads
   stan-blog-web:
     image: stan-blog-web:${IMAGE_TAG}
     container_name: stan-blog-web
@@ -23,3 +26,6 @@ services:
 
 networks:
   stan_blog_network:
+
+volumes:
+  stan_blog_uploads:
