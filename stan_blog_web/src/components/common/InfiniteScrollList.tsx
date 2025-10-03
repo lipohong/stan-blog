@@ -1,5 +1,5 @@
 import { Grid } from '@mui/material';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, isValidElement, cloneElement } from 'react';
 
 export default function InfiniteScrollList<T>(
   props: Readonly<{
@@ -36,7 +36,11 @@ export default function InfiniteScrollList<T>(
       {dataSource.map(data => {
         return renderItem(data);
       })}
-      {loading && new Array(4).fill(0).map(() => renderSkeleton?.())}
+      {loading &&
+        Array.from({ length: 4 }, (_, index) => {
+          const el = renderSkeleton?.();
+          return isValidElement(el) ? cloneElement(el, { key: `skeleton-${index}` }) : <span key={`skeleton-${index}`}>{el}</span>;
+        })}
     </Grid>
   );
 }
