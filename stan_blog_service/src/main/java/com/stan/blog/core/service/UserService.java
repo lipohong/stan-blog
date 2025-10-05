@@ -234,7 +234,7 @@ public class UserService extends ServiceImpl<UserMapper, UserEntity> {
 
     private List<UserRoleEntity> createDefaultRole(Long userId) {
         return List.of(
-                new UserRoleEntity(Const.Role.BASIC.name(), userId));
+                new UserRoleEntity(Const.Role.BASIC.getValue(), userId));
     }
 
     private UserFeatureEntity createDefaultFeature(Long userId) {

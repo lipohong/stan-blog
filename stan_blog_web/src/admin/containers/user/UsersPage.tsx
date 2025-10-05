@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Grid } from '@mui/material';
+import { Grid, Button } from '@mui/material';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { useSearchParams } from 'react-router-dom';
 import { useCommonUtils } from '../../../commons/index.ts';
 import { Page } from '../../../components/layout';
@@ -10,6 +11,7 @@ import { FilterTabsWithCount, AdminSearchBox } from '../../components';
 import UserCard from './UserCard';
 import UserCardSkeleton from './UserCardSkeleton';
 import UserDetailDrawer from './UserDetailDrawer';
+import UserCreateDialog from './UserCreateDialog';
 
 interface ILoadDataOption {
   status: string;
@@ -35,6 +37,7 @@ export default function UsersPage() {
 
   const [selectedUserId, setSelectedUserId] = useState<number | string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const [createOpen, setCreateOpen] = useState<boolean>(false);
   const [searchKeyword, setSearchKeyword] = useState<string>(paramKeyword);
   const [emailVerificationFilter, setEmailVerificationFilter] = useState<string>(paramEmailVerified);
 
@@ -126,6 +129,14 @@ export default function UsersPage() {
     setSelectedUserId(null);
   }, []);
 
+  const handleCreateOpen = useCallback(() => setCreateOpen(true), []);
+  const handleCreateClose = useCallback(() => setCreateOpen(false), []);
+  const handleCreated = useCallback(() => {
+    // reload list from page 1 with current filters
+    const emailVerified = emailVerificationFilter === 'true' ? true : emailVerificationFilter === 'false' ? false : undefined;
+    loadData({ status: '', keyword: searchKeyword, emailVerified, reset: true });
+  }, [emailVerificationFilter, searchKeyword]);
+
   const handleSearchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
       const newKeyword = event.target.value;
@@ -163,8 +174,19 @@ export default function UsersPage() {
         container
         sx={{ py: 1 }}
         alignItems="center"
-        justifyContent="flex-end"
+        justifyContent="space-between"
+        spacing={1}
       >
+        <Grid item>
+          <Button
+            size="small"
+            variant="contained"
+            startIcon={<PersonAddIcon />}
+            onClick={handleCreateOpen}
+          >
+            {t('user-create.create-btn')}
+          </Button>
+        </Grid>
         <Grid
           item
           sx={{ width: { xs: '100%', sm: 'auto' } }}
@@ -210,6 +232,12 @@ export default function UsersPage() {
         onClose={handleDrawerClose}
         userId={selectedUserId}
         onDelete={handleDelete}
+      />
+
+      <UserCreateDialog
+        open={createOpen}
+        onClose={handleCreateClose}
+        onCreated={handleCreated}
       />
     </Page>
   );
