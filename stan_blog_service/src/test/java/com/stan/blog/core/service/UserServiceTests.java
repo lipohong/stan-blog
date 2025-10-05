@@ -70,7 +70,7 @@ public class UserServiceTests {
         UserRoleEntity roleEntity = roleMapper.selectOne(
                 new LambdaQueryWrapper<UserRoleEntity>()
                         .eq(UserRoleEntity::getUserId, result.getId())
-                        .eq(UserRoleEntity::getRole, Role.BASIC)
+                        .eq(UserRoleEntity::getRole, Role.BASIC.getValue())
                         .eq(UserRoleEntity::getDeleted, Boolean.FALSE));
         Assertions.assertNotNull(roleEntity);
 
