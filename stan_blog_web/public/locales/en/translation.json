@@ -394,6 +394,14 @@
     },
     "no-data": "No data available"
   },
+  "user-create": {
+    "title": "Create User",
+    "create-btn": "Create User",
+    "msg": {
+      "success": "User created successfully",
+      "error": "Failed to create user"
+    }
+  },
   "admin-table": {
     "title": "Audit",
     "label": {

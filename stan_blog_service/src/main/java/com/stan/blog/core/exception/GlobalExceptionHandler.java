@@ -5,8 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
@@ -48,6 +51,38 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         log.error("Unhandled exception: ", ex);
         return ErrorResponse.internalServerError("An unexpected error occurred");
+    }
+
+    /**
+     * Handle bean validation errors on @RequestBody DTOs
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        final String message = ex.getBindingResult().getFieldErrors().stream()
+                .map(fe -> toFieldMessage(fe))
+                .reduce((a, b) -> a + "; " + b)
+                .orElse("Validation failed");
+        log.warn("Validation error: {}", message);
+        return ErrorResponse.badRequest(message);
+    }
+
+    /**
+     * Handle validation errors on @RequestParam/@PathVariable etc.
+     */
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ErrorResponse> handleBindException(BindException ex) {
+        final String message = ex.getFieldErrors().stream()
+                .map(fe -> toFieldMessage(fe))
+                .reduce((a, b) -> a + "; " + b)
+                .orElse("Validation failed");
+        log.warn("Binding error: {}", message);
+        return ErrorResponse.badRequest(message);
+    }
+
+    private String toFieldMessage(FieldError fe) {
+        String field = fe.getField();
+        String defaultMessage = fe.getDefaultMessage();
+        return (field == null || field.isBlank()) ? defaultMessage : field + ": " + defaultMessage;
     }
 
     @ExceptionHandler({MissingServletRequestPartException.class, MissingServletRequestParameterException.class})

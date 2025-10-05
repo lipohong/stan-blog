@@ -379,6 +379,14 @@
     },
     "no-data": "暂无数据"
   },
+  "user-create": {
+    "title": "创建用户",
+    "create-btn": "创建用户",
+    "msg": {
+      "success": "用户创建成功",
+      "error": "用户创建失败"
+    }
+  },
   "admin-table": {
     "title": "监管",
     "label": {
