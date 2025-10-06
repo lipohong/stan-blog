@@ -171,26 +171,35 @@ public class UserService extends ServiceImpl<UserMapper, UserEntity> {
         userEntity.setPassword(encoder.encode(dto.getPassword()));
         userEntity.setDeleted(Boolean.FALSE);
         userEntity.setEmailVerified(Boolean.FALSE); // Set email as not verified initially
-        this.save(userEntity);
+        // persist user
+        boolean inserted = this.save(userEntity);
+        // In some environments (e.g. certain JDBC/H2 combos), the auto-generated
+        // ID may not be populated back to the entity instance. To make the
+        // behavior robust, reload the entity by unique email to ensure ID is present.
+        UserEntity persisted = userEntity;
+        if (!inserted || userEntity.getId() == null) {
+            persisted = this.getOne(new LambdaQueryWrapper<UserEntity>()
+                    .eq(UserEntity::getEmail, userEntity.getEmail()));
+        }
 
         // insert default user role
-        List<UserRoleEntity> defaultRoles = createDefaultRole(userEntity.getId());
+        List<UserRoleEntity> defaultRoles = createDefaultRole(persisted.getId());
         defaultRoles.forEach(x -> this.userRoleService.save(x));
 
         // insert default user feature setting
-        userFeatureService.save(createDefaultFeature(userEntity.getId()));
+        userFeatureService.save(createDefaultFeature(persisted.getId()));
         
         // Send email verification
         try {
             EmailVerificationService emailVerificationService = applicationContext.getBean(EmailVerificationService.class);
-            emailVerificationService.sendVerificationEmail(userEntity.getEmail(), userEntity.getFirstName());
+            emailVerificationService.sendVerificationEmail(persisted.getEmail(), persisted.getFirstName());
         } catch (Exception e) {
             log.error("Failed to send verification email during user registration for email: {}", 
                 userEntity.getEmail(), e);
             // Don't fail the registration if email sending fails
         }
         
-        return BasicConverter.convert(userEntity, UserGeneralDTO.class);
+        return BasicConverter.convert(persisted, UserGeneralDTO.class);
     }
 
     @Transactional
