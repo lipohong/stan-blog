@@ -130,25 +130,29 @@ npm run build
 
 ```
 stan-blog/
-├── stan_blog_service/          # Backend service
+├── stan_blog_service/          # 后端服务
 │   ├── src/main/java/com/stan/blog/
-│   │   ├── core/              # Core functionality modules
-│   │   ├── portal/            # Portal APIs
-│   │   ├── content/           # Content management
-│   │   ├── analytics/         # Data analytics
-│   │   └── beans/             # Data entities
-│   ├── src/main/resources/    # Configuration files
-│   └── src/test/             # Unit tests
+│   │   ├── core/              # 主功能模块
+│   │   ├── portal/            # 用户门户模块
+│   │   ├── content/           # 内容管理模块
+│   │   ├── analytics/         # 数据分析模块
+│   │   └── beans/             # 数据实体模块
+│   ├── src/main/resources/    # 配置文件
+│   └── src/test/             # 单元测试
 │
-└── stan_blog_web/             # Frontend application
-    ├── src/
-    │   ├── portal/           # User portal
-    │   ├── admin/            # Admin dashboard
-    │   ├── components/       # Common components
-    │   ├── services/         # API services
-    │   └── contexts/         # State management
-    ├── public/               # Static assets
-    └── deploy/               # Deployment related
+├── stan_blog_web/             # 前端应用
+│   ├── src/
+│   │   ├── portal/           # 用户门户模块
+│   │   ├── admin/            # 管理后台模块
+│   │   ├── components/       # 公共组件模块
+│   │   ├── services/         # API 服务模块
+│   │   └── contexts/         # 状态管理模块
+│   ├── public/               # 静态资源
+│   └── deploy/               # 部署相关
+│
+├── docker_compose/           # Docker Compose 文件
+├── Jenkinsfile               # Jenkins 流水线配置
+└── Jmeter/                   # JMeter 测试脚本和测试用户数据
 ```
 
 ## 🧪 测试
@@ -172,6 +176,20 @@ mvn test
 cd stan_blog_web
 npm run lint          # 代码规范检查
 npm run build:analyze  # 打包分析
+```
+
+### 负载测试
+
+#### JMeter
+
+```bash
+# 创建文件夹
+mkdir jmeter
+mkdir jmeter\results
+mkdir jmeter\logs
+
+# 运行测试计划
+jmeter.bat -n -t ".\jmeter\stanblog-test-plan.jmx" -l ".\jmeter\results.jtl" -j ".\jmeter\logs\jmeter.log"
 ```
 
 ## 📱 功能模块

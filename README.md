@@ -140,15 +140,19 @@ stan-blog/
 │   ├── src/main/resources/    # Configuration files
 │   └── src/test/             # Unit tests
 │
-└── stan_blog_web/             # Frontend application
-    ├── src/
-    │   ├── portal/           # User portal
-    │   ├── admin/            # Admin dashboard
-    │   ├── components/       # Common components
-    │   ├── services/         # API services
-    │   └── contexts/         # State management
-    ├── public/               # Static assets
-    └── deploy/               # Deployment related
+├── stan_blog_web/             # Frontend application
+│   ├── src/
+│   │   ├── portal/           # User portal
+│   │   ├── admin/            # Admin dashboard
+│   │   ├── components/       # Common components
+│   │   ├── services/         # API services
+│   │   └── contexts/         # State management
+│   ├── public/               # Static assets
+│   └── deploy/               # Deployment related
+│
+├── docker_compose/           # Docker Compose files
+├── Jenkinsfile               # Jenkins pipeline configuration
+└── Jmeter/                   # JMeter test scripts and test user data
 ```
 
 ## 🧪 Testing
@@ -172,6 +176,20 @@ The project adopts a layered testing strategy:
 cd stan_blog_web
 npm run lint          # Code style checking
 npm run build:analyze  # Bundle analysis
+```
+
+### Load Testing
+
+#### JMeter
+
+```bash
+# create folders
+mkdir jmeter
+mkdir jmeter\results
+mkdir jmeter\logs
+
+# Run test plan
+jmeter.bat -n -t ".\jmeter\stanblog-test-plan.jmx" -l ".\jmeter\results.jtl" -j ".\jmeter\logs\jmeter.log"
 ```
 
 ## 📱 Feature Modules
