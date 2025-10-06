@@ -151,7 +151,9 @@ stan-blog/
 │   └── deploy/               # Deployment related
 │
 ├── docker_compose/           # Docker Compose files
-├── Jenkinsfile               # Jenkins pipeline configuration
+├── Jenkinsfiles
+│   └── Jenkinsfile_staging   # Staging environment pipeline for Jenkins
+│
 └── Jmeter/                   # JMeter test scripts and test user data
 ```
 
