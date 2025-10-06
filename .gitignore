@@ -23,3 +23,8 @@ docker-compose.yml
 
 # Jenkins Config
 Jenkinsfile_production
+
+# Jmeter reports
+jmeter/results.jtl
+jmeter/html-report/*
+*jmeter.log
