@@ -1,10 +1,15 @@
 package com.stan.blog.beans.entity.user;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import com.stan.blog.beans.entity.BaseEntity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,9 +19,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@TableName("stan_blog_core_user")
+@Entity
+@Table(name = "stan_blog_core_user")
+@SQLDelete(sql = "UPDATE user SET deleted = true WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class UserEntity extends BaseEntity {
-    @TableId(type = IdType.AUTO)
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String lastName;
     private String firstName;

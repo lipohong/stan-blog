@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.data.domain.Page;
 import com.stan.blog.beans.consts.Const;
 import com.stan.blog.beans.dto.content.BaseContentDTO;
 import com.stan.blog.beans.dto.content.ContentBasicInfoDTO;

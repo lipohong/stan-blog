@@ -1,5 +1,6 @@
 package com.stan.blog.content.controller.impl;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,12 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stan.blog.beans.dto.content.BaseContentDTO;
 import com.stan.blog.content.service.impl.ContentGeneralInfoService;
 
 import lombok.RequiredArgsConstructor;
-
 
 @RestController
 @RequestMapping("/v1/contents")
@@ -21,7 +20,7 @@ public class ContentGeneralInfoController {
 
     private final ContentGeneralInfoService contentService;
 
-    /** 
+    /**
      * Search all published content no matter if the content get banned or not.
      * This API is for administrator to manage and review contents
      * @param current page number (1-based)
@@ -40,5 +39,4 @@ public class ContentGeneralInfoController {
         @RequestParam(value = "topic", required = false, defaultValue = "") String topic) {
         return ResponseEntity.ok(contentService.searchPublishedContentDTOs(current, size, keyword, status, topic));
     }
-    
 }

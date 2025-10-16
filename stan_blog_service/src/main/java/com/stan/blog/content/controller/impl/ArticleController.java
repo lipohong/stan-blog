@@ -7,7 +7,6 @@ import com.stan.blog.beans.dto.content.ArticleCreationDTO;
 import com.stan.blog.beans.dto.content.ArticleDTO;
 import com.stan.blog.beans.dto.content.ArticleUpdateDTO;
 import com.stan.blog.beans.entity.content.ArticleEntity;
-import com.stan.blog.content.mapper.ArticleMapper;
 import com.stan.blog.content.service.impl.ArticleService;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/v1/articles")
 @RequiredArgsConstructor
 public class ArticleController extends
-        BaseContentController<ArticleDTO, ArticleCreationDTO, ArticleUpdateDTO, ArticleEntity, ArticleMapper, ArticleService> {
+        BaseContentController<ArticleDTO, ArticleCreationDTO, ArticleUpdateDTO, ArticleEntity, ArticleService> {
 
     private final ArticleService articleService;
 
@@ -24,5 +23,4 @@ public class ArticleController extends
     protected ArticleService getConcreteSubContentService() {
         return this.articleService;
     }
-
 }

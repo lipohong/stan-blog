@@ -1,77 +1,121 @@
 package com.stan.blog.content.service.impl;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stan.blog.beans.consts.Const.ContentType;
 import com.stan.blog.beans.dto.content.PlanProgressCreationDTO;
 import com.stan.blog.beans.dto.content.PlanProgressDTO;
 import com.stan.blog.beans.dto.content.PlanProgressUpdateDTO;
 import com.stan.blog.beans.entity.content.ContentGeneralInfoEntity;
 import com.stan.blog.beans.entity.content.PlanProgressEntity;
-import com.stan.blog.content.mapper.PlanProgressMapper;
+import com.stan.blog.beans.entity.user.UserEntity;
+import com.stan.blog.beans.repository.content.PlanProgressRepository;
+import com.stan.blog.beans.repository.user.UserRepository;
 import com.stan.blog.core.exception.StanBlogRuntimeException;
 import com.stan.blog.core.utils.BasicConverter;
 import com.stan.blog.core.utils.SecurityUtil;
+import com.stan.blog.core.utils.UserDisplayNameUtil;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class PlanProgressService extends ServiceImpl<PlanProgressMapper, PlanProgressEntity> {
+public class PlanProgressService {
 
+    private final PlanProgressRepository planProgressRepository;
     private final ContentGeneralInfoService contentGeneralInfoService;
+    private final UserRepository userRepository;
 
     public Page<PlanProgressDTO> getProgressesByPlanId(String planId, int current, int size) {
-        return this.baseMapper.getProgressDTOsByPlanId(new Page<>(current, size), planId);
+        Pageable pageable = PageRequest.of(Math.max(current - 1, 0), Math.max(size, 1));
+        Page<PlanProgressEntity> page = planProgressRepository.findByPlanIdOrderByCreateTimeDesc(planId, pageable);
+        if (page.isEmpty()) {
+            return Page.empty(pageable);
+        }
+        Map<Long, UserEntity> userMap = loadUsers(page.getContent());
+        List<PlanProgressDTO> content = page.getContent().stream()
+                .map(entity -> toDto(entity, userMap.get(entity.getUpdaterId())))
+                .toList();
+        return new PageImpl<>(content, pageable, page.getTotalElements());
     }
 
     public PlanProgressDTO getProgressesById(String id) {
-        return this.baseMapper.getProgressDTOById(id);
+        return planProgressRepository.findById(id)
+                .map(entity -> toDto(entity, loadUser(entity.getUpdaterId())))
+                .orElse(null);
     }
 
     @Transactional
     public PlanProgressDTO saveProgress(PlanProgressCreationDTO dto) {
-        final ContentGeneralInfoEntity contentEntity = contentGeneralInfoService.getById(dto.getPlanId());
+        ContentGeneralInfoEntity contentEntity = contentGeneralInfoService.findById(dto.getPlanId());
         if (Objects.isNull(contentEntity) || !ContentType.PLAN.name().equals(contentEntity.getContentType())) {
             throw new StanBlogRuntimeException("The planId is invalid");
         }
-        final PlanProgressEntity entity = BasicConverter.convert(dto, PlanProgressEntity.class);
+        PlanProgressEntity entity = new PlanProgressEntity();
+        entity.setPlanId(dto.getPlanId());
+        entity.setDescription(dto.getDescription());
         entity.setUpdaterId(SecurityUtil.getUserId());
-        this.save(entity);
-        return this.baseMapper.getProgressDTOById(entity.getId());
+        PlanProgressEntity saved = planProgressRepository.save(entity);
+        return getProgressesById(saved.getId());
     }
 
     @Transactional
     public PlanProgressDTO updateProgress(PlanProgressUpdateDTO dto) {
-        final PlanProgressEntity progress = getAndValidateProgress(dto.getId());
-        BeanUtils.copyProperties(dto, progress);
+        PlanProgressEntity progress = getAndValidateProgress(dto.getId());
+        progress.setDescription(dto.getDescription());
         progress.setUpdaterId(SecurityUtil.getUserId());
-        this.baseMapper.updateById(progress);
-        return this.getProgressesById(dto.getId());
+        PlanProgressEntity saved = planProgressRepository.save(progress);
+        return getProgressesById(saved.getId());
+    }
+
+    @Transactional
+    public void deleteProgressById(String id) {
+        PlanProgressEntity progress = getAndValidateProgress(id);
+        planProgressRepository.delete(progress);
     }
 
     private PlanProgressEntity getAndValidateProgress(String id) {
-        final PlanProgressEntity progress = this.getById(id);
-        validateProgressExists(progress);
+        PlanProgressEntity progress = planProgressRepository.findById(id)
+                .orElseThrow(() -> new StanBlogRuntimeException("The progress doesn't exist, or already has been deleted"));
         validateProgressOwner(progress);
         return progress;
     }
 
-    private void validateProgressExists(PlanProgressEntity progress) {
-        if (Objects.isNull(progress)) {
-            throw new StanBlogRuntimeException("The progress doesn't exists, or already has been deleted");
+    private void validateProgressOwner(PlanProgressEntity progress) {
+        if (!Objects.equals(progress.getUpdaterId(), SecurityUtil.getUserId())) {
+            throw new StanBlogRuntimeException("You can't operate a progress that doesn't belong to you");
         }
     }
 
-    private void validateProgressOwner(PlanProgressEntity progress) {
-        if (progress.getUpdaterId().longValue() != SecurityUtil.getUserId().longValue()) {
-            throw new StanBlogRuntimeException("You can't operate a progress doesn't belong to you");
+    private PlanProgressDTO toDto(PlanProgressEntity entity, UserEntity user) {
+        PlanProgressDTO dto = BasicConverter.convert(entity, PlanProgressDTO.class);
+        if (user != null) {
+            dto.setUpdaterName(UserDisplayNameUtil.buildDisplayName(user));
+            dto.setAvatarUrl(user.getAvatarUrl());
         }
+        return dto;
+    }
+
+    private Map<Long, UserEntity> loadUsers(List<PlanProgressEntity> entities) {
+        Set<Long> userIds = entities.stream()
+                .map(PlanProgressEntity::getUpdaterId)
+                .collect(Collectors.toSet());
+        return userRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(UserEntity::getId, entity -> entity));
+    }
+
+    private UserEntity loadUser(Long userId) {
+        return userId == null ? null : userRepository.findById(userId).orElse(null);
     }
 }

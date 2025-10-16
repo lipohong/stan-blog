@@ -2,26 +2,36 @@ package com.stan.blog.beans.entity.content;
 
 import java.sql.Timestamp;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import com.stan.blog.beans.consts.Const.Topic;
 import com.stan.blog.beans.entity.BaseEntity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.apache.ibatis.type.EnumTypeHandler;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@TableName("stan_blog_content_general_info")
+@Entity
+@Table(name = "stan_blog_content_general_info")
+@SQLDelete(sql = "UPDATE stan_blog_content_general_info SET deleted = true WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class ContentGeneralInfoEntity extends BaseEntity {
-    @TableId(type = IdType.ASSIGN_UUID)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected String id;
     protected String title;
     protected String description;
@@ -36,6 +46,7 @@ public class ContentGeneralInfoEntity extends BaseEntity {
     // manipulate if the content require login to view
     protected Boolean contentProtected;
 
-    @TableField(value = "topic", typeHandler = EnumTypeHandler.class)
+    @Column(name = "topic")
+    @Enumerated(EnumType.STRING)
     protected Topic topic;
 }
