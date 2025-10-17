@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "stan_blog_vocabulary_info")
-@SQLDelete(sql = "UPDATE stan_blog_vocabulary_info SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE stan_blog_vocabulary_info SET deleted = true WHERE content_id = ?")
 @SQLRestriction("deleted = false")
 public class VOCEntity extends BaseContentEntity {
     private String language;

@@ -23,6 +23,13 @@ public class BaseEntity implements Serializable {
         if (createBy == null) {
             createBy = "system";
         }
+        // Ensure updateTime is initialized on creation for tests relying on it
+        if (updateTime == null) {
+            updateTime = createTime;
+        }
+        if (updateBy == null) {
+            updateBy = "system";
+        }
     }
     protected Timestamp createTime;
     protected String createBy;

@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "stan_blog_tag_relationship")
-@SQLDelete(sql = "UPDATE tag_relationship SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE stan_blog_tag_relationship SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
 public class TagRelationshipEntity extends BaseEntity {
     @Id

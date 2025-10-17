@@ -11,7 +11,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import com.stan.blog.beans.dto.content.PlanDTO;
 import com.stan.blog.beans.dto.content.PlanProgressDTO;
 import com.stan.blog.content.controller.impl.PlanController;
@@ -34,7 +36,7 @@ class PlanControllerTests {
 
     @Test
     void getPlanProgressesDelegatesToService() throws Exception {
-        Page<PlanProgressDTO> page = new Page<>(1, 10);
+        Page<PlanProgressDTO> page = new PageImpl<>(java.util.List.of(), PageRequest.of(1, 10), 0);
         when(progressService.getProgressesByPlanId("plan-1", 1, 10)).thenReturn(page);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/plans/{id}/progresses", "plan-1"))

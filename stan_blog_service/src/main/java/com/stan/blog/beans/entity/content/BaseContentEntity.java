@@ -4,9 +4,6 @@ import com.stan.blog.beans.entity.BaseEntity;
 import com.stan.blog.core.exception.StanBlogRuntimeException;
 
 import io.micrometer.common.util.StringUtils;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Table;
@@ -15,11 +12,10 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Entity
+// Removed @Entity to avoid conflict with @MappedSuperclass
 @MappedSuperclass
 public abstract class BaseContentEntity extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     protected String contentId;
 
     public String getTableName() {

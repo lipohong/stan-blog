@@ -69,6 +69,7 @@ public abstract class BaseContentService<
         generalInfo.setContentType(getContentType().name());
         generalInfo.setDeleted(Boolean.FALSE);
         generalInfo.setPublicToAll(Boolean.FALSE);
+        generalInfo.setContentProtected(Boolean.FALSE);
         generalInfo.setViewCount(0L);
         generalInfo.setLikeCount(0L);
         generalInfo.setOwnerId(SecurityUtil.getUserId());
@@ -90,12 +91,12 @@ public abstract class BaseContentService<
     @Transactional
     public D update(U updateDTO) {
         ContentGeneralInfoEntity generalInfo = contentGeneralInfoService.getAndValidateContent(updateDTO.getId());
-        BeanUtils.copyProperties(updateDTO, generalInfo);
+        org.springframework.beans.BeanUtils.copyProperties(updateDTO, generalInfo, getNullPropertyNames(updateDTO));
         contentGeneralInfoService.save(generalInfo);
 
         E contentEntity = getRepository().findById(updateDTO.getId())
                 .orElseThrow(() -> new StanBlogRuntimeException("Content does not exist"));
-        BeanUtils.copyProperties(updateDTO, contentEntity);
+        org.springframework.beans.BeanUtils.copyProperties(updateDTO, contentEntity, getNullPropertyNames(updateDTO));
         contentEntity.setContentId(updateDTO.getId());
         getRepository().save(contentEntity);
 
@@ -187,17 +188,18 @@ public abstract class BaseContentService<
         return getDTOById(id);
     }
 
-    private Map<String, E> toContentMap(Iterable<E> entities) {
-        return StreamSupport.stream(entities.spliterator(), false)
+    private Map<String, E> toContentMap(Iterable<E> contentIterable) {
+        Map<String, E> contentMap = StreamSupport.stream(contentIterable.spliterator(), false)
                 .collect(Collectors.toMap(BaseContentEntity::getContentId, Function.identity()));
+        return contentMap;
     }
 
-    private Map<Long, UserEntity> loadOwners(List<ContentGeneralInfoEntity> infos) {
-        Set<Long> ownerIds = infos.stream()
-                .map(ContentGeneralInfoEntity::getOwnerId)
-                .collect(Collectors.toSet());
-        return userRepository.findAllById(ownerIds).stream()
+    private Map<Long, UserEntity> loadOwners(List<ContentGeneralInfoEntity> contentList) {
+        Set<Long> ownerIds = contentList.stream().map(ContentGeneralInfoEntity::getOwnerId).collect(Collectors.toSet());
+        Iterable<UserEntity> users = userRepository.findAllById(ownerIds);
+        Map<Long, UserEntity> userMap = StreamSupport.stream(users.spliterator(), false)
                 .collect(Collectors.toMap(UserEntity::getId, Function.identity()));
+        return userMap;
     }
 
     private D buildDto(ContentGeneralInfoEntity generalInfo, E contentEntity, ContentAdminEntity adminEntity,
@@ -219,5 +221,17 @@ public abstract class BaseContentService<
             BeanUtils.copyProperties(contentEntity, dto);
         }
         return dto;
+    }
+    private static String[] getNullPropertyNames(Object source) {
+        final org.springframework.beans.BeanWrapper src = new org.springframework.beans.BeanWrapperImpl(source);
+        java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        java.util.Set<String> emptyNames = new java.util.HashSet<>();
+        for (java.beans.PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null) emptyNames.add(pd.getName());
+        }
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
     }
 }

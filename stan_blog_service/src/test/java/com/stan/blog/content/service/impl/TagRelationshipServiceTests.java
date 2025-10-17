@@ -4,26 +4,36 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
-import org.mockito.Spy;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.stan.blog.beans.dto.content.TagRelationshipCreationDTO;
 import com.stan.blog.beans.dto.content.TagRelationshipDTO;
 import com.stan.blog.beans.entity.tag.TagRelationshipEntity;
+import com.stan.blog.beans.repository.tag.TagRelationshipRepository;
+import com.stan.blog.beans.repository.tag.TagInfoRepository;
 
 @ExtendWith(MockitoExtension.class)
 class TagRelationshipServiceTests {
 
-    @Spy
+    @Mock
+    private TagRelationshipRepository tagRelationshipRepository;
+
+    @Mock
+    private TagInfoRepository tagInfoRepository;
+
     @InjectMocks
     private TagRelationshipService tagRelationshipService;
 
@@ -34,11 +44,15 @@ class TagRelationshipServiceTests {
         dto.setParentId(3L);
         dto.setCollectionId("collection-1");
 
-        doReturn(true).when(tagRelationshipService).save(any(TagRelationshipEntity.class));
+        TagRelationshipEntity savedEntity = new TagRelationshipEntity();
+        savedEntity.setTagId(12L);
+        savedEntity.setParentId(3L);
+        savedEntity.setCollectionId("collection-1");
+        when(tagRelationshipRepository.save(any(TagRelationshipEntity.class))).thenReturn(savedEntity);
 
         TagRelationshipDTO result = tagRelationshipService.createTagRelationship(dto);
 
-        verify(tagRelationshipService).save(any(TagRelationshipEntity.class));
+        verify(tagRelationshipRepository).save(any(TagRelationshipEntity.class));
         assertNotNull(result);
         assertEquals(12L, result.getTagId());
         assertEquals(3L, result.getParentId());
@@ -51,13 +65,16 @@ class TagRelationshipServiceTests {
         entity.setId(21L);
         entity.setCollectionId("collection-1");
 
-        doReturn(entity).when(tagRelationshipService).getById(21L);
-        doReturn(List.of()).when(tagRelationshipService).getTagRelationshipByParentId(21L, "collection-1");
-        doReturn(true).when(tagRelationshipService).removeById(21L);
+        when(tagRelationshipRepository.findById(21L)).thenReturn(Optional.of(entity));
+        when(tagRelationshipRepository.findByCollectionId("collection-1")).thenReturn(List.of());
 
         tagRelationshipService.deleteById(21L);
 
-        verify(tagRelationshipService).removeById(21L);
+        ArgumentCaptor<Iterable<Long>> captor = ArgumentCaptor.forClass(Iterable.class);
+        verify(tagRelationshipRepository).deleteAllById(captor.capture());
+        List<Long> ids = StreamSupport.stream(captor.getValue().spliterator(), false).collect(Collectors.toList());
+        assertEquals(1, ids.size());
+        assertTrue(ids.contains(21L));
     }
 
     @Test
@@ -66,21 +83,21 @@ class TagRelationshipServiceTests {
         entity.setId(30L);
         entity.setCollectionId("collection-2");
 
-        TagRelationshipDTO child = new TagRelationshipDTO();
-        child.setId(31L);
-        TagRelationshipDTO grandChild = new TagRelationshipDTO();
-        grandChild.setId(32L);
-        child.setChildren(List.of(grandChild));
+        TagRelationshipEntity childRel = new TagRelationshipEntity();
+        childRel.setId(31L);
+        childRel.setParentId(30L);
+        TagRelationshipEntity grandChildRel = new TagRelationshipEntity();
+        grandChildRel.setId(32L);
+        grandChildRel.setParentId(31L);
 
-        doReturn(entity).when(tagRelationshipService).getById(30L);
-        doReturn(List.of(child)).when(tagRelationshipService).getTagRelationshipByParentId(30L, "collection-2");
-        doReturn(true).when(tagRelationshipService).removeBatchByIds(any());
+        when(tagRelationshipRepository.findById(30L)).thenReturn(Optional.of(entity));
+        when(tagRelationshipRepository.findByCollectionId("collection-2")).thenReturn(List.of(entity, childRel, grandChildRel));
 
         tagRelationshipService.deleteById(30L);
 
-        ArgumentCaptor<List<Long>> captor = ArgumentCaptor.forClass(List.class);
-        verify(tagRelationshipService).removeBatchByIds(captor.capture());
-        List<Long> ids = captor.getValue();
+        ArgumentCaptor<Iterable<Long>> captor = ArgumentCaptor.forClass(Iterable.class);
+        verify(tagRelationshipRepository).deleteAllById(captor.capture());
+        List<Long> ids = StreamSupport.stream(captor.getValue().spliterator(), false).collect(Collectors.toList());
         assertEquals(3, ids.size());
         assertTrue(ids.containsAll(List.of(30L, 31L, 32L)));
     }

@@ -16,7 +16,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import com.stan.blog.analytics.service.AnalyticsService;
 import com.stan.blog.beans.consts.Const;
 import com.stan.blog.beans.dto.analytics.UserContentAnalyticsDTO;
@@ -88,7 +90,7 @@ class PublicApiControllerTests {
 
     @Test
     void searchContentsDelegatesToService() throws Exception {
-        Page<BaseContentDTO> page = new Page<>(1, 10);
+        Page<BaseContentDTO> page = new PageImpl<>(List.of(), PageRequest.of(1, 10), 0);
         when(publicApiService.searchContents(1, 20, new String[] {}, null, new String[] {}, null, ""))
             .thenReturn(page);
 

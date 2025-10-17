@@ -6,14 +6,15 @@ import org.hibernate.annotations.SQLRestriction;
 import com.stan.blog.beans.entity.BaseEntity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -26,9 +27,16 @@ import lombok.NoArgsConstructor;
 public class PlanProgressEntity extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String planId;
     private String description;
     private Long updaterId;
+
+    @PrePersist
+    public void prePersist() {
+        super.prePersist();
+        if (id == null || id.isBlank()) {
+            id = UUID.randomUUID().toString().replace("-", "");
+        }
+    }
 }

@@ -13,7 +13,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stan.blog.beans.dto.content.PlanProgressCreationDTO;
 import com.stan.blog.beans.dto.content.PlanProgressDTO;
@@ -37,7 +39,7 @@ class PlanProgressControllerTests {
 
     @Test
     void getProgressByPlanIdReturnsPage() throws Exception {
-        Page<PlanProgressDTO> page = new Page<>(1, 10);
+        Page<PlanProgressDTO> page = new PageImpl<>(java.util.List.of(), PageRequest.of(1, 10), 0);
         when(progressService.getProgressesByPlanId("plan-1", 1, 10)).thenReturn(page);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/plan-progresses")
@@ -85,9 +87,9 @@ class PlanProgressControllerTests {
 
     @Test
     void deleteProgressDelegatesToService() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/plan-progresses/{id}", 20))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/plan-progresses/{id}", "20"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        verify(progressService).removeById(20L);
+        verify(progressService).deleteProgressById("20");
     }
 }

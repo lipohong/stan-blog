@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -22,6 +22,7 @@ import com.stan.blog.DefaultTestData;
 import com.stan.blog.beans.dto.content.BaseContentDTO;
 import com.stan.blog.beans.entity.content.ContentAdminEntity;
 import com.stan.blog.beans.entity.content.ContentGeneralInfoEntity;
+import com.stan.blog.beans.repository.content.ContentAdminRepository;
 import com.stan.blog.core.service.NotificationService;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,7 +34,9 @@ class ContentAdminServiceTests {
     @Mock
     private ContentGeneralInfoService contentGeneralInfoService;
 
-    @Spy
+    @Mock
+    private ContentAdminRepository contentAdminRepository;
+
     @InjectMocks
     private ContentAdminService contentAdminService;
 
@@ -59,13 +62,13 @@ class ContentAdminServiceTests {
         generalInfo.setContentType("ARTICLE");
         generalInfo.setOwnerId(8L);
 
-        doReturn(adminEntity).when(contentAdminService).getById("content-1");
-        doReturn(true).when(contentAdminService).updateById(any());
-        doReturn(generalInfo).when(contentGeneralInfoService).getById("content-1");
+        when(contentAdminRepository.findById("content-1")).thenReturn(java.util.Optional.of(adminEntity));
+        when(contentAdminRepository.save(any(ContentAdminEntity.class))).thenReturn(adminEntity);
+        when(contentGeneralInfoService.findById("content-1")).thenReturn(generalInfo);
 
         BaseContentDTO result = contentAdminService.banContentById("content-1");
 
-        verify(contentAdminService).updateById(adminEntity);
+        verify(contentAdminRepository).save(adminEntity);
         verify(notificationService).notifyContentBanned("content-1", "First Article", "ARTICLE", 8L, 1L);
         assertTrue(adminEntity.getBanned());
         assertEquals("Violating content, blocked by administrators", adminEntity.getReason());
@@ -79,12 +82,12 @@ class ContentAdminServiceTests {
         adminEntity.setContentId("content-2");
         adminEntity.setRecommended(true);
 
-        doReturn(adminEntity).when(contentAdminService).getById("content-2");
-        doReturn(true).when(contentAdminService).updateById(any());
+        when(contentAdminRepository.findById("content-2")).thenReturn(java.util.Optional.of(adminEntity));
+        when(contentAdminRepository.save(any(ContentAdminEntity.class))).thenReturn(adminEntity);
 
         BaseContentDTO result = contentAdminService.unrecommendContentById("content-2");
 
-        verify(contentAdminService).updateById(adminEntity);
+        verify(contentAdminRepository).save(adminEntity);
         assertFalse(adminEntity.getRecommended());
         assertEquals("Content recommendation has been removed by administrators", adminEntity.getReason());
         assertNotNull(result);
@@ -103,9 +106,9 @@ class ContentAdminServiceTests {
         generalInfo.setContentType("PLAN");
         generalInfo.setOwnerId(5L);
 
-        doReturn(adminEntity).when(contentAdminService).getById("content-3");
-        doReturn(true).when(contentAdminService).updateById(any());
-        doReturn(generalInfo).when(contentGeneralInfoService).getById("content-3");
+        when(contentAdminRepository.findById("content-3")).thenReturn(java.util.Optional.of(adminEntity));
+        when(contentAdminRepository.save(any(ContentAdminEntity.class))).thenReturn(adminEntity);
+        when(contentGeneralInfoService.findById("content-3")).thenReturn(generalInfo);
 
         BaseContentDTO result = contentAdminService.recommmendContentById("content-3");
 

@@ -12,16 +12,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stan.blog.beans.dto.analytics.UserContentAnalyticsDTO;
 import com.stan.blog.beans.entity.content.ContentGeneralInfoEntity;
-import com.stan.blog.content.service.impl.ContentGeneralInfoService;
+import com.stan.blog.beans.repository.content.ContentGeneralInfoRepository;
 
 @ExtendWith(MockitoExtension.class)
 class AnalyticsServiceTests {
 
     @Mock
-    private ContentGeneralInfoService contentGeneralInfoService;
+    private ContentGeneralInfoRepository contentGeneralInfoRepository;
 
     @InjectMocks
     private AnalyticsService analyticsService;
@@ -38,7 +37,7 @@ class AnalyticsServiceTests {
         privateContent.setViewCount(5L);
         privateContent.setPublicToAll(false);
 
-        when(contentGeneralInfoService.list(org.mockito.ArgumentMatchers.<LambdaQueryWrapper<ContentGeneralInfoEntity>>any()))
+        when(contentGeneralInfoRepository.findAll(org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<ContentGeneralInfoEntity>>any()))
             .thenReturn(List.of(publicContent, privateContent));
 
         UserContentAnalyticsDTO result = analyticsService.getOverallResult(42L);
@@ -47,7 +46,7 @@ class AnalyticsServiceTests {
         assertEquals(10L, result.getTotalLikeCount());
         assertEquals(16L, result.getTotalViewCount());
         assertEquals(1, result.getPublicCount());
-        verify(contentGeneralInfoService).list(org.mockito.ArgumentMatchers.<LambdaQueryWrapper<ContentGeneralInfoEntity>>any());
+        verify(contentGeneralInfoRepository).findAll(org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<ContentGeneralInfoEntity>>any());
     }
 
     @Test
@@ -57,7 +56,7 @@ class AnalyticsServiceTests {
         vocabulary.setViewCount(9L);
         vocabulary.setPublicToAll(true);
 
-        when(contentGeneralInfoService.list(org.mockito.ArgumentMatchers.<LambdaQueryWrapper<ContentGeneralInfoEntity>>any()))
+        when(contentGeneralInfoRepository.findAll(org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<ContentGeneralInfoEntity>>any()))
             .thenReturn(List.of(vocabulary));
 
         UserContentAnalyticsDTO result = analyticsService.getResult("VOC", 99L);
@@ -66,6 +65,6 @@ class AnalyticsServiceTests {
         assertEquals(2L, result.getTotalLikeCount());
         assertEquals(9L, result.getTotalViewCount());
         assertEquals(1, result.getPublicCount());
-        verify(contentGeneralInfoService).list(org.mockito.ArgumentMatchers.<LambdaQueryWrapper<ContentGeneralInfoEntity>>any());
+        verify(contentGeneralInfoRepository).findAll(org.mockito.ArgumentMatchers.<org.springframework.data.jpa.domain.Specification<ContentGeneralInfoEntity>>any());
     }
 }

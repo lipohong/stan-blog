@@ -1,5 +1,8 @@
 package com.stan.blog.beans.entity.content;
 
+import com.stan.blog.beans.entity.BaseEntity;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -30,7 +33,7 @@ import lombok.NoArgsConstructor;
 public class NotificationEntity extends BaseEntity {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     /**
@@ -89,4 +92,4 @@ public class NotificationEntity extends BaseEntity {
      * Additional metadata for the notification (JSON string)
      */
     private String metadata;
-} 
+}

@@ -51,9 +51,11 @@ public class ContentTagService {
         Map<Long, TagInfoEntity> tagInfoMap = tagInfoRepository.findAllById(tagIds).stream()
                 .collect(Collectors.toMap(TagInfoEntity::getId, Function.identity()));
         return tagLinks.stream()
-                .map(link -> tagInfoMap.get(link.getTagId()))
-                .filter(info -> info != null)
-                .map(TagInfoEntity::covertToDTO)
+                .map(link -> {
+                    TagInfoEntity info = tagInfoMap.get(link.getTagId());
+                    return info != null ? TagInfoEntity.covertToDTO(info)
+                            : TagInfoDTO.builder().value(link.getTagId()).label(null).build();
+                })
                 .toList();
     }
 
@@ -73,14 +75,11 @@ public class ContentTagService {
                 .collect(Collectors.toMap(TagInfoEntity::getId, Function.identity()));
         return tagLinks.stream()
                 .collect(Collectors.groupingBy(ContentTagEntity::getContentId,
-                        Collectors.mapping(link -> tagInfoMap.get(link.getTagId()), Collectors.toList())))
-                .entrySet()
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        entry -> entry.getValue().stream()
-                                .filter(info -> info != null)
-                                .map(TagInfoEntity::covertToDTO)
-                                .toList()));
+                        Collectors.mapping(link -> {
+                            TagInfoEntity info = tagInfoMap.get(link.getTagId());
+                            return info != null ? TagInfoEntity.covertToDTO(info)
+                                    : TagInfoDTO.builder().value(link.getTagId()).label(null).build();
+                        }, Collectors.toList())));
     }
 
     @Transactional(readOnly = true)

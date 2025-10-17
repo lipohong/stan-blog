@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.stan.blog.beans.dto.user.EnhancedUserDetail;
 import com.stan.blog.beans.dto.user.UserGeneralDTO;
 import com.stan.blog.beans.entity.file.FileResourceEntity;
+import com.stan.blog.beans.repository.file.FileResourceRepository;
 import com.stan.blog.file.service.storage.StorageProperties;
 import com.stan.blog.file.service.storage.StorageService;
 
@@ -27,7 +28,8 @@ class FileResourceServiceUnitTests {
     private FileResourceService newService() {
         StorageService storage = org.mockito.Mockito.mock(StorageService.class);
         StorageProperties props = new StorageProperties();
-        return new FileResourceService(storage, props);
+        FileResourceRepository repo = org.mockito.Mockito.mock(FileResourceRepository.class);
+        return new FileResourceService(storage, props, repo);
     }
 
     private void setPrincipal(long userId, boolean admin) {

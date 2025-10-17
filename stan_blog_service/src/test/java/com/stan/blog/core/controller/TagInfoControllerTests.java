@@ -13,7 +13,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stan.blog.beans.dto.tag.TagInfoCreationDTO;
 import com.stan.blog.beans.dto.tag.TagInfoDTO;
@@ -54,11 +56,11 @@ class TagInfoControllerTests {
 
     @Test
     void getTagsByKeywordReturnsPage() throws Exception {
-        Page<TagInfoDTO> page = new Page<>(1, 10);
+        Page<TagInfoDTO> page = new PageImpl<>(java.util.List.of(), PageRequest.of(1, 10), 0);
         TagInfoDTO dto = new TagInfoDTO();
         dto.setValue(2L);
         dto.setLabel("Spring");
-        page.setRecords(java.util.List.of(dto));
+        page = new PageImpl<>(java.util.List.of(dto), PageRequest.of(1, 10), 1);
         when(tagInfoService.getTagsByKeyword("java", 1, 10)).thenReturn(page);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/tags")

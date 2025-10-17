@@ -12,15 +12,10 @@ spring:
       continue-on-error: true
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  global-config:
-    banner: false
-    db-config:
-      logic-delete-field: deleted
-      logic-delete-value: 1
-      logic-not-delete-value: 0
+  jpa:
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: true
 jwt:
   secret:
     access: ${JWT_SECRET_ACCESS:482B4D6251655468576D597133743677397A24432646294A404E635266556A58}

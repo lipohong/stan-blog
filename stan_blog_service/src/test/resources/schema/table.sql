@@ -246,10 +246,11 @@ create table stan_blog_tag_relationship
   COLLATE = utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS stan_blog_content_tag;
-create table stan_blog_content_tag
-(
-    CONTENT_ID  varchar(32)       not null,
-    TAG_ID      int               not null
+CREATE TABLE stan_blog_content_tag (
+    ID          bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    CONTENT_ID  varchar(32)       NOT NULL,
+    TAG_ID      int               NOT NULL,
+    DELETED     bit(1)            NOT NULL DEFAULT false
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -336,4 +337,4 @@ CREATE TABLE IF NOT EXISTS `stan_blog_file_resource` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- data.sql content
--- end of sql 
+-- end of sql

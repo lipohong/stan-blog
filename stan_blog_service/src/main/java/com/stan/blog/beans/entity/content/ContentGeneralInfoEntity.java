@@ -1,6 +1,7 @@
 package com.stan.blog.beans.entity.content;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -12,9 +13,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,7 +31,6 @@ import lombok.NoArgsConstructor;
 @SQLRestriction("deleted = false")
 public class ContentGeneralInfoEntity extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected String id;
     protected String title;
     protected String description;
@@ -49,4 +48,12 @@ public class ContentGeneralInfoEntity extends BaseEntity {
     @Column(name = "topic")
     @Enumerated(EnumType.STRING)
     protected Topic topic;
+
+    @PrePersist
+    public void prePersist() {
+        super.prePersist();
+        if (id == null || id.isBlank()) {
+            id = UUID.randomUUID().toString().replace("-", "");
+        }
+    }
 }

@@ -116,6 +116,7 @@ public class TagRelationshipService {
 
     private Set<Long> collectSubtreeIds(Long rootId, List<TagRelationshipEntity> relationships) {
         Map<Long, List<TagRelationshipEntity>> childrenMap = relationships.stream()
+                .filter(rel -> rel.getParentId() != null)
                 .collect(Collectors.groupingBy(TagRelationshipEntity::getParentId));
         Deque<Long> stack = new ArrayDeque<>();
         Set<Long> ids = new HashSet<>();

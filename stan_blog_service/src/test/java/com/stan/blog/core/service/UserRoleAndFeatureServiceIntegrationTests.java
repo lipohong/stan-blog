@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stan.blog.beans.entity.user.UserFeatureEntity;
 import com.stan.blog.beans.entity.user.UserRoleEntity;
 
@@ -29,13 +28,12 @@ class UserRoleAndFeatureServiceIntegrationTests {
         entity.setRole("ROLE_TEST");
         entity.setUserId(1000L + (long)(Math.random() * 1000));
 
-        assertTrue(userRoleService.save(entity));
+        UserRoleEntity saved = userRoleService.save(entity);
+        assertNotNull(saved.getId());
 
-        UserRoleEntity stored = userRoleService.getOne(new LambdaQueryWrapper<UserRoleEntity>()
-                .eq(UserRoleEntity::getUserId, entity.getUserId()));
+        java.util.List<UserRoleEntity> stored = userRoleService.findByUserId(entity.getUserId());
 
-        assertNotNull(stored);
-        assertEquals("ROLE_TEST", stored.getRole());
+        assertTrue(stored.stream().anyMatch(r -> "ROLE_TEST".equals(r.getRole())));
     }
 
     @Test
@@ -48,9 +46,10 @@ class UserRoleAndFeatureServiceIntegrationTests {
         feature.setVocabularyModule(Boolean.TRUE);
         feature.setCollectionModule(Boolean.TRUE);
 
-        assertTrue(userFeatureService.saveOrUpdate(feature));
+        UserFeatureEntity saved = userFeatureService.saveOrUpdate(feature);
+        assertNotNull(saved.getUserId());
 
-        UserFeatureEntity stored = userFeatureService.getById(userId);
+        UserFeatureEntity stored = userFeatureService.findByUserId(userId).orElse(null);
 
         assertNotNull(stored);
         assertTrue(stored.getArticleModule());

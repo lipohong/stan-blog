@@ -106,6 +106,6 @@ class WordControllerTests {
         mockMvc.perform(MockMvcRequestBuilders.delete("/v1/words/{id}", 5))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        verify(wordService).removeById(5L);
+        verify(wordService).deleteWordById(5L);
     }
 }

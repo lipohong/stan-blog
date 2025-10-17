@@ -33,6 +33,7 @@ CREATE TABLE `stan_blog_core_user`
 DROP TABLE IF EXISTS stan_blog_core_user_feature;
 CREATE TABLE `stan_blog_core_user_feature`
 (
+    `ID`                bigint NOT NULL AUTO_INCREMENT,
     `USER_ID`           bigint NOT NULL,
     `ARTICLE_MODULE`    bit(1)      DEFAULT TRUE,
     `PLAN_MODULE`       bit(1)      DEFAULT TRUE,
@@ -43,7 +44,7 @@ CREATE TABLE `stan_blog_core_user_feature`
     `UPDATE_TIME`       datetime    DEFAULT NULL,
     `UPDATE_BY`         varchar(30) DEFAULT NULL,
     `DELETED`           bit(1)      DEFAULT FALSE,
-    PRIMARY KEY (`USER_ID`),
+    PRIMARY KEY (`ID`),
     UNIQUE KEY `stan_blog_core_user_feature_USER_ID_uindex` (`USER_ID`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -246,10 +247,11 @@ create table stan_blog_tag_relationship
   COLLATE = utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS stan_blog_content_tag;
-create table stan_blog_content_tag
-(
-    CONTENT_ID  varchar(32)       not null,
-    TAG_ID      int               not null
+CREATE TABLE stan_blog_content_tag (
+    ID          bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    CONTENT_ID  varchar(32)       NOT NULL,
+    TAG_ID      int               NOT NULL,
+    DELETED     bit(1)            NOT NULL DEFAULT false
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -336,4 +338,4 @@ CREATE TABLE IF NOT EXISTS `stan_blog_file_resource` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- data.sql content
--- end of sql 
+-- end of sql
