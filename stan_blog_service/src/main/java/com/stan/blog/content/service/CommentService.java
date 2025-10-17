@@ -125,7 +125,7 @@ public class CommentService {
 
             commentRepository.findById(parentCommentId)
                 .filter(parentComment -> !Boolean.TRUE.equals(parentComment.getDeleted()))
-                .ifPresent(parentComment -> notificationService.notifyCommentReplied(
+                .ifPresent(parentComment -> notificationService.notifyReplyCommented(
                     contentId,
                     content.getTitle(),
                     contentType,

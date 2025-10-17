@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.data.domain.Page;
 import com.stan.blog.analytics.service.AnalyticsService;
 import com.stan.blog.beans.consts.Const;
 import com.stan.blog.beans.dto.EmailVerificationResponse;

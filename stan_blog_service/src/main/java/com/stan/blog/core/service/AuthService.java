@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stan.blog.beans.dto.user.EnhancedUserDetail;
 import com.stan.blog.beans.dto.user.UserFeatureDTO;
 import com.stan.blog.beans.dto.user.UserGeneralDTO;
@@ -33,9 +32,9 @@ public class AuthService implements UserDetailsService {
     private final TokenUtil tokenUtil;
 
     public EnhancedUserDetail login(UserLoginDTO dto) {
-        final EnhancedUserDetail userDetails = (EnhancedUserDetail) loadUserByUsername(dto.getUsername());
-        final String accessToken = tokenUtil.createAccessToken(userDetails);
-        final String refreshToken = tokenUtil.createRefreshToken(userDetails);
+        EnhancedUserDetail userDetails = (EnhancedUserDetail) loadUserByUsername(dto.getUsername());
+        String accessToken = tokenUtil.createAccessToken(userDetails);
+        String refreshToken = tokenUtil.createRefreshToken(userDetails);
         userDetails.setAccessToken(accessToken);
         userDetails.setRefreshToken(refreshToken);
         return userDetails;
@@ -43,25 +42,22 @@ public class AuthService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        final UserEntity userEntity = this.userService.getOne(new LambdaQueryWrapper<UserEntity>()
-                .eq(UserEntity::getUsername, userName)
-                .or().eq(UserEntity::getEmail, userName)
-                .or().eq(UserEntity::getPhoneNum, userName));
-        if (userEntity == null) {
-            log.info("Invalid user name, please confirm again!", userName);
-            throw new UsernameNotFoundException("Invalid user name[ " + userName + " ], please confirm again!");
-        }
-        
-        final UserGeneralDTO profile = BasicConverter.convert(userEntity, UserGeneralDTO.class);
-        profile.setFeatures(BasicConverter.convert(userFeatureService.getById(profile.getId()), UserFeatureDTO.class));
+        UserEntity userEntity = userService.findByUsernameOrEmailOrPhone(userName)
+                .orElseThrow(() -> {
+                    log.info("Invalid user name, please confirm again!", userName);
+                    return new UsernameNotFoundException("Invalid user name[ " + userName + " ], please confirm again!");
+                });
+
+        UserGeneralDTO profile = BasicConverter.convert(userEntity, UserGeneralDTO.class);
+        userFeatureService.findByUserId(profile.getId())
+                .map(feature -> BasicConverter.convert(feature, UserFeatureDTO.class))
+                .ifPresent(profile::setFeatures);
         return new EnhancedUserDetail(getAuthority(userEntity.getId()), userEntity.getUsername(),
                 userEntity.getPassword(), profile);
     }
 
     private List<SimpleGrantedAuthority> getAuthority(long id) {
-        final List<UserRoleEntity> roles = userRoleService
-                .list(new LambdaQueryWrapper<UserRoleEntity>().eq(UserRoleEntity::getUserId, id));
+        List<UserRoleEntity> roles = userRoleService.findByUserId(id);
         return roles.stream().map(r -> new SimpleGrantedAuthority(r.getRole())).collect(Collectors.toList());
     }
-
 }
