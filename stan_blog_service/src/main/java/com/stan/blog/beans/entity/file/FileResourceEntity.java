@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "stan_blog_file_resource")
-@SQLDelete(sql = "UPDATE file_resource SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE stan_blog_file_resource SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
 public class FileResourceEntity extends BaseEntity {
     @Id
@@ -37,4 +37,3 @@ public class FileResourceEntity extends BaseEntity {
     private Boolean publicToAll = Boolean.FALSE;
     private String checksum; // optional SHA-256 or MD5
 }
-

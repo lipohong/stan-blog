@@ -6,21 +6,25 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stan.blog.beans.dto.file.FileResourceDTO;
 import com.stan.blog.beans.entity.file.FileResourceEntity;
+import com.stan.blog.beans.repository.file.FileResourceRepository;
 import com.stan.blog.core.utils.AuthenticationUtil;
 import com.stan.blog.core.utils.BasicConverter;
 import com.stan.blog.core.utils.SecurityUtil;
-import com.stan.blog.file.mapper.FileResourceMapper;
 import com.stan.blog.file.service.storage.StorageProperties;
 import com.stan.blog.file.service.storage.StorageService;
 
@@ -30,10 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FileResourceService extends ServiceImpl<FileResourceMapper, FileResourceEntity> {
+public class FileResourceService {
 
     private final StorageService storageService;
     private final StorageProperties storageProperties;
+    private final FileResourceRepository fileResourceRepository;
 
     @Transactional
     public FileResourceDTO upload(MultipartFile file, boolean publicToAll) {
@@ -47,15 +52,17 @@ public class FileResourceService extends ServiceImpl<FileResourceMapper, FileRes
                 entity.setStoredFilename(stored.storedFilename());
                 entity.setStoragePath(stored.absolutePath().toString());
                 entity.setSizeInBytes(file.getSize());
-                entity.setContentType(StringUtils.hasText(file.getContentType()) ? file.getContentType() : MediaType.APPLICATION_OCTET_STREAM_VALUE);
+                entity.setContentType(StringUtils.hasText(file.getContentType()) ? file.getContentType()
+                        : MediaType.APPLICATION_OCTET_STREAM_VALUE);
                 entity.setOwnerId(user.getUserProfile().getId());
                 entity.setPublicToAll(publicToAll);
                 entity.setDeleted(false);
                 entity.setChecksum(calcChecksum(stored.absolutePath()));
-                this.save(entity);
 
-                FileResourceDTO dto = BasicConverter.convert(entity, FileResourceDTO.class);
-                dto.setDownloadUrl(buildDownloadUrl(entity.getId()));
+                FileResourceEntity saved = fileResourceRepository.save(entity);
+
+                FileResourceDTO dto = BasicConverter.convert(saved, FileResourceDTO.class);
+                dto.setDownloadUrl(buildDownloadUrl(saved.getId()));
                 return ResponseEntity.ok(dto);
             } catch (IOException ex) {
                 log.error("Failed to store uploaded file", ex);
@@ -64,68 +71,97 @@ public class FileResourceService extends ServiceImpl<FileResourceMapper, FileRes
         }).getBody();
     }
 
+    @Transactional(readOnly = true)
     public ResponseEntity<byte[]> download(Long id) {
-        FileResourceEntity entity = this.getById(id);
-        if (entity == null || Boolean.TRUE.equals(entity.getDeleted())) {
-            return ResponseEntity.notFound().build();
-        }
-        if (!canAccess(entity)) {
-            return ResponseEntity.status(401).build();
-        }
-        try {
-            Path path = Path.of(entity.getStoragePath());
-            byte[] bytes = Files.readAllBytes(path);
-            String contentType = StringUtils.hasText(entity.getContentType()) ? entity.getContentType()
-                    : MediaType.APPLICATION_OCTET_STREAM_VALUE;
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\"" + sanitizeFilename(entity.getOriginalFilename()) + "\"")
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .contentLength(bytes.length)
-                    .body(bytes);
-        } catch (IOException e) {
-            log.error("Failed to read file {}", entity.getStoragePath(), e);
-            return ResponseEntity.internalServerError().build();
-        }
+        return fileResourceRepository.findById(id)
+                .filter(entity -> !Boolean.TRUE.equals(entity.getDeleted()))
+                .map(entity -> {
+                    if (!canAccess(entity)) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).<byte[]>build();
+                    }
+                    try {
+                        Path path = Path.of(entity.getStoragePath());
+                        byte[] bytes = Files.readAllBytes(path);
+                        String contentType = StringUtils.hasText(entity.getContentType()) ? entity.getContentType()
+                                : MediaType.APPLICATION_OCTET_STREAM_VALUE;
+                        return ResponseEntity.ok()
+                                .header(HttpHeaders.CONTENT_DISPOSITION,
+                                        "attachment; filename=\"" + sanitizeFilename(entity.getOriginalFilename()) + "\"")
+                                .contentType(MediaType.parseMediaType(contentType))
+                                .contentLength(bytes.length)
+                                .body(bytes);
+                    } catch (IOException e) {
+                        log.error("Failed to read file {}", entity.getStoragePath(), e);
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<byte[]>build();
+                    }
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).<byte[]>build());
     }
 
+    @Transactional(readOnly = true)
     public ResponseEntity<byte[]> viewInline(Long id) {
-        FileResourceEntity entity = this.getById(id);
-        if (entity == null || Boolean.TRUE.equals(entity.getDeleted())) {
-            return ResponseEntity.notFound().build();
-        }
-        if (!canAccess(entity)) {
-            return ResponseEntity.status(401).build();
-        }
-        try {
-            Path path = Path.of(entity.getStoragePath());
-            byte[] bytes = Files.readAllBytes(path);
-            String contentType = StringUtils.hasText(entity.getContentType()) ? entity.getContentType()
-                    : MediaType.APPLICATION_OCTET_STREAM_VALUE;
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "inline; filename=\"" + sanitizeFilename(entity.getOriginalFilename()) + "\"")
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .contentLength(bytes.length)
-                    .body(bytes);
-        } catch (IOException e) {
-            log.error("Failed to read file {}", entity.getStoragePath(), e);
-            return ResponseEntity.internalServerError().build();
-        }
+        return fileResourceRepository.findById(id)
+                .filter(entity -> !Boolean.TRUE.equals(entity.getDeleted()))
+                .map(entity -> {
+                    if (!canAccess(entity)) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).<byte[]>build();
+                    }
+                    try {
+                        Path path = Path.of(entity.getStoragePath());
+                        byte[] bytes = Files.readAllBytes(path);
+                        String contentType = StringUtils.hasText(entity.getContentType()) ? entity.getContentType()
+                                : MediaType.APPLICATION_OCTET_STREAM_VALUE;
+                        return ResponseEntity.ok()
+                                .header(HttpHeaders.CONTENT_DISPOSITION,
+                                        "inline; filename=\"" + sanitizeFilename(entity.getOriginalFilename()) + "\"")
+                                .contentType(MediaType.parseMediaType(contentType))
+                                .contentLength(bytes.length)
+                                .body(bytes);
+                    } catch (IOException e) {
+                        log.error("Failed to read file {}", entity.getStoragePath(), e);
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<byte[]>build();
+                    }
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).<byte[]>build());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<FileResourceDTO> getUserFiles(Long ownerId, int page, int size) {
+        int resolvedPage = Math.max(page - 1, 0);
+        int resolvedSize = Math.max(size, 1);
+        Pageable pageable = PageRequest.of(resolvedPage, resolvedSize, Sort.by(Sort.Direction.DESC, "createTime"));
+        return fileResourceRepository.findByOwnerIdAndDeletedFalse(ownerId, pageable)
+                .map(this::toDTO);
+    }
+
+    @Transactional
+    public FileResourceEntity save(FileResourceEntity entity) {
+        return fileResourceRepository.save(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public FileResourceEntity getById(Long id) {
+        return fileResourceRepository.findById(id).orElse(null);
     }
 
     public boolean canModify(FileResourceEntity entity) {
         var current = SecurityUtil.getCurrentUserDetail();
-        if (current == null) return false;
+        if (current == null) {
+            return false;
+        }
         boolean isOwner = entity.getOwnerId() != null && entity.getOwnerId().equals(current.getUserProfile().getId());
         boolean isAdmin = current.getAuthorities().stream().anyMatch(a -> a.getAuthority().contains("ADMIN"));
         return isOwner || isAdmin;
     }
 
     public boolean canAccess(FileResourceEntity entity) {
-        if (Boolean.TRUE.equals(entity.getPublicToAll())) return true;
+        if (Boolean.TRUE.equals(entity.getPublicToAll())) {
+            return true;
+        }
         var current = SecurityUtil.getCurrentUserDetail();
-        if (current == null) return false;
+        if (current == null) {
+            return false;
+        }
         return canModify(entity);
     }
 
@@ -140,7 +176,9 @@ public class FileResourceService extends ServiceImpl<FileResourceMapper, FileRes
     }
 
     private static String sanitizeFilename(String name) {
-        if (!StringUtils.hasText(name)) return "file";
+        if (!StringUtils.hasText(name)) {
+            return "file";
+        }
         return name.replaceAll("[\\\\/\\r\\n]", "_");
     }
 
