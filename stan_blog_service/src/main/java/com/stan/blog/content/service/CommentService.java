@@ -57,8 +57,7 @@ public class CommentService {
 
         // Handle reply information for quoted display
         if (dto.getParentId() != null) {
-            commentRepository.findById(dto.getParentId())
-                .filter(parentComment -> !Boolean.TRUE.equals(parentComment.getDeleted()))
+            commentRepository.findByIdAndDeletedFalse(dto.getParentId())
                 .ifPresent(parentComment -> {
                     entity.setReplyToUserName(parentComment.getUserName());
                     String contentSnippet = parentComment.getContent();
@@ -123,8 +122,7 @@ public class CommentService {
                 return;
             }
 
-            commentRepository.findById(parentCommentId)
-                .filter(parentComment -> !Boolean.TRUE.equals(parentComment.getDeleted()))
+            commentRepository.findByIdAndDeletedFalse(parentCommentId)
                 .ifPresent(parentComment -> notificationService.notifyReplyCommented(
                     contentId,
                     content.getTitle(),
@@ -160,7 +158,7 @@ public class CommentService {
         int resolvedSize = size > 0 ? size : DEFAULT_PAGE_SIZE;
         Pageable pageable = PageRequest.of(resolvedPage, resolvedSize, Sort.by(Sort.Direction.DESC, "createTime"));
 
-        Page<CommentEntity> commentsPage = commentRepository.findByContentIdAndContentType(contentId, contentType, pageable);
+        Page<CommentEntity> commentsPage = commentRepository.findByContentIdAndContentTypeAndDeletedFalse(contentId, contentType, pageable);
         return commentsPage.map(this::convertToDTO);
     }
 
@@ -258,7 +256,7 @@ public class CommentService {
                                                 String deletedReplyContent, Long replyAuthorId,
                                                 Long parentCommentId, Long deleterId, String deleterName) {
         try {
-            CommentEntity parentComment = commentRepository.findById(parentCommentId).orElse(null);
+            CommentEntity parentComment = commentRepository.findByIdAndDeletedFalse(parentCommentId).orElse(null);
             if (parentComment == null) {
                 log.warn("Parent comment {} not found for reply deletion notification", parentCommentId);
                 return;
@@ -354,13 +352,18 @@ public class CommentService {
      */
     @Transactional
     public Long toggleCommentLike(Long commentId, boolean isLike, EnhancedUserDetail currentUser) {
-        return commentRepository.findById(commentId)
+        return commentRepository.findByIdAndDeletedFalse(commentId)
             .map(comment -> {
-                long currentLikeCount = comment.getLikeCount() == null ? 0L : comment.getLikeCount();
-                long updatedCount = isLike ? currentLikeCount + 1 : Math.max(0L, currentLikeCount - 1);
-                comment.setLikeCount(updatedCount);
-                commentRepository.save(comment);
-                return updatedCount;
+                int updatedRows = isLike
+                    ? commentRepository.incrementLikeCount(commentId)
+                    : commentRepository.decrementLikeCount(commentId);
+                if (updatedRows == 0) {
+                    log.warn("Comment {} like toggle requested but no rows were updated", commentId);
+                    return comment.getLikeCount() == null ? 0L : comment.getLikeCount();
+                }
+                return commentRepository.findByIdAndDeletedFalse(commentId)
+                    .map(CommentEntity::getLikeCount)
+                    .orElse(0L);
             })
             .orElseGet(() -> {
                 log.warn("Comment {} not found when toggling like", commentId);
@@ -388,3 +391,4 @@ public class CommentService {
         return BasicConverter.convert(entity, CommentDTO.class);
     }
 }
+
