@@ -43,7 +43,7 @@ CREATE TABLE `stan_blog_core_user_feature`
     `CREATE_BY`         varchar(30) DEFAULT NULL,
     `UPDATE_TIME`       datetime    DEFAULT NULL,
     `UPDATE_BY`         varchar(30) DEFAULT NULL,
-    `DELETED`           bit(1)      DEFAULT FALSE,
+    `DELETED`           bit(1)      NOT NULL DEFAULT FALSE,
     PRIMARY KEY (`ID`),
     UNIQUE KEY `stan_blog_core_user_feature_USER_ID_uindex` (`USER_ID`)
 ) ENGINE = InnoDB
@@ -54,17 +54,15 @@ CREATE TABLE `stan_blog_core_user_feature`
 DROP TABLE IF EXISTS stan_blog_core_user_role;
 CREATE TABLE `stan_blog_core_user_role`
 (
-    `ID`          int NOT NULL AUTO_INCREMENT,
+    `ID`          bigint NOT NULL AUTO_INCREMENT,
     `ROLE`        varchar(30) DEFAULT NULL,
-    `USER_ID`     int NOT NULL,
-    `MODULE`      varchar(20) DEFAULT NULL,
+    `USER_ID`     bigint NOT NULL,
     `CREATE_TIME` datetime    DEFAULT NULL,
     `CREATE_BY`   varchar(30) DEFAULT NULL,
     `UPDATE_TIME` datetime    DEFAULT NULL,
     `UPDATE_BY`   varchar(30) DEFAULT NULL,
-    `DELETED`     bit(1)      DEFAULT FALSE,
+    `DELETED`     bit(1)      NOT NULL DEFAULT FALSE,
     PRIMARY KEY (`ID`),
-    UNIQUE KEY `stan_blog_core_user_role_ID_uindex` (`ID`),
     KEY `stan_blog_core_user_role_USER_ID_index` (`USER_ID`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 40
@@ -81,9 +79,9 @@ create table stan_blog_content_general_info
     DESCRIPTION       varchar(1000) collate utf8mb4_unicode_ci null,
     COVER_IMG_URL     varchar(2000) collate utf8mb4_unicode_ci null,
     CONTENT_TYPE      varchar(20)                              not null,
-    OWNER_ID          int                                      not null,
-    LIKE_COUNT        int default 0                            not null,
-    VIEW_COUNT        int default 0                            not null,
+    OWNER_ID          bigint                                   not null,
+    LIKE_COUNT        bigint default 0                         not null,
+    VIEW_COUNT        bigint default 0                         not null,
     PUBLIC_TO_ALL     bit default false                        not null,
     PUBLISH_TIME      datetime                                 null,
     CONTENT_PROTECTED bit default false                        not null,
@@ -157,7 +155,7 @@ create table stan_blog_plan_progress
         primary key,
     PLAN_ID  varchar(32)       not null,
     DESCRIPTION varchar(1000)    null,
-    UPDATER_ID  int              not null,
+    UPDATER_ID  bigint           not null,
     DELETED     bit default FALSE not null,
     CREATE_BY   varchar(64)      null,
     CREATE_TIME datetime         null,
@@ -199,7 +197,7 @@ create table stan_blog_vocabulary_info
 
 DROP TABLE IF EXISTS stan_blog_word_info;
 create table stan_blog_word_info (
-  ID            int auto_increment 
+  ID            bigint auto_increment 
       primary key,
   VOCABULARY_ID varchar(32) not null,
   TEXT varchar(200)         not null,
@@ -217,7 +215,7 @@ create table stan_blog_word_info (
 DROP TABLE IF EXISTS stan_blog_tag_info;
 create table stan_blog_tag_info
 (
-    ID          int auto_increment
+    ID          bigint auto_increment
         primary key,
     KEYWORD     varchar(32)       not null,
     DELETED     bit default false not null,
@@ -232,10 +230,10 @@ create table stan_blog_tag_info
 DROP TABLE IF EXISTS stan_blog_tag_relationship;
 create table stan_blog_tag_relationship
 (
-    ID          int auto_increment
+    ID          bigint auto_increment
         primary key,
-    TAG_ID      int               not null,
-    PARENT_ID   int               null,
+    TAG_ID      bigint            not null,
+    PARENT_ID   bigint            null,
     COLLECTION_ID  varchar(32)       not null,
     DELETED     bit default false null,
     CREATE_BY   varchar(64)       null,
@@ -260,14 +258,14 @@ ALTER TABLE `stan_blog_content_general_info` ADD INDEX (`TOPIC`);
 
 CREATE TABLE IF NOT EXISTS `stan_blog_comment` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-    `content_id` VARCHAR(255) NOT NULL,
+    `content_id` VARCHAR(32) NOT NULL,
     `content_type` VARCHAR(50) NOT NULL,
     `content` TEXT NOT NULL,
     `user_id` BIGINT(20) NOT NULL,
     `user_name` VARCHAR(255) NOT NULL,
     `user_avatar_url` VARCHAR(500),
     `parent_id` BIGINT(20),
-    `like_count` INT(11) NOT NULL DEFAULT 0,
+    `like_count` BIGINT NOT NULL DEFAULT 0,
     `deleted` TINYINT(1) NOT NULL DEFAULT 0,
     `ip_address` VARCHAR(50),
     `create_time` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -300,7 +298,7 @@ CREATE TABLE IF NOT EXISTS `stan_blog_notification` (
     `related_content_type` VARCHAR(50),
     `related_content_title` VARCHAR(255),
     `action_url` VARCHAR(500),
-    `metadata` JSON,
+    `metadata` VARCHAR(2000),
     `create_time` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
     `create_by` VARCHAR(30) DEFAULT NULL,
     `update_time` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
