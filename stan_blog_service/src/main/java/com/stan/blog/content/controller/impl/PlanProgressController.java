@@ -1,5 +1,6 @@
 package com.stan.blog.content.controller.impl;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stan.blog.beans.dto.content.PlanProgressCreationDTO;
 import com.stan.blog.beans.dto.content.PlanProgressDTO;
 import com.stan.blog.beans.dto.content.PlanProgressUpdateDTO;
@@ -19,17 +19,16 @@ import com.stan.blog.content.service.impl.PlanProgressService;
 
 import lombok.RequiredArgsConstructor;
 
-
 @RestController
 @RequestMapping("/v1/plan-progresses")
 @RequiredArgsConstructor
 public class PlanProgressController {
-  
+
     private final PlanProgressService progressService;
 
     @GetMapping
     public ResponseEntity<Page<PlanProgressDTO>> getProgressByPlanId(
-        @RequestParam(value = "planId") String planId,         
+        @RequestParam(value = "planId") String planId,
         @RequestParam(value = "current", required = false, defaultValue = "1") int current,
         @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
         return ResponseEntity.ok(progressService.getProgressesByPlanId(planId, current, size));
@@ -46,13 +45,14 @@ public class PlanProgressController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PlanProgressDTO> updateProgress(@RequestBody PlanProgressUpdateDTO dto) {
+    public ResponseEntity<PlanProgressDTO> updateProgress(@PathVariable String id, @RequestBody PlanProgressUpdateDTO dto) {
+        dto.setId(id);
         return ResponseEntity.ok(progressService.updateProgress(dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<PlanProgressDTO> deleteWordById(@PathVariable Long id) {
-        progressService.removeById(id);
-        return ResponseEntity.ok(null);
+    public ResponseEntity<Void> deleteWordById(@PathVariable String id) {
+        progressService.deleteProgressById(id);
+        return ResponseEntity.ok().build();
     }
 }

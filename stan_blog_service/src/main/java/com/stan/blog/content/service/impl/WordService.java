@@ -2,60 +2,79 @@ package com.stan.blog.content.service.impl;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stan.blog.beans.consts.Const.ContentType;
 import com.stan.blog.beans.dto.content.WordCreationDTO;
 import com.stan.blog.beans.dto.content.WordDTO;
 import com.stan.blog.beans.dto.content.WordUpdateDTO;
 import com.stan.blog.beans.entity.content.ContentGeneralInfoEntity;
 import com.stan.blog.beans.entity.content.WordEntity;
-import com.stan.blog.content.mapper.WordMapper;
+import com.stan.blog.beans.repository.content.WordRepository;
 import com.stan.blog.core.exception.StanBlogRuntimeException;
 import com.stan.blog.core.utils.BasicConverter;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@AllArgsConstructor
-public class WordService extends ServiceImpl<WordMapper, WordEntity> {
+@RequiredArgsConstructor
+public class WordService {
 
+    private final WordRepository wordRepository;
     private final ContentGeneralInfoService contentGeneralInfoService;
-    
+
     @Transactional
     public WordDTO saveWord(WordCreationDTO dto) {
         validateCreationDTO(dto);
 
-        final ContentGeneralInfoEntity contentEntity = contentGeneralInfoService.getById(dto.getVocabularyId());
+        ContentGeneralInfoEntity contentEntity = contentGeneralInfoService.findById(dto.getVocabularyId());
         if (Objects.isNull(contentEntity) || !ContentType.VOCABULARY.name().equals(contentEntity.getContentType())) {
             throw new StanBlogRuntimeException("The vocabularyId is invalid");
         }
-        final WordEntity entity = BasicConverter.convert(dto, WordEntity.class);
-        this.save(entity);
-        return getWordById(entity.getId());
+        WordEntity entity = BasicConverter.convert(dto, WordEntity.class);
+        WordEntity saved = wordRepository.save(entity);
+        return getWordById(saved.getId());
     }
 
     @Transactional
     public WordDTO updateWord(WordUpdateDTO dto) {
         validateUpdateDTO(dto);
 
-        final WordEntity entity = BasicConverter.convert(dto, WordEntity.class);
-        this.updateById(entity);
-        return getWordById(entity.getId());
+        WordEntity existing = wordRepository.findById(dto.getId())
+                .orElseThrow(() -> new StanBlogRuntimeException("Word not found"));
+        existing.setText(dto.getText());
+        existing.setMeaningInChinese(dto.getMeaningInChinese());
+        existing.setMeaningInEnglish(dto.getMeaningInEnglish());
+        existing.setPartOfSpeech(dto.getPartOfSpeech());
+        WordEntity updated = wordRepository.save(existing);
+        return getWordById(updated.getId());
     }
 
+    @Transactional(readOnly = true)
     public List<WordDTO> getWordsByVOCId(String vocabularyId) {
-        return this.list(new LambdaQueryWrapper<WordEntity>().eq(WordEntity::getVocabularyId, vocabularyId))
-            .stream().map(t -> BasicConverter.convert(t, WordDTO.class)).toList();
+        return wordRepository.findByVocabularyId(vocabularyId).stream()
+                .map(word -> BasicConverter.convert(word, WordDTO.class))
+                .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public WordDTO getWordById(Long id) {
-        return BasicConverter.convert(this.getById(id), WordDTO.class);
+        return wordRepository.findById(id)
+                .map(word -> BasicConverter.convert(word, WordDTO.class))
+                .orElse(null);
+    }
+
+    @Transactional
+    public boolean deleteWordById(Long id) {
+        if (!wordRepository.findById(id).isEmpty()) {
+            wordRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     private void validateCreationDTO(WordCreationDTO dto) {

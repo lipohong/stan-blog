@@ -140,15 +140,20 @@ stan-blog/
 │   ├── src/main/resources/    # 設定檔
 │   └── src/test/              # 單元測試
 │
-└── stan_blog_web/             # 前端應用
-    ├── src/
-    │   ├── portal/           # 使用者入口
-    │   ├── admin/            # 後台儀表板
-    │   ├── components/       # 共用元件
-    │   ├── services/         # API 服務
-    │   └── contexts/         # 狀態管理
-    ├── public/               # 靜態資產
-    └── deploy/               # 部署相關
+├── stan_blog_web/             # 前端應用
+│   ├── src/
+│   │   ├── portal/           # 使用者入口
+│   │   ├── admin/            # 後台儀表板
+│   │   ├── components/       # 共用元件
+│   │   ├── services/         # API 服務
+│   │   └── contexts/         # 狀態管理
+│   ├── public/               # 靜態資產
+│   └── deploy/               # 部署相關
+│
+├── docker_compose/           # Docker Compose 文件
+├── Jenkinsfiles/
+│   └── Jenkinsfile_staging   # Staging 環境流水線配置
+└── Jmeter/                   # JMeter 測試腳本與測試用戶數據
 ```
 
 ## 🧪 測試
@@ -172,6 +177,20 @@ mvn test
 cd stan_blog_web
 npm run lint           # 程式碼規範檢查
 npm run build:analyze  # 打包分析
+```
+
+### 負載測試
+
+#### JMeter
+
+```bash
+# 建立必要的資料夾
+mkdir jmeter
+mkdir jmeter\results
+mkdir jmeter\logs
+
+# 執行測試計劃
+jmeter.bat -n -t ".\jmeter\stanblog-test-plan.jmx" -l ".\jmeter\results.jtl" -j ".\jmeter\logs\jmeter.log"
 ```
 
 ## 📱 功能模組

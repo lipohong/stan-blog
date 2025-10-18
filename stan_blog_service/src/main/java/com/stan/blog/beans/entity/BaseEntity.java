@@ -3,22 +3,44 @@ package com.stan.blog.beans.entity;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.Data;
 
 @Data
+@MappedSuperclass
 public class BaseEntity implements Serializable {
-    @TableLogic
-    protected Boolean deleted;
-    @TableField(fill = FieldFill.INSERT)
+    @Column(name = "deleted")
+    protected Boolean deleted = false;
+   
+    @PrePersist
+    public void prePersist() {
+        if (createTime == null) {
+            createTime = new Timestamp(System.currentTimeMillis());
+        }
+        if (createBy == null) {
+            createBy = "system";
+        }
+        // Ensure updateTime is initialized on creation for tests relying on it
+        if (updateTime == null) {
+            updateTime = createTime;
+        }
+        if (updateBy == null) {
+            updateBy = "system";
+        }
+    }
     protected Timestamp createTime;
-    @TableField(fill = FieldFill.INSERT)
     protected String createBy;
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+
+    @PreUpdate
+    public void preUpdate() {
+        updateTime = new Timestamp(System.currentTimeMillis());
+        if (updateBy == null) {
+            updateBy = "system";
+        }
+    }
     protected Timestamp updateTime;
-    @TableField(fill = FieldFill.UPDATE)
     protected String updateBy;
 }

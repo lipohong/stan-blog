@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springframework.data.domain.Page;
 import com.stan.blog.beans.dto.content.CommentCreateDTO;
 import com.stan.blog.beans.dto.content.CommentDTO;
 import com.stan.blog.content.service.CommentService;
@@ -50,12 +50,12 @@ public class CommentController {
      * @return paginated comments
      */
     @GetMapping
-    public ResponseEntity<IPage<CommentDTO>> getComments(
+    public ResponseEntity<Page<CommentDTO>> getComments(
             @RequestParam String contentId,
             @RequestParam String contentType,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        IPage<CommentDTO> comments = commentService.getCommentsForContent(contentId, contentType, page, size);
+        Page<CommentDTO> comments = commentService.getCommentsForContent(contentId, contentType, page, size);
         return ResponseEntity.ok(comments);
     }
 

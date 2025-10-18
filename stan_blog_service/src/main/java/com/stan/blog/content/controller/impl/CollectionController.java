@@ -10,19 +10,18 @@ import com.stan.blog.beans.dto.content.CollectionCreationDTO;
 import com.stan.blog.beans.dto.content.CollectionDTO;
 import com.stan.blog.beans.dto.content.CollectionUpdateDTO;
 import com.stan.blog.beans.entity.content.CollectionEntity;
-import com.stan.blog.content.mapper.CollectionMapper;
 import com.stan.blog.content.service.impl.CollectionService;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/v1/collections")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CollectionController extends
-        BaseContentController<CollectionDTO, CollectionCreationDTO, CollectionUpdateDTO, CollectionEntity, CollectionMapper, CollectionService> {
+        BaseContentController<CollectionDTO, CollectionCreationDTO, CollectionUpdateDTO, CollectionEntity, CollectionService> {
 
-    private CollectionService collectionService;
-          
+    private final CollectionService collectionService;
+
     @Override
     protected CollectionService getConcreteSubContentService() {
         return this.collectionService;

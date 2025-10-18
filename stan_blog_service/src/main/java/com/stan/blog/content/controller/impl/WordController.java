@@ -1,6 +1,5 @@
 package com.stan.blog.content.controller.impl;
 
-
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -40,6 +39,7 @@ public class WordController {
 
     @PutMapping("/{id}")
     public ResponseEntity<WordDTO> updateWord(@PathVariable Long id, @RequestBody WordUpdateDTO dto) {
+        dto.setId(id);
         return ResponseEntity.ok(wordService.updateWord(dto));
     }
 
@@ -49,8 +49,8 @@ public class WordController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<WordDTO> deleteWordById(@PathVariable Long id) {
-        wordService.removeById(id);
-        return ResponseEntity.ok(null);
+    public ResponseEntity<Void> deleteWordById(@PathVariable Long id) {
+        wordService.deleteWordById(id);
+        return ResponseEntity.ok().build();
     }
 }

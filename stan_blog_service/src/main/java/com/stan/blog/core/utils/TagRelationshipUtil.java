@@ -43,7 +43,7 @@ public class TagRelationshipUtil {
                     new String[]{}, 
                     null, 
                     ""
-                ).getRecords()
+                ).getContent()
                 .stream()
                 .sorted(Comparator.comparing(BaseContentDTO::getTitle))
                 .collect(Collectors.toList())

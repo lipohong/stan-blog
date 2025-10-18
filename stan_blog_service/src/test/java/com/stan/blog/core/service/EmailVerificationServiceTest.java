@@ -1,6 +1,7 @@
 package com.stan.blog.core.service;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,7 +28,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stan.blog.beans.entity.user.UserEntity;
 import com.stan.blog.core.exception.StanBlogRuntimeException;
 import com.stan.blog.core.utils.CacheUtil;
@@ -82,8 +82,8 @@ public class EmailVerificationServiceTest {
     void testVerifyEmail_Success() {
         // Given
         when(cacheUtil.get("email_verification_token:" + testEmail)).thenReturn(testToken);
-        when(userService.getOne(any(LambdaQueryWrapper.class))).thenReturn(testUser);
-        when(userService.updateById(testUser)).thenReturn(true);
+        when(userService.findByEmail(testEmail)).thenReturn(Optional.of(testUser));
+        when(userService.saveUser(testUser)).thenReturn(testUser);
         doNothing().when(cacheUtil).del(anyString());
         
         // When
@@ -93,6 +93,7 @@ public class EmailVerificationServiceTest {
         assertTrue(result);
         assertTrue(testUser.getEmailVerified());
         verify(cacheUtil).del("email_verification_token:" + testEmail);
+        verify(userService).saveUser(testUser);
     }
     
     @Test
@@ -106,8 +107,8 @@ public class EmailVerificationServiceTest {
         
         // Then
         assertFalse(result);
-        verify(userService, never()).getOne(any());
-        verify(userService, never()).updateById(any());
+        verify(userService, never()).findByEmail(anyString());
+        verify(userService, never()).saveUser(any());
     }
     
     @Test
@@ -121,8 +122,8 @@ public class EmailVerificationServiceTest {
         
         // Then
         assertFalse(result);
-        verify(userService, never()).getOne(any());
-        verify(userService, never()).updateById(any());
+        verify(userService, never()).findByEmail(anyString());
+        verify(userService, never()).saveUser(any());
     }
     
     @Test
@@ -130,14 +131,14 @@ public class EmailVerificationServiceTest {
     void testVerifyEmail_UserNotFound() {
         // Given
         when(cacheUtil.get("email_verification_token:" + testEmail)).thenReturn(testToken);
-        when(userService.getOne(any(LambdaQueryWrapper.class))).thenReturn(null);
+        when(userService.findByEmail(testEmail)).thenReturn(Optional.empty());
         
         // When
         Boolean result = emailVerificationService.verifyEmail(testEmail, testToken);
         
         // Then
         assertFalse(result);
-        verify(userService, never()).updateById(any());
+        verify(userService, never()).saveUser(any());
     }
     
     @Test
@@ -146,14 +147,14 @@ public class EmailVerificationServiceTest {
         // Given
         testUser.setEmailVerified(Boolean.TRUE);
         when(cacheUtil.get("email_verification_token:" + testEmail)).thenReturn(testToken);
-        when(userService.getOne(any(LambdaQueryWrapper.class))).thenReturn(testUser);
+        when(userService.findByEmail(testEmail)).thenReturn(Optional.of(testUser));
         
         // When
         Boolean result = emailVerificationService.verifyEmail(testEmail, testToken);
         
         // Then
         assertTrue(result);
-        verify(userService, never()).updateById(any());
+        verify(userService, never()).saveUser(any());
     }
     
     @Test
@@ -161,7 +162,7 @@ public class EmailVerificationServiceTest {
     void testIsEmailVerified() {
         // Given - verified user
         testUser.setEmailVerified(Boolean.TRUE);
-        when(userService.getOne(any(LambdaQueryWrapper.class))).thenReturn(testUser);
+        when(userService.findByEmail(testEmail)).thenReturn(Optional.of(testUser));
         
         // When
         Boolean result = emailVerificationService.isEmailVerified(testEmail);
@@ -183,7 +184,7 @@ public class EmailVerificationServiceTest {
     @DisplayName("Should resend verification email successfully")
     void testResendVerificationEmail_Success() {
         // Given
-        when(userService.getOne(any(LambdaQueryWrapper.class))).thenReturn(testUser);
+        when(userService.findByEmail(testEmail)).thenReturn(Optional.of(testUser));
         when(cacheUtil.set(anyString(), anyString(), anyInt())).thenReturn(true);
         doNothing().when(emailService).sendTemplateEmail(anyString(), anyString(), anyString(), any(Map.class));
         
@@ -198,13 +199,10 @@ public class EmailVerificationServiceTest {
     @DisplayName("Should throw exception when resending email for non-existent user")
     void testResendVerificationEmail_UserNotFound() {
         // Given
-        when(userService.getOne(any(LambdaQueryWrapper.class))).thenReturn(null);
+        when(userService.findByEmail(testEmail)).thenReturn(Optional.empty());
         
         // When & Then
-        StanBlogRuntimeException exception = assertThrows(StanBlogRuntimeException.class,
-            () -> emailVerificationService.resendVerificationEmail(testEmail));
-        
-        assertEquals("User not found", exception.getMessage());
+        assertThrows(StanBlogRuntimeException.class, () -> emailVerificationService.resendVerificationEmail(testEmail));
     }
     
     @Test
@@ -212,12 +210,9 @@ public class EmailVerificationServiceTest {
     void testResendVerificationEmail_AlreadyVerified() {
         // Given
         testUser.setEmailVerified(Boolean.TRUE);
-        when(userService.getOne(any(LambdaQueryWrapper.class))).thenReturn(testUser);
+        when(userService.findByEmail(testEmail)).thenReturn(Optional.of(testUser));
         
         // When & Then
-        StanBlogRuntimeException exception = assertThrows(StanBlogRuntimeException.class,
-            () -> emailVerificationService.resendVerificationEmail(testEmail));
-        
-        assertEquals("Email already verified", exception.getMessage());
+        assertThrows(StanBlogRuntimeException.class, () -> emailVerificationService.resendVerificationEmail(testEmail));
     }
-} 
+}

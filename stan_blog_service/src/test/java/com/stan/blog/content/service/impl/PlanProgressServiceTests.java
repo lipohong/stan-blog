@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.data.domain.Page;
 import com.stan.blog.DefaultTestData;
 import com.stan.blog.DefaultTestData.DefaultUser;
 import com.stan.blog.beans.dto.content.PlanCreationDTO;
@@ -106,8 +106,8 @@ public class PlanProgressServiceTests {
         progressService.saveProgress(dto);
         // get all progress
         final Page<PlanProgressDTO> result = progressService.getProgressesByPlanId(PLAN_ID_FOR_QUERY, 1, 2);
-        Assertions.assertEquals(1, result.getCurrent());
-        Assertions.assertEquals(2, result.getRecords().size());
-        Assertions.assertEquals(3, result.getTotal());
+        Assertions.assertEquals(0, result.getNumber());
+        Assertions.assertEquals(2, result.getContent().size());
+        Assertions.assertEquals(3L, result.getTotalElements());
     }
 }
