@@ -33,7 +33,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @org.springframework.beans.factory.annotation.Value("${auth.email-verify.enabled:true}")
-    private boolean emailVerifyEnabled;
+    private boolean emailVerifyEnabled = true;
 
     @PostMapping("/login")
     public ResponseEntity<EnhancedUserDetail> login(@RequestBody final UserLoginDTO dto) {
