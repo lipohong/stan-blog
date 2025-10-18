@@ -1,19 +1,27 @@
 package com.stan.blog.beans.entity.content;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.stan.blog.beans.entity.BaseEntity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("stan_blog_comment")
+@Entity
+@Table(name = "stan_blog_comment")
+@SQLDelete(sql = "UPDATE stan_blog_comment SET deleted = true WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class CommentEntity extends BaseEntity {
 
-    @TableId(type = IdType.AUTO)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**

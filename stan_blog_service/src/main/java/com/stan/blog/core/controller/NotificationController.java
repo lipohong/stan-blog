@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stan.blog.beans.dto.content.NotificationDTO;
+import com.stan.blog.core.dto.PageResponse;
 import com.stan.blog.core.service.NotificationService;
 import com.stan.blog.core.utils.AuthenticationUtil;
 
@@ -24,46 +24,30 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    /**
-     * Get current user's notifications with pagination
-     * @param page page number (default: 1)
-     * @param size page size (default: 10)
-     * @param isRead filter by read status (null for all)
-     * @return paginated notifications
-     */
     @GetMapping
-    public ResponseEntity<Page<NotificationDTO>> getCurrentUserNotifications(
+    public ResponseEntity<PageResponse<NotificationDTO>> getCurrentUserNotifications(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Boolean isRead) {
-        
+
         return AuthenticationUtil.withAuthenticatedUserId(userId -> {
-            Page<NotificationDTO> notifications = notificationService.getUserNotifications(
-                    userId, page, size, isRead);
+            PageResponse<NotificationDTO> notifications = PageResponse.from(
+                    notificationService.getUserNotifications(userId, page, size, isRead));
             return ResponseEntity.ok(notifications);
         });
     }
 
-    /**
-     * Get current user's unread notification count
-     * @return unread count
-     */
     @GetMapping("/unread-count")
     public ResponseEntity<Long> getCurrentUserUnreadCount() {
         long count = notificationService.getCurrentUserUnreadCount();
         return ResponseEntity.ok(count);
     }
 
-    /**
-     * Mark a notification as read
-     * @param notificationId notification ID
-     * @return success response
-     */
     @PutMapping("/{notificationId}/read")
     public ResponseEntity<Void> markAsRead(@PathVariable Long notificationId) {
         return AuthenticationUtil.withAuthenticatedUserId(userId -> {
             boolean success = notificationService.markAsRead(notificationId, userId);
-            
+
             if (success) {
                 return ResponseEntity.ok().<Void>build();
             } else {
@@ -72,10 +56,6 @@ public class NotificationController {
         });
     }
 
-    /**
-     * Mark all notifications as read for current user
-     * @return number of notifications marked as read
-     */
     @PutMapping("/mark-all-read")
     public ResponseEntity<Integer> markAllAsRead() {
         return AuthenticationUtil.withAuthenticatedUserId(userId -> {
@@ -83,4 +63,4 @@ public class NotificationController {
             return ResponseEntity.ok(count);
         });
     }
-} 
+}

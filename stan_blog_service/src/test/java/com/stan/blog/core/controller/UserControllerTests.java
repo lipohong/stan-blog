@@ -1,6 +1,7 @@
 package com.stan.blog.core.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -11,7 +12,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import com.stan.blog.beans.dto.user.UserCreationDTO;
 import com.stan.blog.beans.dto.user.UserFeatureDTO;
 import com.stan.blog.beans.dto.user.UserGeneralDTO;
@@ -31,12 +34,16 @@ class UserControllerTests {
 
     @Test
     void getUsersUsesServiceWithProvidedFilters() {
-        Page<UserGeneralDTO> page = new Page<>(1, 10);
+        Page<UserGeneralDTO> page = new PageImpl<>(java.util.List.of(), PageRequest.of(1, 10), 0);
         when(userService.getUsers(2, 5, "stan", Boolean.TRUE)).thenReturn(page);
 
         var response = userController.getUsers(2, 5, "stan", Boolean.TRUE);
 
-        assertEquals(page, response.getBody());
+        assertEquals(2L, response.getBody().getCurrent());
+        assertEquals(10L, response.getBody().getSize());
+        assertEquals(0L, response.getBody().getTotal());
+        assertEquals(0, response.getBody().getPages());
+        assertTrue(response.getBody().getRecords().isEmpty());
         verify(userService).getUsers(2, 5, "stan", Boolean.TRUE);
     }
 

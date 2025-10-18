@@ -1,5 +1,6 @@
 package com.stan.blog.file.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,11 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stan.blog.beans.dto.file.FileResourceDTO;
 import com.stan.blog.beans.dto.file.FileVisibilityUpdateDTO;
 import com.stan.blog.beans.entity.file.FileResourceEntity;
+import com.stan.blog.core.dto.PageResponse;
 import com.stan.blog.core.utils.AuthenticationUtil;
 import com.stan.blog.file.service.FileResourceService;
 
@@ -68,20 +68,11 @@ public class FileController {
     }
 
     @GetMapping
-    public ResponseEntity<IPage<FileResourceDTO>> myFiles(@RequestParam(defaultValue = "1") int page,
-                                                          @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<PageResponse<FileResourceDTO>> myFiles(@RequestParam(defaultValue = "1") int page,
+                                                                 @RequestParam(defaultValue = "10") int size) {
         return AuthenticationUtil.withAuthenticatedUser(user -> {
-            Page<FileResourceEntity> entityPage = new Page<>(page, size);
-            IPage<FileResourceEntity> p = fileService.lambdaQuery()
-                    .eq(FileResourceEntity::getOwnerId, user.getUserProfile().getId())
-                    .eq(FileResourceEntity::getDeleted, false)
-                    .orderByDesc(FileResourceEntity::getCreateTime)
-                    .page(entityPage);
-            Page<FileResourceDTO> dtoPage = new Page<>(page, size);
-            dtoPage.setTotal(p.getTotal());
-            dtoPage.setPages(p.getPages());
-            dtoPage.setRecords(p.getRecords().stream().map(fileService::toDTO).toList());
-            return ResponseEntity.ok(dtoPage);
+            Page<FileResourceDTO> resultPage = fileService.getUserFiles(user.getUserProfile().getId(), page, size);
+            return ResponseEntity.ok(PageResponse.from(resultPage));
         });
     }
 
@@ -97,7 +88,7 @@ public class FileController {
                 return ResponseEntity.status(401).build();
             }
             entity.setPublicToAll(dto.getPublicToAll());
-            fileService.updateById(entity);
+            fileService.save(entity);
             return ResponseEntity.ok(fileService.toDTO(entity));
         });
     }
@@ -113,7 +104,7 @@ public class FileController {
                 return ResponseEntity.status(401).build();
             }
             entity.setDeleted(true);
-            fileService.updateById(entity);
+            fileService.save(entity);
             return ResponseEntity.ok().build();
         });
     }

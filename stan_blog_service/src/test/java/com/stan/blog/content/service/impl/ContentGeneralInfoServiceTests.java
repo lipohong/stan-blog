@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -15,29 +13,36 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import com.stan.blog.DefaultTestData;
+import com.stan.blog.beans.consts.Const;
 import com.stan.blog.beans.entity.content.ContentGeneralInfoEntity;
-import com.stan.blog.content.mapper.ContentGeneralInfoMapper;
-import com.stan.blog.core.exception.StanBlogRuntimeException;
+import com.stan.blog.beans.repository.content.ContentAdminRepository;
+import com.stan.blog.beans.repository.content.ContentGeneralInfoRepository;
+import com.stan.blog.beans.repository.user.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ContentGeneralInfoServiceTests {
 
     @Mock
-    private ContentGeneralInfoMapper contentGeneralInfoMapper;
+    private ContentGeneralInfoRepository contentGeneralInfoRepository;
 
-    @Spy
+    @Mock
+    private ContentAdminRepository contentAdminRepository;
+
+    @Mock
+    private ContentTagService contentTagService;
+
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private ContentGeneralInfoService contentGeneralInfoService;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(contentGeneralInfoService, "baseMapper", contentGeneralInfoMapper);
         com.stan.blog.core.utils.SecurityUtil.setUserDetail(DefaultTestData.getDefaultUserAuthentication());
     }
 
@@ -52,11 +57,13 @@ class ContentGeneralInfoServiceTests {
         entity.setId("content-1");
         entity.setViewCount(5L);
 
-        doReturn(entity).when(contentGeneralInfoService).getById("content-1");
+        org.mockito.Mockito.when(contentGeneralInfoRepository.findById("content-1"))
+                .thenReturn(java.util.Optional.of(entity));
 
-        contentGeneralInfoService.sinkViewCountToDB("CONTENT_VIEW_COUNT", "content-1", 1L);
+        contentGeneralInfoService.sinkViewCountToDB(Const.CONTENT_VIEW_COUNT_KEY, "content-1", 1L);
 
-        verify(contentGeneralInfoMapper).updateContentMetaCount("VIEW_COUNT", "content-1", 6L);
+        assertEquals(6L, entity.getViewCount());
+        verify(contentGeneralInfoRepository).save(entity);
     }
 
     @Test
@@ -65,11 +72,13 @@ class ContentGeneralInfoServiceTests {
         entity.setId("content-2");
         entity.setLikeCount(10L);
 
-        doReturn(entity).when(contentGeneralInfoService).getById("content-2");
+        org.mockito.Mockito.when(contentGeneralInfoRepository.findById("content-2"))
+                .thenReturn(java.util.Optional.of(entity));
 
-        contentGeneralInfoService.sinkViewCountToDB("CONTENT_LIKE_COUNT", "content-2", 3L);
+        contentGeneralInfoService.sinkViewCountToDB(Const.CONTENT_LIKE_COUNT_KEY, "content-2", 3L);
 
-        verify(contentGeneralInfoMapper).updateContentMetaCount("LIKE_COUNT", "content-2", 13L);
+        assertEquals(13L, entity.getLikeCount());
+        verify(contentGeneralInfoRepository).save(entity);
     }
 
     @Test
@@ -77,11 +86,12 @@ class ContentGeneralInfoServiceTests {
         ContentGeneralInfoEntity entity = new ContentGeneralInfoEntity();
         entity.setId("content-3");
 
-        doReturn(entity).when(contentGeneralInfoService).getById("content-3");
+        org.mockito.Mockito.when(contentGeneralInfoRepository.findById("content-3"))
+                .thenReturn(java.util.Optional.of(entity));
 
         contentGeneralInfoService.sinkViewCountToDB("UNKNOWN", "content-3", 5L);
 
-        verify(contentGeneralInfoMapper, never()).updateContentMetaCount(any(), any(), anyLong());
+        verify(contentGeneralInfoRepository, never()).save(any(ContentGeneralInfoEntity.class));
     }
 
     @Test
@@ -90,7 +100,8 @@ class ContentGeneralInfoServiceTests {
         entity.setId("content-4");
         entity.setOwnerId(DefaultTestData.DefaultUser.USER_ID);
 
-        doReturn(entity).when(contentGeneralInfoService).getById("content-4");
+        org.mockito.Mockito.when(contentGeneralInfoRepository.findById("content-4"))
+                .thenReturn(java.util.Optional.of(entity));
 
         ContentGeneralInfoEntity result = contentGeneralInfoService.getAndValidateContent("content-4");
 
@@ -100,9 +111,11 @@ class ContentGeneralInfoServiceTests {
 
     @Test
     void getAndValidateContentThrowsWhenMissing() {
-        doReturn(null).when(contentGeneralInfoService).getById("missing");
+        org.mockito.Mockito.when(contentGeneralInfoRepository.findById("missing"))
+                .thenReturn(java.util.Optional.empty());
 
-        assertThrows(StanBlogRuntimeException.class, () -> contentGeneralInfoService.getAndValidateContent("missing"));
+        assertThrows(com.stan.blog.core.exception.StanBlogRuntimeException.class,
+                () -> contentGeneralInfoService.getAndValidateContent("missing"));
     }
 
     @Test
@@ -111,8 +124,10 @@ class ContentGeneralInfoServiceTests {
         entity.setId("content-5");
         entity.setOwnerId(999L);
 
-        doReturn(entity).when(contentGeneralInfoService).getById("content-5");
+        org.mockito.Mockito.when(contentGeneralInfoRepository.findById("content-5"))
+                .thenReturn(java.util.Optional.of(entity));
 
-        assertThrows(StanBlogRuntimeException.class, () -> contentGeneralInfoService.getAndValidateContent("content-5"));
+        assertThrows(com.stan.blog.core.exception.StanBlogRuntimeException.class,
+                () -> contentGeneralInfoService.getAndValidateContent("content-5"));
     }
 }

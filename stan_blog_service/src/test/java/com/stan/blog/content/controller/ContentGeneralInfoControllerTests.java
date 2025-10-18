@@ -10,7 +10,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import com.stan.blog.beans.dto.content.BaseContentDTO;
 import com.stan.blog.content.controller.impl.ContentGeneralInfoController;
 import com.stan.blog.content.service.impl.ContentGeneralInfoService;
@@ -29,7 +31,7 @@ class ContentGeneralInfoControllerTests {
 
     @Test
     void searchPublishedContentsDelegatesToService() throws Exception {
-        Page<BaseContentDTO> page = new Page<>(1, 10);
+        Page<BaseContentDTO> page = new PageImpl<>(java.util.List.of(), PageRequest.of(1, 10), 0);
         when(contentService.searchPublishedContentDTOs(2, 20, "key", "recommended", "TECHNICAL")).thenReturn(page);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/contents")

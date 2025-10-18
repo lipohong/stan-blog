@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stan.blog.beans.consts.Const;
 import com.stan.blog.beans.dto.content.BaseContentCreationDTO;
 import com.stan.blog.beans.dto.content.BaseContentDTO;
@@ -24,7 +24,6 @@ import com.stan.blog.beans.dto.content.BaseSearchFilter;
 import com.stan.blog.beans.dto.content.ContentVisibilityUpdateDTO;
 import com.stan.blog.beans.entity.content.BaseContentEntity;
 import com.stan.blog.content.controller.IContentController;
-import com.stan.blog.content.mapper.BaseContentMapper;
 import com.stan.blog.content.service.IContentService;
 
 /**
@@ -36,16 +35,14 @@ import com.stan.blog.content.service.IContentService;
  * @param <C> DTO used for creation
  * @param <U> DTO used for update
  * @param <E> Entity used for database, @TableName annotation is required
- * @param <M> Mapper used for manipulating data, providing common CRUD methods
  * @param <S> Core service to implement the save, update, delete operations
  */
 public abstract class BaseContentController<
-    D extends BaseContentDTO, 
-    C extends BaseContentCreationDTO, 
-    U extends BaseContentUpdateDTO, 
-    E extends BaseContentEntity, 
-    M extends BaseContentMapper<D, E>, 
-    S extends IContentService<D, C, U, E, M>> implements IContentController<D, C, U, E, M, S> {
+    D extends BaseContentDTO,
+    C extends BaseContentCreationDTO,
+    U extends BaseContentUpdateDTO,
+    E extends BaseContentEntity,
+    S extends IContentService<D, C, U, E>> implements IContentController<D, C, U, E, S> {
 
     protected abstract S getConcreteSubContentService();
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

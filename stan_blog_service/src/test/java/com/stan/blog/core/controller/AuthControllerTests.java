@@ -55,7 +55,7 @@ class AuthControllerTests {
     void loginReturnsEnhancedUserDetailWhenCredentialsValid() throws Exception {
         UserEntity entity = new UserEntity();
         entity.setEmailVerified(true);
-        when(userService.getOne(any())).thenReturn(entity);
+        when(userService.findByUsernameOrEmailOrPhone(any())).thenReturn(java.util.Optional.of(entity));
         Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         EnhancedUserDetail detail = new EnhancedUserDetail(null, "stan", null, new UserGeneralDTO());
@@ -79,7 +79,7 @@ class AuthControllerTests {
     void loginThrowsWhenEmailNotVerified() {
         UserEntity entity = new UserEntity();
         entity.setEmailVerified(false);
-        when(userService.getOne(any())).thenReturn(entity);
+        when(userService.findByUsernameOrEmailOrPhone(any())).thenReturn(java.util.Optional.of(entity));
         AuthController controller = new AuthController(authService, userService, tokenUtil, authenticationManager);
         UserLoginDTO dto = new UserLoginDTO();
         dto.setUsername("stan");

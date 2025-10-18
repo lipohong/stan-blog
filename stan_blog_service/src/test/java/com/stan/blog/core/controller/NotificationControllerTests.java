@@ -18,7 +18,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import com.stan.blog.DefaultTestData;
 import com.stan.blog.beans.dto.content.NotificationDTO;
 import com.stan.blog.core.service.NotificationService;
@@ -44,10 +46,9 @@ class NotificationControllerTests {
 
     @Test
     void getNotificationsReturnsPageForAuthenticatedUser() throws Exception {
-        Page<NotificationDTO> page = new Page<>(1, 10);
         NotificationDTO dto = new NotificationDTO();
         dto.setId(1L);
-        page.setRecords(java.util.List.of(dto));
+        Page<NotificationDTO> page = new PageImpl<>(java.util.List.of(dto), PageRequest.of(1, 10), 1);
         when(notificationService.getUserNotifications(1L, 1, 10, null)).thenReturn(page);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/notifications")

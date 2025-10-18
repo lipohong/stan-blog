@@ -1,16 +1,23 @@
 package com.stan.blog.content.service.impl;
 
-import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stan.blog.beans.consts.Const;
 import com.stan.blog.beans.consts.Const.Visibility;
 import com.stan.blog.beans.dto.content.BaseContentCreationDTO;
@@ -22,165 +29,209 @@ import com.stan.blog.beans.dto.tag.TagInfoDTO;
 import com.stan.blog.beans.entity.content.BaseContentEntity;
 import com.stan.blog.beans.entity.content.ContentAdminEntity;
 import com.stan.blog.beans.entity.content.ContentGeneralInfoEntity;
-import com.stan.blog.beans.entity.content.ContentTagEntity;
-import com.stan.blog.content.mapper.BaseContentMapper;
+import com.stan.blog.beans.entity.user.UserEntity;
+import com.stan.blog.beans.repository.user.UserRepository;
 import com.stan.blog.content.service.IContentService;
 import com.stan.blog.core.exception.StanBlogRuntimeException;
 import com.stan.blog.core.utils.CacheUtil;
 import com.stan.blog.core.utils.SecurityUtil;
+import com.stan.blog.core.utils.UserDisplayNameUtil;
 
-import io.jsonwebtoken.lang.Collections;
-import io.netty.util.internal.StringUtil;
+import lombok.RequiredArgsConstructor;
 
-/**
- * This is the core service to save, update, delete, and search user contents.
- * The code has been highly abstracted with generics and several DTO beans
- * and entities need to be created when onboarding new kind of user content.
- * 
- * @param <D> DTO used to return basic info to client
- * @param <C> DTO used for creation
- * @param <U> DTO used for update
- * @param <E> Entity used for database, @TableName annotation is required
- * @param <M> Mapper used for manipulating data, providing common CRUD methods
- */
+@RequiredArgsConstructor
 public abstract class BaseContentService<
     D extends BaseContentDTO,
     C extends BaseContentCreationDTO,
     U extends BaseContentUpdateDTO,
-    E extends BaseContentEntity,
-    M extends BaseContentMapper<D, E>> extends ServiceImpl<M, E> implements IContentService<D, C, U, E, M> {
-    @Autowired
-    private ContentGeneralInfoService generalInfoService;
-    @Autowired
-    private ContentAdminService contentAdminService;
-    @Autowired
-    private ContentTagService tagService;
-    @Autowired
-    private CacheUtil cacheUtil;
+    E extends BaseContentEntity>
+        implements IContentService<D, C, U, E> {
 
-    @Override
-    @Transactional
-    public D save(C creationDTO) {
-        // save content level data
-        final ContentGeneralInfoEntity contentEntity = new ContentGeneralInfoEntity();
-        BeanUtils.copyProperties(creationDTO, contentEntity);
-        contentEntity.setContentType(getContentType().name());
-        contentEntity.setDeleted(Boolean.FALSE);
-        contentEntity.setPublicToAll(Boolean.FALSE);
-        contentEntity.setViewCount(0L);
-        contentEntity.setLikeCount(0L);
-        contentEntity.setOwnerId(SecurityUtil.getUserId());
-        generalInfoService.save(contentEntity);
-        // save sub level data and return general concrete DTO
-        E concreteEntity = this.getConcreteEntity();
-        concreteEntity.setContentId(contentEntity.getId());
-        concreteEntity.setDeleted(Boolean.FALSE);
-        BeanUtils.copyProperties(creationDTO, concreteEntity);
-        this.save(concreteEntity);
-        // save tag info
-        saveContentTag(contentEntity.getId(), creationDTO.getTags());
-        // save admin info
-        final ContentAdminEntity contentAdmin = new ContentAdminEntity();
-        contentAdmin.setContentId(contentEntity.getId());
-        contentAdmin.setDeleted(Boolean.FALSE);
-        contentAdminService.save(contentAdmin);
-        return this.getDTOById(contentEntity.getId());
-    }
+    private final ContentGeneralInfoService contentGeneralInfoService;
+    private final ContentAdminService contentAdminService;
+    private final ContentTagService contentTagService;
+    private final UserRepository userRepository;
+    private final CacheUtil cacheUtil;
 
-    @Override
-    @Transactional
-    public D update(U updateDTO) {
-        // validate and update content level values
-        final ContentGeneralInfoEntity contentEntity = generalInfoService.getAndValidateContent(updateDTO.getId());
-        BeanUtils.copyProperties(updateDTO, contentEntity);
-        generalInfoService.updateById(contentEntity);
-        // update sub level values
-        final E concreteEntity = this.getById(updateDTO.getId());
-        BeanUtils.copyProperties(updateDTO, concreteEntity);
-        this.updateById(concreteEntity);
-        // save tag info
-        saveContentTag(contentEntity.getId(), updateDTO.getTags());
-        // return updated general DTO
-        return this.getDTOById(updateDTO.getId());
-    }
-
-    @Override
-    @Transactional
-    public void delete(String id) {
-        generalInfoService.getAndValidateContent(id);
-        generalInfoService.removeById(id);
-        this.removeById(id);
-    }
-
-    @Override
-    public Page<D> search(int current, int size, BaseSearchFilter filter) {
-        return this.baseMapper.pageDTOsByUserId(new Page<>(current, size), getConcreteEntity().getTableName(),
-                SecurityUtil.getUserId(), filter);
-    }
-
-    /**
-     * Used by admin web for getting user content details
-     */
-    @Override
-    public D getDTOById(String id) {
-        return this.baseMapper.getDTOById(getConcreteEntity().getTableName(), id);
-    }
-
-    /**
-     * Used by portal web for getting user content details
-     * The view count will increased with every request
-     * The content can be viewed only if the content is published by owner and not banned by admin
-     */
-    @Override
-    public D getDTOByIdAndCount(String id) {
-        D result = this.getDTOById(id);
-        if (Objects.isNull(result)) {
-            return null;
-        }
-        if (!result.getPublicToAll()) {
-            return null;
-        }
-        if (result.getBanned()) {
-            return null;
-        }
-        result.setViewCount(result.getViewCount() + cacheUtil.hIncr(Const.CONTENT_VIEW_COUNT_KEY, id, 1L));
-        return result;
-    }
-
-    @Override
-    public D updateVisibility(String id, ContentVisibilityUpdateDTO updateDTO) {
-        final ContentGeneralInfoEntity entity = generalInfoService.getAndValidateContent(id);
-        if (updateDTO.getVisibility() == Visibility.PUBLIC) {
-            if (entity.getPublicToAll()) {
-                throw new StanBlogRuntimeException("Content has already been released");
-            } else {
-                entity.setPublicToAll(Boolean.TRUE);
-                entity.setPublishTime(new Timestamp(System.currentTimeMillis()));
-            }
-        } else {
-            if (!entity.getPublicToAll()) {
-                throw new StanBlogRuntimeException("Content has already been private");
-            } else {
-                entity.setPublicToAll(Boolean.FALSE);
-            }
-        }
-        generalInfoService.updateById(entity);
-        return this.baseMapper.getDTOById(getConcreteEntity().getTableName(), id);
-    }
-
-    private void saveContentTag(String contentId, List<TagInfoDTO> tags) {
-        if (Collections.isEmpty(tags) || StringUtil.isNullOrEmpty(contentId)) {
-            return;
-        }
-        tagService.remove(
-            new LambdaQueryWrapper<ContentTagEntity>().eq(ContentTagEntity::getContentId, contentId));
-        tagService.saveBatch(
-            tags.stream().map(t -> new ContentTagEntity(contentId, t.getValue())).toList());
-    }
+    protected abstract JpaRepository<E, String> getRepository();
 
     protected abstract D getConcreteDTO();
 
     protected abstract E getConcreteEntity();
 
     protected abstract Const.ContentType getContentType();
+
+    @Override
+    @Transactional
+    public D save(C creationDTO) {
+        ContentGeneralInfoEntity generalInfo = new ContentGeneralInfoEntity();
+        BeanUtils.copyProperties(creationDTO, generalInfo);
+        generalInfo.setContentType(getContentType().name());
+        generalInfo.setDeleted(Boolean.FALSE);
+        generalInfo.setPublicToAll(Boolean.FALSE);
+        generalInfo.setContentProtected(Boolean.FALSE);
+        generalInfo.setViewCount(0L);
+        generalInfo.setLikeCount(0L);
+        generalInfo.setOwnerId(SecurityUtil.getUserId());
+        ContentGeneralInfoEntity savedGeneralInfo = contentGeneralInfoService.save(generalInfo);
+
+        E contentEntity = getConcreteEntity();
+        BeanUtils.copyProperties(creationDTO, contentEntity);
+        contentEntity.setContentId(savedGeneralInfo.getId());
+        contentEntity.setDeleted(Boolean.FALSE);
+        getRepository().save(contentEntity);
+
+        contentTagService.replaceContentTags(savedGeneralInfo.getId(), creationDTO.getTags());
+        contentAdminService.createDefaultAdminRecord(savedGeneralInfo.getId());
+
+        return getDTOById(savedGeneralInfo.getId());
+    }
+
+    @Override
+    @Transactional
+    public D update(U updateDTO) {
+        ContentGeneralInfoEntity generalInfo = contentGeneralInfoService.getAndValidateContent(updateDTO.getId());
+        org.springframework.beans.BeanUtils.copyProperties(updateDTO, generalInfo, getNullPropertyNames(updateDTO));
+        contentGeneralInfoService.save(generalInfo);
+
+        E contentEntity = getRepository().findById(updateDTO.getId())
+                .orElseThrow(() -> new StanBlogRuntimeException("Content does not exist"));
+        org.springframework.beans.BeanUtils.copyProperties(updateDTO, contentEntity, getNullPropertyNames(updateDTO));
+        contentEntity.setContentId(updateDTO.getId());
+        getRepository().save(contentEntity);
+
+        contentTagService.replaceContentTags(updateDTO.getId(), updateDTO.getTags());
+        return getDTOById(updateDTO.getId());
+    }
+
+    @Override
+    @Transactional
+    public void delete(String id) {
+        contentGeneralInfoService.getAndValidateContent(id);
+        contentGeneralInfoService.deleteById(id);
+        getRepository().deleteById(id);
+        contentTagService.replaceContentTags(id, List.of());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<D> search(int current, int size, BaseSearchFilter filter) {
+        int resolvedPage = Math.max(current - 1, 0);
+        int resolvedSize = Math.max(size, 1);
+        Pageable pageable = PageRequest.of(resolvedPage, resolvedSize, Sort.by(Sort.Direction.DESC, "createTime"));
+
+        Page<ContentGeneralInfoEntity> page = contentGeneralInfoService.searchContentForOwner(
+                SecurityUtil.getUserId(), getContentType(), filter, pageable);
+        if (page.isEmpty()) {
+            return new PageImpl<>(List.of(), pageable, 0);
+        }
+
+        List<String> contentIds = page.getContent().stream().map(ContentGeneralInfoEntity::getId).toList();
+        Map<String, E> contentMap = toContentMap(getRepository().findAllById(contentIds));
+        Map<String, ContentAdminEntity> adminMap = contentAdminService.findByContentIds(contentIds);
+        Map<String, List<TagInfoDTO>> tagsMap = contentTagService.findTagsForContents(contentIds);
+        Map<Long, UserEntity> ownerMap = loadOwners(page.getContent());
+
+        List<D> dtoList = page.getContent().stream()
+                .map(info -> buildDto(info, contentMap.get(info.getId()), adminMap.get(info.getId()),
+                        tagsMap.getOrDefault(info.getId(), List.of()), ownerMap.get(info.getOwnerId())))
+                .toList();
+        return new PageImpl<>(dtoList, pageable, page.getTotalElements());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public D getDTOById(String id) {
+        ContentGeneralInfoEntity generalInfo = contentGeneralInfoService.findById(id);
+        if (generalInfo == null) {
+            return null;
+        }
+        E content = getRepository().findById(id).orElse(null);
+        ContentAdminEntity admin = contentAdminService.findByContentId(id).orElse(null);
+        List<TagInfoDTO> tags = contentTagService.findTagsForContent(id);
+        UserEntity owner = userRepository.findById(generalInfo.getOwnerId()).orElse(null);
+        return buildDto(generalInfo, content, admin, tags, owner);
+    }
+
+    @Override
+    @Transactional
+    public D getDTOByIdAndCount(String id) {
+        D dto = getDTOById(id);
+        if (dto == null) {
+            return null;
+        }
+        if (!Boolean.TRUE.equals(dto.getPublicToAll()) || Boolean.TRUE.equals(dto.getBanned())) {
+            return null;
+        }
+        cacheUtil.hIncr(Const.CONTENT_VIEW_COUNT_KEY, id, 1L);
+        dto.setViewCount(dto.getViewCount() + 1);
+        return dto;
+    }
+
+    @Override
+    @Transactional
+    public D updateVisibility(String id, ContentVisibilityUpdateDTO updateDTO) {
+        ContentGeneralInfoEntity entity = contentGeneralInfoService.getAndValidateContent(id);
+        if (updateDTO.getVisibility() == Visibility.PUBLIC) {
+            if (Boolean.TRUE.equals(entity.getPublicToAll())) {
+                throw new StanBlogRuntimeException("Content has already been released");
+            }
+            entity.setPublicToAll(Boolean.TRUE);
+            entity.setPublishTime(new java.sql.Timestamp(System.currentTimeMillis()));
+        } else {
+            if (!Boolean.TRUE.equals(entity.getPublicToAll())) {
+                throw new StanBlogRuntimeException("Content has already been private");
+            }
+            entity.setPublicToAll(Boolean.FALSE);
+        }
+        contentGeneralInfoService.save(entity);
+        return getDTOById(id);
+    }
+
+    private Map<String, E> toContentMap(Iterable<E> contentIterable) {
+        Map<String, E> contentMap = StreamSupport.stream(contentIterable.spliterator(), false)
+                .collect(Collectors.toMap(BaseContentEntity::getContentId, Function.identity()));
+        return contentMap;
+    }
+
+    private Map<Long, UserEntity> loadOwners(List<ContentGeneralInfoEntity> contentList) {
+        Set<Long> ownerIds = contentList.stream().map(ContentGeneralInfoEntity::getOwnerId).collect(Collectors.toSet());
+        Iterable<UserEntity> users = userRepository.findAllById(ownerIds);
+        Map<Long, UserEntity> userMap = StreamSupport.stream(users.spliterator(), false)
+                .collect(Collectors.toMap(UserEntity::getId, Function.identity()));
+        return userMap;
+    }
+
+    private D buildDto(ContentGeneralInfoEntity generalInfo, E contentEntity, ContentAdminEntity adminEntity,
+                       List<TagInfoDTO> tags, UserEntity owner) {
+        D dto = getConcreteDTO();
+        BeanUtils.copyProperties(generalInfo, dto);
+        dto.setId(generalInfo.getId());
+        dto.setTags(tags);
+        if (adminEntity != null) {
+            dto.setBanned(adminEntity.getBanned());
+            dto.setRecommended(adminEntity.getRecommended());
+            dto.setReason(adminEntity.getReason());
+        }
+        if (owner != null) {
+            dto.setOwnerName(UserDisplayNameUtil.buildDisplayName(owner));
+            dto.setAvatarUrl(owner.getAvatarUrl());
+        }
+        if (contentEntity != null) {
+            BeanUtils.copyProperties(contentEntity, dto);
+        }
+        return dto;
+    }
+    private static String[] getNullPropertyNames(Object source) {
+        final org.springframework.beans.BeanWrapper src = new org.springframework.beans.BeanWrapperImpl(source);
+        java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        java.util.Set<String> emptyNames = new java.util.HashSet<>();
+        for (java.beans.PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null) emptyNames.add(pd.getName());
+        }
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
+    }
 }

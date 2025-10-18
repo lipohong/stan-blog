@@ -13,7 +13,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stan.blog.beans.dto.content.ArticleCreationDTO;
 import com.stan.blog.beans.dto.content.ArticleDTO;
@@ -94,7 +96,7 @@ class ArticleControllerTests {
 
     @Test
     void searchArticlesReturnsPage() throws Exception {
-        Page<ArticleDTO> page = new Page<>(1, 10);
+        Page<ArticleDTO> page = new PageImpl<>(java.util.List.of(), PageRequest.of(1, 10), 0);
         when(articleService.search(eq(1), eq(10), any())).thenReturn(page);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/articles"))

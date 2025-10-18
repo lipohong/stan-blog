@@ -11,8 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.data.domain.Page;
 import com.stan.blog.DefaultTestData;
 import com.stan.blog.DefaultTestData.DefaultUser;
 import static com.stan.blog.DefaultTestData.DefaultUser.ARTICLE_MODULE;
@@ -29,8 +28,8 @@ import com.stan.blog.beans.dto.user.UserUpdateDTO;
 import com.stan.blog.beans.entity.user.UserFeatureEntity;
 import com.stan.blog.beans.entity.user.UserRoleEntity;
 import com.stan.blog.core.exception.StanBlogRuntimeException;
-import com.stan.blog.core.mapper.UserFeatureMapper;
-import com.stan.blog.core.mapper.UserRoleMapper;
+import com.stan.blog.core.service.UserFeatureService;
+import com.stan.blog.core.service.UserRoleService;
 import com.stan.blog.core.utils.SecurityUtil;
 
 @SpringBootTest
@@ -41,9 +40,9 @@ public class UserServiceTests {
     @Autowired
     private UserService userService;
     @Autowired
-    private UserRoleMapper roleMapper;
+    private UserRoleService userRoleService;
     @Autowired
-    private UserFeatureMapper featureMapper;
+    private UserFeatureService userFeatureService;
 
     @BeforeEach
     void setUp() {
@@ -67,18 +66,11 @@ public class UserServiceTests {
         Assertions.assertEquals(dto.getFirstName(), result.getFirstName());
 
         // The user role should be correctly saved
-        UserRoleEntity roleEntity = roleMapper.selectOne(
-                new LambdaQueryWrapper<UserRoleEntity>()
-                        .eq(UserRoleEntity::getUserId, result.getId())
-                        .eq(UserRoleEntity::getRole, Role.BASIC.getValue())
-                        .eq(UserRoleEntity::getDeleted, Boolean.FALSE));
-        Assertions.assertNotNull(roleEntity);
+        java.util.List<UserRoleEntity> roles = userRoleService.findByUserId(result.getId());
+        Assertions.assertTrue(roles.stream().anyMatch(r -> Role.BASIC.getValue().equals(r.getRole())));
 
         // The user feature should be correctly saved
-        UserFeatureEntity featureEntity = featureMapper.selectOne(
-                new LambdaQueryWrapper<UserFeatureEntity>()
-                        .eq(UserFeatureEntity::getUserId, result.getId())
-                        .eq(UserFeatureEntity::getDeleted, Boolean.FALSE));
+        UserFeatureEntity featureEntity = userFeatureService.findByUserId(result.getId()).orElse(null);
         Assertions.assertNotNull(featureEntity);
         Assertions.assertEquals(Boolean.TRUE, featureEntity.getArticleModule());
         Assertions.assertEquals(Boolean.TRUE, featureEntity.getPlanModule());
@@ -218,9 +210,9 @@ public class UserServiceTests {
     @DisplayName("User Service: get all user profiles in pages")
     public void testGetUsers_getUsersNotEmpty() {
         Page<UserGeneralDTO> page = userService.getUsers(1, 5);
-        Assertions.assertEquals(1, page.getCurrent());
+        Assertions.assertEquals(0, page.getNumber());
         Assertions.assertEquals(5, page.getSize());
-        Assertions.assertTrue(page.getRecords().size() > 0);
+        Assertions.assertTrue(page.getContent().size() > 0);
     }
 
     @Test
@@ -267,7 +259,7 @@ public class UserServiceTests {
         Assertions.assertEquals(DefaultUser.ARTICLE_MODULE, updatedUser.getFeatures().getArticleModule());
         Assertions.assertEquals(DefaultUser.PLAN_MODULE, updatedUser.getFeatures().getPlanModule());
         Assertions.assertEquals(DefaultUser.VOCABULARY_MODULE, updatedUser.getFeatures().getVocabularyModule());
-        Assertions.assertEquals(COLLECTION_MODULE, updatedUser.getFeatures().getVocabularyModule());
+        Assertions.assertEquals(COLLECTION_MODULE, updatedUser.getFeatures().getCollectionModule());
     }
 
     @Test
@@ -292,11 +284,7 @@ public class UserServiceTests {
         
         // Note: User roles are kept for audit/historical purposes, so we don't verify role deletion
         
-        UserFeatureEntity featureEntity = featureMapper.selectOne(
-                new LambdaQueryWrapper<UserFeatureEntity>()
-                        .eq(UserFeatureEntity::getUserId, createdUser.getId())
-                        .eq(UserFeatureEntity::getDeleted, Boolean.FALSE));
-        Assertions.assertNull(featureEntity);
+        Assertions.assertTrue(userFeatureService.findByUserId(createdUser.getId()).isEmpty());
         Assertions.assertNull(userService.getUser(createdUser.getId()));
     }
 
