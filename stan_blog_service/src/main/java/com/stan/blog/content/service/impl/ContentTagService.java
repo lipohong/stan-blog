@@ -34,7 +34,7 @@ public class ContentTagService {
         }
         List<ContentTagEntity> entities = new ArrayList<>(tags.size());
         for (TagInfoDTO tag : tags) {
-            entities.add(new ContentTagEntity(null, contentId, tag.getValue()));
+            entities.add(new ContentTagEntity(contentId, tag.getValue()));
         }
         contentTagRepository.saveAll(entities);
     }

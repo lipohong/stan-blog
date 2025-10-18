@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.stan.blog.beans.entity.content.ContentTagEntity;
 
 @Repository
-public interface ContentTagRepository extends JpaRepository<ContentTagEntity, Long> {
+public interface ContentTagRepository extends JpaRepository<ContentTagEntity, com.stan.blog.beans.entity.content.ContentTagId> {
 
     void deleteByContentId(String contentId);
 

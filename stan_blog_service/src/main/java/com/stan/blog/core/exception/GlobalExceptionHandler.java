@@ -34,6 +34,12 @@ public class GlobalExceptionHandler {
         return ErrorResponse.unauthorized("Invalid username or password");
     }
 
+    @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentials(org.springframework.security.authentication.BadCredentialsException ex) {
+        log.warn("Bad credentials: {}", ex.getMessage());
+        return ErrorResponse.unauthorized("Invalid username or password");
+    }
+
     @ExceptionHandler(StanBlogRuntimeException.class)
     public ResponseEntity<ErrorResponse> handleStanBlogRuntimeException(StanBlogRuntimeException ex) {
         log.error("StanBlogRuntimeException: {}", ex.getMessage());
@@ -147,4 +153,4 @@ public class GlobalExceptionHandler {
                     .body(new ErrorResponse(500, message));
         }
     }
-} 
+}

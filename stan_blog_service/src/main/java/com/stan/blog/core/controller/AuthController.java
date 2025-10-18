@@ -32,13 +32,16 @@ public class AuthController {
     private final TokenUtil tokenUtil;
     private final AuthenticationManager authenticationManager;
 
+    @org.springframework.beans.factory.annotation.Value("${auth.email-verify.enabled:true}")
+    private boolean emailVerifyEnabled;
+
     @PostMapping("/login")
     public ResponseEntity<EnhancedUserDetail> login(@RequestBody final UserLoginDTO dto) {
         UserEntity userEntity = userService.findByUsernameOrEmailOrPhone(dto.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "Invalid user name[ " + dto.getUsername() + " ], please confirm again!"));
 
-        if (!Boolean.TRUE.equals(userEntity.getEmailVerified())) {
+        if (emailVerifyEnabled && !Boolean.TRUE.equals(userEntity.getEmailVerified())) {
             throw new EmailNotVerifiedException(
                     "Email not verified. Please check your email and complete the verification process.");
         }

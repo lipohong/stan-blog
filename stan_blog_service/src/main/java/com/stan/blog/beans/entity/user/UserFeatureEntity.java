@@ -21,12 +21,10 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "stan_blog_core_user_feature")
-@SQLDelete(sql = "UPDATE stan_blog_core_user_feature SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE stan_blog_core_user_feature SET deleted = true WHERE user_id = ?")
 @SQLRestriction("deleted = false")
 public class UserFeatureEntity extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private Long userId;
     private Boolean articleModule;
     private Boolean planModule;
