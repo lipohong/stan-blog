@@ -1,7 +1,5 @@
 package com.stan.blog.content.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,6 +62,12 @@ public abstract class BaseContentService<
     @Override
     @Transactional
     public D save(C creationDTO) {
+        if (creationDTO.getDescription() != null && creationDTO.getDescription().length() > 1000) {
+            throw new StanBlogRuntimeException("Description can not exceed 1000 characters");
+        }
+        if (creationDTO.getCoverImgUrl() != null && creationDTO.getCoverImgUrl().length() > 2000) {
+            throw new StanBlogRuntimeException("Cover image URL can not exceed 2000 characters");
+        }
         ContentGeneralInfoEntity generalInfo = new ContentGeneralInfoEntity();
         BeanUtils.copyProperties(creationDTO, generalInfo);
         generalInfo.setContentType(getContentType().name());
@@ -90,6 +94,13 @@ public abstract class BaseContentService<
     @Override
     @Transactional
     public D update(U updateDTO) {
+        // 长度校验，避免数据库约束错误
+        if (updateDTO.getDescription() != null && updateDTO.getDescription().length() > 1000) {
+            throw new StanBlogRuntimeException("Description can not exceed 1000 characters");
+        }
+        if (updateDTO.getCoverImgUrl() != null && updateDTO.getCoverImgUrl().length() > 2000) {
+            throw new StanBlogRuntimeException("Cover image URL can not exceed 2000 characters");
+        }
         ContentGeneralInfoEntity generalInfo = contentGeneralInfoService.getAndValidateContent(updateDTO.getId());
         org.springframework.beans.BeanUtils.copyProperties(updateDTO, generalInfo, getNullPropertyNames(updateDTO));
         contentGeneralInfoService.save(generalInfo);

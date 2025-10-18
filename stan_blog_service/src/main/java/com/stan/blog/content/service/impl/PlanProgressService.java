@@ -56,24 +56,32 @@ public class PlanProgressService {
                 .orElse(null);
     }
 
-    @Transactional
-    public PlanProgressDTO saveProgress(PlanProgressCreationDTO dto) {
-        ContentGeneralInfoEntity contentEntity = contentGeneralInfoService.findById(dto.getPlanId());
+    @org.springframework.transaction.annotation.Transactional
+    public com.stan.blog.beans.dto.content.PlanProgressDTO saveProgress(
+            com.stan.blog.beans.dto.content.PlanProgressCreationDTO creationDTO) {
+        if (creationDTO.getDescription() != null && creationDTO.getDescription().length() > 1000) {
+             throw new com.stan.blog.core.exception.StanBlogRuntimeException("Description can not exceed 1000 characters");
+         }
+        ContentGeneralInfoEntity contentEntity = contentGeneralInfoService.findById(creationDTO.getPlanId());
         if (Objects.isNull(contentEntity) || !ContentType.PLAN.name().equals(contentEntity.getContentType())) {
             throw new StanBlogRuntimeException("The planId is invalid");
         }
         PlanProgressEntity entity = new PlanProgressEntity();
-        entity.setPlanId(dto.getPlanId());
-        entity.setDescription(dto.getDescription());
+        entity.setPlanId(creationDTO.getPlanId());
+        entity.setDescription(creationDTO.getDescription());
         entity.setUpdaterId(SecurityUtil.getUserId());
         PlanProgressEntity saved = planProgressRepository.save(entity);
         return getProgressesById(saved.getId());
     }
 
-    @Transactional
-    public PlanProgressDTO updateProgress(PlanProgressUpdateDTO dto) {
-        PlanProgressEntity progress = getAndValidateProgress(dto.getId());
-        progress.setDescription(dto.getDescription());
+    @org.springframework.transaction.annotation.Transactional
+    public com.stan.blog.beans.dto.content.PlanProgressDTO updateProgress(
+            com.stan.blog.beans.dto.content.PlanProgressUpdateDTO updateDTO) {
+        if (updateDTO.getDescription() != null && updateDTO.getDescription().length() > 1000) {
+             throw new com.stan.blog.core.exception.StanBlogRuntimeException("Description can not exceed 1000 characters");
+         }
+        PlanProgressEntity progress = getAndValidateProgress(updateDTO.getId());
+        progress.setDescription(updateDTO.getDescription());
         progress.setUpdaterId(SecurityUtil.getUserId());
         PlanProgressEntity saved = planProgressRepository.save(progress);
         return getProgressesById(saved.getId());

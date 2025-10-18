@@ -47,4 +47,22 @@ public class ArticleService extends
     protected ContentType getContentType() {
         return ContentType.ARTICLE;
     }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional
+    public com.stan.blog.beans.dto.content.ArticleDTO save(com.stan.blog.beans.dto.content.ArticleCreationDTO creationDTO) {
+        if (creationDTO.getSubTitle() != null && creationDTO.getSubTitle().length() > 128) {
+             throw new com.stan.blog.core.exception.StanBlogRuntimeException("SubTitle can not exceed 128 characters");
+         }
+        return super.save(creationDTO);
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional
+    public com.stan.blog.beans.dto.content.ArticleDTO update(com.stan.blog.beans.dto.content.ArticleUpdateDTO updateDTO) {
+        if (updateDTO.getSubTitle() != null && updateDTO.getSubTitle().length() > 128) {
+             throw new com.stan.blog.core.exception.StanBlogRuntimeException("SubTitle can not exceed 128 characters");
+         }
+        return super.update(updateDTO);
+    }
 }
