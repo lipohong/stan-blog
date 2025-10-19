@@ -1,5 +1,8 @@
 package com.stan.blog.file.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +49,9 @@ public class FileController {
     )
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<FileResourceDTO> upload(@RequestParam(value = "file", required = true) MultipartFile file,
-                                                  @RequestParam(value = "publicToAll", required = false, defaultValue = "false") Boolean publicToAll) {
+                                                  @RequestParam(value = "publicToAll", required = false, defaultValue = "false") Boolean publicToAll,
+                                                  @RequestParam(value = "srcId", required = false) String srcId,
+                                                  @RequestParam(value = "fileType", required = false) String fileType) {
         return AuthenticationUtil.withAuthenticatedUser(user -> {
             if (file == null || file.isEmpty()) {
                 return ResponseEntity.badRequest().build();
@@ -54,6 +59,36 @@ public class FileController {
             boolean pub = publicToAll != null && Boolean.TRUE.equals(publicToAll);
             FileResourceDTO dto = fileService.upload(file, pub);
             return ResponseEntity.ok(dto);
+        });
+    }
+
+    /**
+     * Batch upload endpoint to align with frontend usage.
+     * Accepts multiple files using key 'files'. Optional params srcId and fileType are tolerated.
+     */
+    @Operation(
+        summary = "Batch upload files",
+        description = "Uploads multiple files in one request.",
+        requestBody = @RequestBody(required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+    )
+    @PostMapping(value = "/batch-upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<FileResourceDTO>> batchUpload(
+            @RequestParam(value = "files", required = true) MultipartFile[] files,
+            @RequestParam(value = "publicToAll", required = false, defaultValue = "false") Boolean publicToAll,
+            @RequestParam(value = "srcId", required = false) String srcId,
+            @RequestParam(value = "fileType", required = false) String fileType) {
+        return AuthenticationUtil.withAuthenticatedUser(user -> {
+            if (files == null || files.length == 0) {
+                return ResponseEntity.badRequest().build();
+            }
+            boolean pub = publicToAll != null && Boolean.TRUE.equals(publicToAll);
+            List<FileResourceDTO> result = new ArrayList<>();
+            for (MultipartFile f : files) {
+                if (f != null && !f.isEmpty()) {
+                    result.add(fileService.upload(f, pub));
+                }
+            }
+            return ResponseEntity.ok(result);
         });
     }
 
