@@ -57,7 +57,7 @@ public class FileController {
                 return ResponseEntity.badRequest().build();
             }
             boolean pub = publicToAll != null && Boolean.TRUE.equals(publicToAll);
-            FileResourceDTO dto = fileService.upload(file, pub);
+            FileResourceDTO dto = fileService.upload(file, pub, srcId, fileType);
             return ResponseEntity.ok(dto);
         });
     }
@@ -85,7 +85,7 @@ public class FileController {
             List<FileResourceDTO> result = new ArrayList<>();
             for (MultipartFile f : files) {
                 if (f != null && !f.isEmpty()) {
-                    result.add(fileService.upload(f, pub));
+                    result.add(fileService.upload(f, pub, srcId, fileType));
                 }
             }
             return ResponseEntity.ok(result);
@@ -107,6 +107,18 @@ public class FileController {
                                                                  @RequestParam(defaultValue = "10") int size) {
         return AuthenticationUtil.withAuthenticatedUser(user -> {
             Page<FileResourceDTO> resultPage = fileService.getUserFiles(user.getUserProfile().getId(), page, size);
+            return ResponseEntity.ok(PageResponse.from(resultPage));
+        });
+    }
+
+    @GetMapping("/by-source")
+    public ResponseEntity<PageResponse<FileResourceDTO>> filesBySource(@RequestParam String srcId,
+                                                                       @RequestParam String fileType,
+                                                                       @RequestParam(defaultValue = "1") int page,
+                                                                       @RequestParam(defaultValue = "10") int size) {
+        return AuthenticationUtil.withAuthenticatedUser(user -> {
+            Long ownerId = user.getUserProfile().getId();
+            Page<FileResourceDTO> resultPage = fileService.getFilesBySource(ownerId, srcId, fileType, page, size);
             return ResponseEntity.ok(PageResponse.from(resultPage));
         });
     }

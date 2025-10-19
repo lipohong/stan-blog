@@ -36,4 +36,6 @@ public class FileResourceEntity extends BaseEntity {
     private Long ownerId;
     private Boolean publicToAll = Boolean.FALSE;
     private String checksum; // optional SHA-256 or MD5
+    private String srcId; // optional source entity id (e.g., plan progress id)
+    private String fileType; // optional logical file type (e.g., PLAN_PIC)
 }
