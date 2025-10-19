@@ -11,8 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -147,7 +147,7 @@ public class FileResourceService {
         } catch (RuntimeException ex) {
             log.warn("Fallback to projection without fileType due to schema mismatch: {}", ex.getMessage());
             return fileResourceRepository
-                .findViewByOwnerIdAndSrcIdAndDeletedFalse(ownerId, srcId, pageable)
+                .findViewByOwnerIdAndDeletedFalse(ownerId, pageable)
                 .map(view -> {
                     FileResourceDTO dto = new FileResourceDTO();
                     dto.setId(view.getId());
@@ -157,8 +157,7 @@ public class FileResourceService {
                     dto.setContentType(view.getContentType());
                     dto.setOwnerId(view.getOwnerId());
                     dto.setPublicToAll(view.getPublicToAll());
-                    dto.setSrcId(view.getSrcId());
-                    // fileType 不在投影中，保持为 null
+                    dto.setSrcId(null);
                     dto.setFileType(null);
                     dto.setCreateTime(view.getCreateTime());
                     dto.setDownloadUrl(buildDownloadUrl(view.getId()));
