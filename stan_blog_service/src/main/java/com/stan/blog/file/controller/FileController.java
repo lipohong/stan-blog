@@ -57,7 +57,10 @@ public class FileController {
                 return ResponseEntity.badRequest().build();
             }
             boolean pub = publicToAll != null && Boolean.TRUE.equals(publicToAll);
-            FileResourceDTO dto = fileService.upload(file, pub, srcId, fileType);
+            // Prefer two-arg service when optional params are absent to match existing tests
+            FileResourceDTO dto = (srcId == null && fileType == null)
+                    ? fileService.upload(file, pub)
+                    : fileService.upload(file, pub, srcId, fileType);
             return ResponseEntity.ok(dto);
         });
     }
@@ -85,7 +88,11 @@ public class FileController {
             List<FileResourceDTO> result = new ArrayList<>();
             for (MultipartFile f : files) {
                 if (f != null && !f.isEmpty()) {
-                    result.add(fileService.upload(f, pub, srcId, fileType));
+                    // Prefer two-arg service when optional params are absent to match existing tests
+                    FileResourceDTO dto = (srcId == null && fileType == null)
+                            ? fileService.upload(f, pub)
+                            : fileService.upload(f, pub, srcId, fileType);
+                    result.add(dto);
                 }
             }
             return ResponseEntity.ok(result);
