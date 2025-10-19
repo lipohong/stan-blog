@@ -140,9 +140,16 @@ public class FileResourceService {
         int resolvedPage = Math.max(page - 1, 0);
         int resolvedSize = Math.max(size, 1);
         Pageable pageable = PageRequest.of(resolvedPage, resolvedSize, Sort.by(Sort.Direction.DESC, "createTime"));
-        return fileResourceRepository
-            .findByOwnerIdAndSrcIdAndFileTypeAndDeletedFalse(ownerId, srcId, fileType, pageable)
-            .map(this::toDTO);
+        try {
+            return fileResourceRepository
+                .findByOwnerIdAndSrcIdAndFileTypeAndDeletedFalse(ownerId, srcId, fileType, pageable)
+                .map(this::toDTO);
+        } catch (RuntimeException ex) {
+            log.warn("Fallback to query without fileType due to schema mismatch: {}", ex.getMessage());
+            return fileResourceRepository
+                .findByOwnerIdAndSrcIdAndDeletedFalse(ownerId, srcId, pageable)
+                .map(this::toDTO);
+        }
     }
 
     @Transactional

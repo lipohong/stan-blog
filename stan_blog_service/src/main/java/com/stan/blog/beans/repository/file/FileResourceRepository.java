@@ -12,4 +12,5 @@ public interface FileResourceRepository extends JpaRepository<FileResourceEntity
 
     Page<FileResourceEntity> findByOwnerIdAndDeletedFalse(Long ownerId, Pageable pageable);
     Page<FileResourceEntity> findByOwnerIdAndSrcIdAndFileTypeAndDeletedFalse(Long ownerId, String srcId, String fileType, Pageable pageable);
+    Page<FileResourceEntity> findByOwnerIdAndSrcIdAndDeletedFalse(Long ownerId, String srcId, Pageable pageable);
 }
