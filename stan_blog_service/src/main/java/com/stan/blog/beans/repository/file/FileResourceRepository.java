@@ -16,8 +16,7 @@ public interface FileResourceRepository extends JpaRepository<FileResourceEntity
 
     @org.springframework.data.jpa.repository.Query(
         "select e.id as id, e.originalFilename as originalFilename, e.storedFilename as storedFilename, e.sizeInBytes as sizeInBytes, " +
-        "e.contentType as contentType, e.ownerId as ownerId, e.publicToAll as publicToAll, e.srcId as srcId, e.storagePath as storagePath, " +
-        "e.checksum as checksum, e.createTime as createTime from FileResourceEntity e " +
-        "where e.ownerId = ?1 and e.srcId = ?2 and e.deleted = false order by e.createTime desc")
-    Page<FileResourceListView> findViewByOwnerIdAndSrcIdAndDeletedFalse(Long ownerId, String srcId, Pageable pageable);
+        "e.contentType as contentType, e.ownerId as ownerId, e.publicToAll as publicToAll, e.createTime as createTime from FileResourceEntity e " +
+        "where e.ownerId = ?1 and e.deleted = false order by e.id desc")
+    Page<FileResourceListView> findViewByOwnerIdAndDeletedFalse(Long ownerId, Pageable pageable);
 }
