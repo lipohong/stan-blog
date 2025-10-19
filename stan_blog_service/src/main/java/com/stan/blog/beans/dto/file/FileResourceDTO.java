@@ -14,6 +14,9 @@ public class FileResourceDTO {
     private Long ownerId;
     private Boolean publicToAll;
     private String downloadUrl;
+    private String viewUrl;
+    private String srcId;
+    private String fileType;
     private Timestamp createTime;
 }
 

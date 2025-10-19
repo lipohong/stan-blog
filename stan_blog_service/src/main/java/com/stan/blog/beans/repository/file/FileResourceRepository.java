@@ -11,4 +11,5 @@ import com.stan.blog.beans.entity.file.FileResourceEntity;
 public interface FileResourceRepository extends JpaRepository<FileResourceEntity, Long> {
 
     Page<FileResourceEntity> findByOwnerIdAndDeletedFalse(Long ownerId, Pageable pageable);
+    Page<FileResourceEntity> findByOwnerIdAndSrcIdAndFileTypeAndDeletedFalse(Long ownerId, String srcId, String fileType, Pageable pageable);
 }

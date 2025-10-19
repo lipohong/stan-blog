@@ -24,3 +24,7 @@ export function batchUpload(srcId: string, fileType: string, files: File[]): Axi
     },
   });
 }
+
+export function listBySource(srcId: string, fileType: string, page = 1, size = 50): AxiosPromise {
+  return server.get(`/${FILE_URI}/by-source?srcId=${srcId}&fileType=${fileType}&page=${page}&size=${size}`);
+}

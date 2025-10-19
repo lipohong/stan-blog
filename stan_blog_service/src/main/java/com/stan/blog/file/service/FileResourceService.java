@@ -63,6 +63,7 @@ public class FileResourceService {
 
                 FileResourceDTO dto = BasicConverter.convert(saved, FileResourceDTO.class);
                 dto.setDownloadUrl(buildDownloadUrl(saved.getId()));
+                dto.setViewUrl(buildViewUrl(saved.getId()));
                 return ResponseEntity.ok(dto);
             } catch (IOException ex) {
                 log.error("Failed to store uploaded file", ex);
@@ -134,6 +135,16 @@ public class FileResourceService {
                 .map(this::toDTO);
     }
 
+    @Transactional(readOnly = true)
+    public Page<FileResourceDTO> getFilesBySource(Long ownerId, String srcId, String fileType, int page, int size) {
+        int resolvedPage = Math.max(page - 1, 0);
+        int resolvedSize = Math.max(size, 1);
+        Pageable pageable = PageRequest.of(resolvedPage, resolvedSize, Sort.by(Sort.Direction.DESC, "createTime"));
+        return fileResourceRepository
+            .findByOwnerIdAndSrcIdAndFileTypeAndDeletedFalse(ownerId, srcId, fileType, pageable)
+            .map(this::toDTO);
+    }
+
     @Transactional
     public FileResourceEntity save(FileResourceEntity entity) {
         return fileResourceRepository.save(entity);
@@ -165,14 +176,53 @@ public class FileResourceService {
         return canModify(entity);
     }
 
+    @Transactional
+    public FileResourceDTO upload(MultipartFile file, boolean publicToAll, String srcId, String fileType) {
+        return AuthenticationUtil.withAuthenticatedUser(user -> {
+            try {
+                String subDir = String.valueOf(user.getUserProfile().getId());
+                StorageService.StoredFile stored = storageService.store(file, subDir, null);
+
+                FileResourceEntity entity = new FileResourceEntity();
+                entity.setOriginalFilename(file.getOriginalFilename());
+                entity.setStoredFilename(stored.storedFilename());
+                entity.setStoragePath(stored.absolutePath().toString());
+                entity.setSizeInBytes(file.getSize());
+                entity.setContentType(StringUtils.hasText(file.getContentType()) ? file.getContentType()
+                        : MediaType.APPLICATION_OCTET_STREAM_VALUE);
+                entity.setOwnerId(user.getUserProfile().getId());
+                entity.setPublicToAll(publicToAll);
+                entity.setDeleted(false);
+                entity.setChecksum(calcChecksum(stored.absolutePath()));
+                entity.setSrcId(srcId);
+                entity.setFileType(fileType);
+
+                FileResourceEntity saved = fileResourceRepository.save(entity);
+
+                FileResourceDTO dto = BasicConverter.convert(saved, FileResourceDTO.class);
+                dto.setDownloadUrl(buildDownloadUrl(saved.getId()));
+                dto.setViewUrl(buildViewUrl(saved.getId()));
+                return ResponseEntity.ok(dto);
+            } catch (IOException ex) {
+                log.error("Failed to store uploaded file", ex);
+                return ResponseEntity.internalServerError().build();
+            }
+        }).getBody();
+    }
+
     public FileResourceDTO toDTO(FileResourceEntity entity) {
         FileResourceDTO dto = BasicConverter.convert(entity, FileResourceDTO.class);
         dto.setDownloadUrl(buildDownloadUrl(entity.getId()));
+        dto.setViewUrl(buildViewUrl(entity.getId()));
         return dto;
     }
 
     private String buildDownloadUrl(Long id) {
         return storageProperties.getPublicBaseUrl() + "/" + id + "/download";
+    }
+
+    private String buildViewUrl(Long id) {
+        return storageProperties.getPublicBaseUrl() + "/" + id + "/view";
     }
 
     private static String sanitizeFilename(String name) {

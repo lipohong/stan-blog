@@ -1,9 +1,11 @@
 import { Grid, Paper, TextField, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TimeFormat, useCommonUtils } from '../../../../../commons';
 import { IPlanProgress } from '../../../../../global/types';
 import { EditIconButton } from '../../../../components';
 import * as PlanProgressService from './PlanProgressService.ts';
+import * as FileService from './FileService.ts';
+import { ImagesPanel } from './ImagesPanel';
 
 interface IPlanProgressItemProps {
   progress: IPlanProgress;
@@ -15,6 +17,19 @@ export default function PlanProgressItem(props: Readonly<IPlanProgressItemProps>
   const [progress, setProgress] = useState<IPlanProgress>(props.progress);
   const [editable, setEditable] = useState<boolean>(false);
   const [progressDesc, setProgressDesc] = useState<string>(props.progress.description);
+  const [imageURLs, setImageURLs] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!props.progress?.id) return;
+    FileService.listBySource(props.progress.id, 'PLAN_PIC', 1, 50)
+      .then(response => {
+        const urls = (response?.data?.records ?? []).map((r: any) => r.viewUrl).filter((u: string) => !!u);
+        setImageURLs(urls);
+      })
+      .catch(() => {
+        // ignore errors for image loading
+      });
+  }, [props.progress?.id]);
 
   const handleEditableChange = () => {
     if (editable) {
@@ -102,10 +117,10 @@ export default function PlanProgressItem(props: Readonly<IPlanProgressItemProps>
             </Typography>
           )}
         </Grid>
-        {/* <ImagesPanel
+        <ImagesPanel
           keyPrefix={props.progress.id}
           imageURLs={imageURLs}
-        /> */}
+        />
       </Grid>
     </Paper>
   );
