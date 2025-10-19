@@ -47,7 +47,7 @@ public class FileController {
         requestBody = @RequestBody(required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
                 schema = @Schema(implementation = com.stan.blog.beans.dto.file.FileUploadRequest.class)))
     )
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<FileResourceDTO> upload(@RequestParam(value = "file", required = true) MultipartFile file,
                                                   @RequestParam(value = "publicToAll", required = false, defaultValue = "false") Boolean publicToAll,
                                                   @RequestParam(value = "srcId", required = false) String srcId,
@@ -71,7 +71,7 @@ public class FileController {
         description = "Uploads multiple files in one request.",
         requestBody = @RequestBody(required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
     )
-    @PostMapping(value = "/batch-upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/batch-upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<FileResourceDTO>> batchUpload(
             @RequestParam(value = "files", required = true) MultipartFile[] files,
             @RequestParam(value = "publicToAll", required = false, defaultValue = "false") Boolean publicToAll,
