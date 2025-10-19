@@ -145,10 +145,26 @@ public class FileResourceService {
                 .findByOwnerIdAndSrcIdAndFileTypeAndDeletedFalse(ownerId, srcId, fileType, pageable)
                 .map(this::toDTO);
         } catch (RuntimeException ex) {
-            log.warn("Fallback to query without fileType due to schema mismatch: {}", ex.getMessage());
+            log.warn("Fallback to projection without fileType due to schema mismatch: {}", ex.getMessage());
             return fileResourceRepository
-                .findByOwnerIdAndSrcIdAndDeletedFalse(ownerId, srcId, pageable)
-                .map(this::toDTO);
+                .findViewByOwnerIdAndSrcIdAndDeletedFalse(ownerId, srcId, pageable)
+                .map(view -> {
+                    FileResourceDTO dto = new FileResourceDTO();
+                    dto.setId(view.getId());
+                    dto.setOriginalFilename(view.getOriginalFilename());
+                    dto.setStoredFilename(view.getStoredFilename());
+                    dto.setSizeInBytes(view.getSizeInBytes());
+                    dto.setContentType(view.getContentType());
+                    dto.setOwnerId(view.getOwnerId());
+                    dto.setPublicToAll(view.getPublicToAll());
+                    dto.setSrcId(view.getSrcId());
+                    // fileType 不在投影中，保持为 null
+                    dto.setFileType(null);
+                    dto.setCreateTime(view.getCreateTime());
+                    dto.setDownloadUrl(buildDownloadUrl(view.getId()));
+                    dto.setViewUrl(buildViewUrl(view.getId()));
+                    return dto;
+                });
         }
     }
 
