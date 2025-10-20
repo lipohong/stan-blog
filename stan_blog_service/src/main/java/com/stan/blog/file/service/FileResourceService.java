@@ -135,7 +135,6 @@ public class FileResourceService {
                 .map(this::toDTO);
     }
 
-    @Transactional(readOnly = true)
     public Page<FileResourceDTO> getFilesBySource(Long ownerId, String srcId, String fileType, int page, int size) {
         int resolvedPage = Math.max(page - 1, 0);
         int resolvedSize = Math.max(size, 1);
@@ -146,24 +145,48 @@ public class FileResourceService {
                 .map(this::toDTO);
         } catch (RuntimeException ex) {
             log.warn("Fallback to projection without fileType due to schema mismatch: {}", ex.getMessage());
-            return fileResourceRepository
-                .findViewByOwnerIdAndDeletedFalse(ownerId, pageable)
-                .map(view -> {
-                    FileResourceDTO dto = new FileResourceDTO();
-                    dto.setId(view.getId());
-                    dto.setOriginalFilename(view.getOriginalFilename());
-                    dto.setStoredFilename(view.getStoredFilename());
-                    dto.setSizeInBytes(view.getSizeInBytes());
-                    dto.setContentType(view.getContentType());
-                    dto.setOwnerId(view.getOwnerId());
-                    dto.setPublicToAll(view.getPublicToAll());
-                    dto.setSrcId(null);
-                    dto.setFileType(null);
-                    dto.setCreateTime(view.getCreateTime());
-                    dto.setDownloadUrl(buildDownloadUrl(view.getId()));
-                    dto.setViewUrl(buildViewUrl(view.getId()));
-                    return dto;
-                });
+            try {
+                // Try a more specific fallback: filter by ownerId + srcId
+                return fileResourceRepository
+                    .findViewByOwnerIdAndSrcIdAndDeletedFalse(ownerId, srcId, pageable)
+                    .map(view -> {
+                        FileResourceDTO dto = new FileResourceDTO();
+                        dto.setId(view.getId());
+                        dto.setOriginalFilename(view.getOriginalFilename());
+                        dto.setStoredFilename(view.getStoredFilename());
+                        dto.setSizeInBytes(view.getSizeInBytes());
+                        dto.setContentType(view.getContentType());
+                        dto.setOwnerId(view.getOwnerId());
+                        dto.setPublicToAll(view.getPublicToAll());
+                        dto.setSrcId(null);
+                        dto.setFileType(null);
+                        dto.setCreateTime(view.getCreateTime());
+                        dto.setDownloadUrl(buildDownloadUrl(view.getId()));
+                        dto.setViewUrl(buildViewUrl(view.getId()));
+                        return dto;
+                    });
+            } catch (RuntimeException ex2) {
+                // Final fallback: filter by ownerId only
+                log.warn("Secondary fallback to owner-only projection due to schema missing src_id: {}", ex2.getMessage());
+                return fileResourceRepository
+                    .findViewByOwnerIdAndDeletedFalse(ownerId, pageable)
+                    .map(view -> {
+                        FileResourceDTO dto = new FileResourceDTO();
+                        dto.setId(view.getId());
+                        dto.setOriginalFilename(view.getOriginalFilename());
+                        dto.setStoredFilename(view.getStoredFilename());
+                        dto.setSizeInBytes(view.getSizeInBytes());
+                        dto.setContentType(view.getContentType());
+                        dto.setOwnerId(view.getOwnerId());
+                        dto.setPublicToAll(view.getPublicToAll());
+                        dto.setSrcId(null);
+                        dto.setFileType(null);
+                        dto.setCreateTime(view.getCreateTime());
+                        dto.setDownloadUrl(buildDownloadUrl(view.getId()));
+                        dto.setViewUrl(buildViewUrl(view.getId()));
+                        return dto;
+                    });
+            }
         }
     }
 

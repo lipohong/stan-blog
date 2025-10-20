@@ -324,6 +324,8 @@ CREATE TABLE IF NOT EXISTS `stan_blog_file_resource` (
   `owner_id` BIGINT NOT NULL,
   `public_to_all` TINYINT(1) NOT NULL DEFAULT 0,
   `checksum` VARCHAR(128) NULL,
+  `src_id` VARCHAR(64) NULL,
+  `file_type` VARCHAR(64) NULL,
   `create_time` DATETIME NULL,
   `create_by` VARCHAR(64) NULL,
   `update_time` DATETIME NULL,
@@ -332,7 +334,9 @@ CREATE TABLE IF NOT EXISTS `stan_blog_file_resource` (
   PRIMARY KEY (`id`),
   INDEX `idx_owner_id` (`owner_id`),
   INDEX `idx_public` (`public_to_all`),
-  INDEX `idx_deleted` (`deleted`)
+  INDEX `idx_deleted` (`deleted`),
+  INDEX `idx_src_id` (`src_id`),
+  INDEX `idx_file_type` (`file_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- data.sql content
