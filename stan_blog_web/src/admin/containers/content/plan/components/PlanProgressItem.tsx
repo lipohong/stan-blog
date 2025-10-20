@@ -2,7 +2,7 @@ import { Grid, Paper, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { TimeFormat, useCommonUtils } from '../../../../../commons';
 import { IPlanProgress } from '../../../../../global/types';
-import { EditIconButton } from '../../../../components';
+import { EditIconButton, InputFileUploadButton } from '../../../../components';
 import * as PlanProgressService from './PlanProgressService.ts';
 import * as FileService from './FileService.ts';
 import { ImagesPanel } from './ImagesPanel';
@@ -17,19 +17,52 @@ export default function PlanProgressItem(props: Readonly<IPlanProgressItemProps>
   const [progress, setProgress] = useState<IPlanProgress>(props.progress);
   const [editable, setEditable] = useState<boolean>(false);
   const [progressDesc, setProgressDesc] = useState<string>(props.progress.description);
-  const [imageURLs, setImageURLs] = useState<string[]>([]);
+  const [images, setImages] = useState<{ id: number | string; url: string }[]>([]);
 
   useEffect(() => {
     if (!props.progress?.id) return;
     FileService.listBySource(props.progress.id, 'PLAN_PIC', 1, 50)
       .then(response => {
-        const urls = (response?.data?.records ?? []).map((r: any) => r.viewUrl).filter((u: string) => !!u);
-        setImageURLs(urls);
+        const imgs = (response?.data?.records ?? []).filter((r: any) => !!r.viewUrl).map((r: any) => ({ id: r.id, url: formatUrl(r.viewUrl) }));
+        setImages(imgs);
       })
       .catch(() => {
         // ignore errors for image loading
       });
   }, [props.progress?.id]);
+
+  function onImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (!progress?.id || files.length < 1) return;
+    FileService.batchUpload(progress.id, 'PLAN_PIC', files, true)
+      .then(() => {
+        return FileService.listBySource(progress.id, 'PLAN_PIC', 1, 50);
+      })
+      .then(response => {
+        const imgs = (response?.data?.records ?? []).filter((r: any) => !!r.viewUrl).map((r: any) => ({ id: r.id, url: formatUrl(r.viewUrl) }));
+        setImages(imgs);
+        enqueueSnackbar(t('msg.success'), { variant: 'success' });
+      })
+      .catch(() => {
+        enqueueSnackbar(t('msg.error'), { variant: 'error' });
+      });
+  }
+
+  const formatUrl = (u: string) => `${import.meta.env.VITE_SERVER_ROOT_URL.replace(/\/$/, '')}/${u.replace(/^\//, '')}`;
+
+  function handleDeleteImage(fileId: number | string) {
+    if (!progress?.id) return;
+    FileService.deleteById(fileId)
+      .then(() => FileService.listBySource(progress.id, 'PLAN_PIC', 1, 50))
+      .then(response => {
+        const imgs = (response?.data?.records ?? []).filter((r: any) => !!r.viewUrl).map((r: any) => ({ id: r.id, url: formatUrl(r.viewUrl) }));
+        setImages(imgs);
+        enqueueSnackbar(t('msg.success'), { variant: 'success' });
+      })
+      .catch(() => {
+        enqueueSnackbar(t('msg.error'), { variant: 'error' });
+      });
+  }
 
   const handleEditableChange = () => {
     if (editable) {
@@ -117,9 +150,22 @@ export default function PlanProgressItem(props: Readonly<IPlanProgressItemProps>
             </Typography>
           )}
         </Grid>
+        {!props.viewOnly && editable && (
+          <Grid
+            item
+            container
+            xs={12}
+            justifyContent="flex-end"
+            sx={{ mt: 1 }}
+          >
+            <InputFileUploadButton onImageChange={onImageChange} />
+          </Grid>
+        )}
         <ImagesPanel
           keyPrefix={props.progress.id}
-          imageURLs={imageURLs}
+          images={images}
+          editable={!props.viewOnly && editable}
+          onDelete={handleDeleteImage}
         />
       </Grid>
     </Paper>
