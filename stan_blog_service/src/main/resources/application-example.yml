@@ -72,4 +72,4 @@ mail:
   mail-from: username@example.com
 storage:
   baseDir: uploads
-  publicBaseUrl: /files
+  publicBaseUrl: /v1/files
