@@ -60,6 +60,7 @@ export default function ArticleCreationPage() {
         htmlValue={htmlValue}
         setHtmlValue={setHtmlValue}
         setTextValue={setTextValue}
+        textValue={textValue}
         editable={true}
         description={''}
         setDescription={() => {}}

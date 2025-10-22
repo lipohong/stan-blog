@@ -40,15 +40,24 @@ public class SecurityUtil {
 
     private static EnhancedUserDetail getUserDetail() {
         try {
-            Object principal = SecurityContextHolder.getContext()
-                    .getAuthentication()
-                    .getPrincipal();
+            var context = SecurityContextHolder.getContext();
+            var authentication = context != null ? context.getAuthentication() : null;
+            if (authentication == null) {
+                log.debug("No authentication present in security context");
+                return null;
+            }
+            Object principal = authentication.getPrincipal();
             if (principal instanceof EnhancedUserDetail userDetail) {
                 return userDetail;
             }
+            if (principal == null) {
+                log.debug("Authentication principal is null");
+            } else {
+                log.debug("Principal is not EnhancedUserDetail: {}", principal.getClass().getName());
+            }
         } catch (Exception ex) {
-            log.error("Cannot get user detail from the security context", ex);
+            log.warn("Cannot get user detail from the security context", ex);
         }
-        return null; // fallback when principal is not EnhancedUserDetail
+        return null;
     }
 }

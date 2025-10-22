@@ -535,6 +535,16 @@
       "description": "簡述",
       "tag": "標籤",
       "content-protected": "該篇筆記只有登入用戶才能看到完整內容"
+    },
+    "title-generation": {
+      "btn": "AI生成標題",
+      "tooltip-title": {
+        "too-short": "內容過短（至少 100 個字符）",
+        "too-long": "內容過長（最多 5000 個字符）",
+        "no-quota": "今日無可用配额",
+        "generate-title-fail": "生成標題失敗",
+        "server-not-available": "服務器不可用，請稍後重試"
+      }
     }
   },
   "article-reading-page": {

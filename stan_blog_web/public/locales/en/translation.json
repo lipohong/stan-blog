@@ -547,6 +547,16 @@
       "description": "Description",
       "tag": "Tag",
       "content-protected": "Only logged in users can read the full content"
+    },
+    "title-generation": {
+      "btn": "Generate title by AI",
+      "tooltip-title": {
+        "too-short": "Content is too short (at least 100 characters)",
+        "too-long": "Content is too long (at most 5000 characters)",
+        "no-quota": "No quota left for today",
+        "generate-title-fail": "Failed to generate title",
+        "server-not-available": "Server not available, please try it later"
+      }
     }
   },
   "article-reading-page": {
