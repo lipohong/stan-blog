@@ -157,6 +157,7 @@ export default function ArticleDetailPage() {
         htmlValue={htmlValue}
         setHtmlValue={setHtmlValue}
         setTextValue={setTextValue}
+        textValue={textValue}
         editable={editable}
         description={''}
         setDescription={() => {}}
