@@ -23,6 +23,7 @@ English | [繁體中文](README_TC.md) | [简体中文](README_SC.md)
 - **Smart Tag System**: Supporting tag hierarchical relationships to build complex content classification systems
 - **Diverse Content Types**: Supporting articles, plans, vocabularies, and other content types
 - **Auto-save Drafts**: Preventing accidental loss of creative content
+- **AI Title Generation**: Utilizing LLM model to generate article titles based on content
 
 ### 🔐 User System
 
