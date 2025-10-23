@@ -65,7 +65,7 @@
 
 - **框架**：Spring Boot 3.2.5
 - **安全**：Spring Security 6.2.4 + JWT
-- **資料庫**：MySQL + MyBatis Plus 3.5.6
+- **資料庫**：MySQL + Hibernate
 - **快取**：Redis（Spring Data Redis）
 - **文件**：SpringDoc OpenAPI 2.5.0（Swagger UI）
 - **郵件**：Spring Boot Starter Mail + Thymeleaf

@@ -65,7 +65,7 @@
 
 - **框架**: Spring Boot 3.2.5
 - **安全**: Spring Security 6.2.4 + JWT
-- **数据库**: MySQL + MyBatis Plus 3.5.6
+- **数据库**: MySQL + Hibernate
 - **缓存**: Redis (Spring Data Redis)
 - **文档**: SpringDoc OpenAPI 2.5.0 (Swagger UI)
 - **邮件**: Spring Boot Starter Mail + Thymeleaf

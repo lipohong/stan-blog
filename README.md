@@ -65,7 +65,7 @@ English | [繁體中文](README_TC.md) | [简体中文](README_SC.md)
 
 - **Framework**: Spring Boot 3.2.5
 - **Security**: Spring Security 6.2.4 + JWT
-- **Database**: MySQL + MyBatis Plus 3.5.6
+- **Database**: MySQL + Hibernate
 - **Cache**: Redis (Spring Data Redis)
 - **Documentation**: SpringDoc OpenAPI 2.5.0 (Swagger UI)
 - **Email**: Spring Boot Starter Mail + Thymeleaf
