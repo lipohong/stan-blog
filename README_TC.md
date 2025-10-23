@@ -23,6 +23,7 @@
 - **智慧標籤系統**：支援標籤階層關係，建構複雜的內容分類
 - **內容型別**：支援文章、計畫、詞彙表等多種型別
 - **自動草稿儲存**：避免創作內容遺失
+- **AI 標題生成**：利用 LLM 模型根據內容生成文章標題
 
 ### 🔐 使用者系統
 
@@ -65,7 +66,7 @@
 
 - **框架**：Spring Boot 3.2.5
 - **安全**：Spring Security 6.2.4 + JWT
-- **資料庫**：MySQL + MyBatis Plus 3.5.6
+- **資料庫**：MySQL + Hibernate
 - **快取**：Redis（Spring Data Redis）
 - **文件**：SpringDoc OpenAPI 2.5.0（Swagger UI）
 - **郵件**：Spring Boot Starter Mail + Thymeleaf
@@ -252,5 +253,12 @@ jmeter.bat -n -t ".\jmeter\stanblog-test-plan.jmx" -l ".\jmeter\results.jtl" -j 
 
 - **線上體驗**：[https://stan-blog.stanli.site](https://stan-blog.stanli.site)
 - **API 文件**： [Swagger UI](http://localhost:8080/swagger-ui/index.html)
-- **專案看板**： [GitLab Projects](https://gitlab.stanli.site/stanli/stan-blog)
-- **問題回報**： [GitLab Issues](https://gitlab.stanli.site/stanli/stan-blog/-/issues)
+- **專案看板**：
+
+  - [GitHub](https://github.com/lipohong/stan-blog)
+  - [Gitlab Projects](https://gitlab.stanli.site/stanli/stan-blog)
+
+- **問題回報**：
+
+  - [GitHub Issues](https://github.com/lipohong/stan-blog/issues)
+  - [Gitlab Issues](https://gitlab.stanli.site/stanli/stan-blog/-/issues)

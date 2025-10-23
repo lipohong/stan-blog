@@ -23,6 +23,7 @@
 - **智能标签系统**: 支持标签层级关系，构建复杂的内容分类系统
 - **内容类型**: 支持文章、计划、词汇表等多种内容类型
 - **自动草稿保存**: 防止创作内容丢失
+- **AI 标题生成**: 利用 LLM 模型根据内容生成文章标题
 
 ### 🔐 用户系统
 
@@ -65,7 +66,7 @@
 
 - **框架**: Spring Boot 3.2.5
 - **安全**: Spring Security 6.2.4 + JWT
-- **数据库**: MySQL + MyBatis Plus 3.5.6
+- **数据库**: MySQL + Hibernate
 - **缓存**: Redis (Spring Data Redis)
 - **文档**: SpringDoc OpenAPI 2.5.0 (Swagger UI)
 - **邮件**: Spring Boot Starter Mail + Thymeleaf
@@ -252,5 +253,12 @@ jmeter.bat -n -t ".\jmeter\stanblog-test-plan.jmx" -l ".\jmeter\results.jtl" -j 
 
 - **在线体验**: [https://stan-blog.stanli.site](https://stan-blog.stanli.site)
 - **API 文档**: [Swagger UI](http://localhost:8080/swagger-ui/index.html)
-- **项目看板**: [Gitlab Projects](https://gitlab.stanli.site/stanli/stan-blog)
-- **问题反馈**: [Gitlab Issues](https://gitlab.stanli.site/stanli/stan-blog/-/issues)
+- **项目看板**:
+
+  - [GitHub](https://github.com/lipohong/stan-blog)
+  - [Gitlab Projects](https://gitlab.stanli.site/stanli/stan-blog)
+
+- **问题反馈**:
+
+  - [GitHub Issues](https://github.com/lipohong/stan-blog/issues)
+  - [Gitlab Issues](https://gitlab.stanli.site/stanli/stan-blog/-/issues)

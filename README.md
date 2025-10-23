@@ -23,6 +23,7 @@ English | [繁體中文](README_TC.md) | [简体中文](README_SC.md)
 - **Smart Tag System**: Supporting tag hierarchical relationships to build complex content classification systems
 - **Diverse Content Types**: Supporting articles, plans, vocabularies, and other content types
 - **Auto-save Drafts**: Preventing accidental loss of creative content
+- **AI Title Generation**: Utilizing LLM model to generate article titles based on content
 
 ### 🔐 User System
 
@@ -65,7 +66,7 @@ English | [繁體中文](README_TC.md) | [简体中文](README_SC.md)
 
 - **Framework**: Spring Boot 3.2.5
 - **Security**: Spring Security 6.2.4 + JWT
-- **Database**: MySQL + MyBatis Plus 3.5.6
+- **Database**: MySQL + Hibernate
 - **Cache**: Redis (Spring Data Redis)
 - **Documentation**: SpringDoc OpenAPI 2.5.0 (Swagger UI)
 - **Email**: Spring Boot Starter Mail + Thymeleaf
@@ -253,5 +254,12 @@ The project supports hot reload development with independent frontend and backen
 
 - **Live Demo**: [https://stan-blog.stanli.site](https://stan-blog.stanli.site)
 - **API Documentation**: [Swagger UI](http://localhost:8080/swagger-ui/index.html)
-- **Project Board**: [Gitlab Projects](https://gitlab.stanli.site/stanli/stan-blog)
-- **Issue Reporting**: [Gitlab Issues](https://gitlab.stanli.site/stanli/stan-blog/-/issues)
+- **Project Board**:
+
+  - [GitHub](https://github.com/lipohong/stan-blog)
+  - [Gitlab Projects](https://gitlab.stanli.site/stanli/stan-blog)
+
+- **Issue Reporting**:
+
+  - [GitHub Issues](https://github.com/lipohong/stan-blog/issues)
+  - [Gitlab Issues](https://gitlab.stanli.site/stanli/stan-blog/-/issues)
