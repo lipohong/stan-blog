@@ -211,6 +211,15 @@ jmeter.bat -n -t ".\jmeter\stanblog-test-plan.jmx" -l ".\jmeter\results.jtl" -j 
 - **Data Analytics**: Access statistics, content performance analysis
 - **System Settings**: Website configuration, theme settings
 
+## 🤖 AI-Assisted Title
+
+- Overview: Generate concise, readable, SEO-friendly titles from article content using an LLM.
+- Frontend: Click `Generate title by AI` on Admin › Article editor; content must exceed 100 characters; informative messages for too short/long, quota exhausted, generation failure, or service unavailable.
+- Backend API: `GET /v1/ai/check-quota` returns `{ allowed, remaining }`; `POST /v1/ai/generate-title` with body `{ content: string }`. Server enforces content length (100–5000 chars).
+- Quotas: Non-admins limited to `ai.title.daily-limit` per day (default 5); Admins unlimited; usage tracked in Redis with a 24h window.
+- Configuration: `ai.title.prompt` (system prompt) and `ai.title.daily-limit` (daily quota). Powered by Spring AI `ChatClient`.
+- Output: Title normalized to a single line with extra whitespace removed.
+
 ## 🌐 Deployment
 
 ### Development Environment

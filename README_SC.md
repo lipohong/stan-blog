@@ -210,6 +210,15 @@ jmeter.bat -n -t ".\jmeter\stanblog-test-plan.jmx" -l ".\jmeter\results.jtl" -j 
 - **数据分析**: 访问统计、内容表现分析
 - **系统设置**: 网站配置、主题设置
 
+## 🤖 AI（LLM）标题生成
+
+- 功能概述：基于大语言模型，从文章正文智能生成精炼、易读且 SEO 友好的标题。
+- 前端使用：在管理后台「文章编辑」页点击 `使用 AI 生成标题`；正文需超过 100 字；会有内容过短/过长、配额耗尽、生成失败或服务不可用等提示。
+- 后端接口：`GET /v1/ai/check-quota` 返回 `{ allowed, remaining }`；`POST /v1/ai/generate-title` 请求体 `{ content: string }`；服务端校验正文长度（100–5000 字）。
+- 配额与限流：非管理员每天最多 `ai.title.daily-limit` 次（默认 5 次）；管理员不受限；使用量通过 Redis 记录，窗口为 24 小时。
+- 配置项：`ai.title.prompt`（系统提示词）、`ai.title.daily-limit`（每日配额）；底层使用 Spring AI `ChatClient`。
+- 输出规范：生成的标题统一为单行文本，自动去除多余空白。
+
 ## 🌐 部署
 
 ### 开发环境

@@ -210,6 +210,15 @@ jmeter.bat -n -t ".\jmeter\stanblog-test-plan.jmx" -l ".\jmeter\results.jtl" -j 
 - **資料分析**：造訪統計、內容表現分析
 - **系統設定**：網站設定與主題設定
 
+## 🤖 AI（LLM）標題生成
+
+- 功能概述：基於大型語言模型，從文章內容智能產生精煉、易讀且具 SEO 友善的標題。
+- 前端使用：在管理後台「文章編輯」頁點選 `使用 AI 生成標題`；正文需超過 100 字；會提示內容過短／過長、額度用罄、生成失敗或服務不可用。
+- 後端介面：`GET /v1/ai/check-quota` 回傳 `{ allowed, remaining }`；`POST /v1/ai/generate-title` 請求體 `{ content: string }`；服務端驗證正文長度（100–5000 字）。
+- 額度與限流：非管理員每日最多 `ai.title.daily-limit` 次（預設 5 次）；管理員不受限；使用量以 Redis 記錄，時窗 24 小時。
+- 設定項：`ai.title.prompt`（系統提示詞）、`ai.title.daily-limit`（每日額度）；底層採用 Spring AI `ChatClient`。
+- 輸出規範：標題為單行文字，會自動去除多餘空白。
+
 ## 🌐 部署
 
 ### 開發環境
