@@ -7,6 +7,13 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.Generation;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.prompt.Prompt;
+
 import com.stan.blog.ai.service.AiService;
 
 @Configuration
@@ -26,7 +33,19 @@ public class TestAiConfiguration {
     }
 
     @Bean
-    public AiService aiService(StringRedisTemplate stringRedisTemplate) {
-        return new AiService(stringRedisTemplate);
+    public ChatClient chatClient() {
+        return ChatClient.builder(new StubChatModel()).build();
+    }
+
+    @Bean
+    public AiService aiService(StringRedisTemplate stringRedisTemplate, ChatClient chatClient) {
+        return new AiService(stringRedisTemplate, chatClient);
+    }
+
+    static class StubChatModel implements ChatModel {
+        @Override
+        public ChatResponse call(Prompt prompt) {
+            return new ChatResponse(java.util.List.of(new Generation(new AssistantMessage("Test Title"))));
+        }
     }
 }
