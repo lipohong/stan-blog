@@ -252,5 +252,12 @@ jmeter.bat -n -t ".\jmeter\stanblog-test-plan.jmx" -l ".\jmeter\results.jtl" -j 
 
 - **在线体验**: [https://stan-blog.stanli.site](https://stan-blog.stanli.site)
 - **API 文档**: [Swagger UI](http://localhost:8080/swagger-ui/index.html)
-- **项目看板**: [Gitlab Projects](https://gitlab.stanli.site/stanli/stan-blog)
-- **问题反馈**: [Gitlab Issues](https://gitlab.stanli.site/stanli/stan-blog/-/issues)
+- **项目看板**:
+
+  - [GitHub](https://github.com/lipohong/stan-blog)
+  - [Gitlab Projects](https://gitlab.stanli.site/stanli/stan-blog)
+
+- **问题反馈**:
+
+  - [GitHub Issues](https://github.com/lipohong/stan-blog/issues)
+  - [Gitlab Issues](https://gitlab.stanli.site/stanli/stan-blog/-/issues)
