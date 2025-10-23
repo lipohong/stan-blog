@@ -44,12 +44,13 @@ spring:
           connectiontimeout: 30000
           writetimeout: 30000
   ai:
-    openai:
-      api-key: ${DEEPSEEK_API_KEY:}
-      base-url: https://api.deepseek.com
+    deepseek:
+      api-key: ${DEEPSEEK_API_KEY}
       chat:
         options:
           model: deepseek-chat
+          temperature: 0.8
+          max-tokens: 128
 
 springdoc:
   swagger-ui:
@@ -87,7 +88,5 @@ storage:
 
 ai:
   title:
-    temperature: 0.2
-    max-tokens: 128
     daily-limit: ${DAILY_TITLE_GENERATION_LIMIT:5}
     prompt: "You are a helpful writing assistant. Generate a concise, catchy article title based strictly on the user's content. Return only the title, no extra words, quotes, or punctuation beyond the title. Prefer 8-60 characters. Please make sure the generated title is using the original Language of the content(Like English, Traditional Chinese and Simplified Chinese)."

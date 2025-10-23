@@ -16,11 +16,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.Generation;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.prompt.Prompt;
 
 import com.stan.blog.ai.dto.QuotaResponse;
 
@@ -32,8 +34,14 @@ public class AiServiceTest {
     @Mock
     private ValueOperations<String, String> valueOps;
 
-    @Mock
-    private RestTemplate restTemplate;
+    private ChatClient.Builder chatClientBuilder;
+
+    private static class StubChatModel implements ChatModel {
+        @Override
+        public ChatResponse call(Prompt prompt) {
+            return new ChatResponse(java.util.List.of(new Generation(new AssistantMessage("\"Great Title\"\nMore"))));
+        }
+    }
 
     private AiService aiService;
 
@@ -41,15 +49,10 @@ public class AiServiceTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
         when(stringRedisTemplate.opsForValue()).thenReturn(valueOps);
-        aiService = new AiService(stringRedisTemplate);
-        // inject mock RestTemplate and configuration fields
-        ReflectionTestUtils.setField(aiService, "restTemplate", restTemplate);
-        ReflectionTestUtils.setField(aiService, "apiKey", "test-key");
-        ReflectionTestUtils.setField(aiService, "baseUrl", "http://localhost");
-        ReflectionTestUtils.setField(aiService, "model", "deepseek-chat");
+        chatClientBuilder = ChatClient.builder(new StubChatModel());
+        aiService = new AiService(stringRedisTemplate, chatClientBuilder.build());
+        // configuration fields
         ReflectionTestUtils.setField(aiService, "dailyLimit", 5);
-        ReflectionTestUtils.setField(aiService, "temperature", 0.2d);
-        ReflectionTestUtils.setField(aiService, "maxTokens", 128);
         ReflectionTestUtils.setField(aiService, "systemPrompt", "You are a helpful assistant that writes concise, attractive blog titles.");
     }
 
@@ -87,55 +90,13 @@ public class AiServiceTest {
     }
 
     @Test
-    @DisplayName("generateTitle: parses choices/message/content and sanitizes output")
+    @DisplayName("generateTitle: returns sanitized content from AI")
     void generateTitle_successAndSanitize() {
-        Map<String, Object> body = new HashMap<>();
-        body.put("choices", List.of(Map.of("message", Map.of("content", "\"Great Title\"\nMore"))));
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(Map.class)))
-                .thenReturn(ResponseEntity.ok(body));
-
         String result = aiService.generateTitle("some input content");
         assertEquals("\"Great Title\" More", result);
     }
 
-    @Test
-    @DisplayName("generateTitle: empty body throws")
-    void generateTitle_emptyBodyThrows() {
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(Map.class)))
-                .thenReturn(ResponseEntity.ok(null));
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> aiService.generateTitle("x"));
-        assertTrue(ex.getMessage().contains("Empty response"));
-    }
 
-    @Test
-    @DisplayName("generateTitle: missing choices throws")
-    void generateTitle_missingChoicesThrows() {
-        Map<String, Object> body = new HashMap<>();
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(Map.class)))
-                .thenReturn(ResponseEntity.ok(body));
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> aiService.generateTitle("x"));
-        assertTrue(ex.getMessage().contains("choices"));
-    }
 
-    @Test
-    @DisplayName("generateTitle: missing message throws")
-    void generateTitle_missingMessageThrows() {
-        Map<String, Object> body = new HashMap<>();
-        body.put("choices", List.of(Map.of()));
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(Map.class)))
-                .thenReturn(ResponseEntity.ok(body));
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> aiService.generateTitle("x"));
-        assertTrue(ex.getMessage().contains("message"));
-    }
 
-    @Test
-    @DisplayName("generateTitle: missing content throws")
-    void generateTitle_missingContentThrows() {
-        Map<String, Object> body = new HashMap<>();
-        body.put("choices", List.of(Map.of("message", Map.of())));
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(Map.class)))
-                .thenReturn(ResponseEntity.ok(body));
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> aiService.generateTitle("x"));
-        assertTrue(ex.getMessage().contains("content"));
-    }
 }
