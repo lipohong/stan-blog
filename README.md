@@ -252,14 +252,11 @@ The project supports hot reload development with independent frontend and backen
 
 ## 🔗 Related Links
 
-- **Live Demo**: [https://stan-blog.stanli.site](https://stan-blog.stanli.site)
 - **API Documentation**: [Swagger UI](http://localhost:8080/swagger-ui/index.html)
 - **Project Board**:
 
   - [GitHub](https://github.com/lipohong/stan-blog)
-  - [Gitlab Projects](https://gitlab.stanli.site/stanli/stan-blog)
 
 - **Issue Reporting**:
 
   - [GitHub Issues](https://github.com/lipohong/stan-blog/issues)
-  - [Gitlab Issues](https://gitlab.stanli.site/stanli/stan-blog/-/issues)
