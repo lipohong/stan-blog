@@ -251,14 +251,11 @@ jmeter.bat -n -t ".\jmeter\stanblog-test-plan.jmx" -l ".\jmeter\results.jtl" -j 
 
 ## 🔗 相關連結
 
-- **線上體驗**：[https://stan-blog.stanli.site](https://stan-blog.stanli.site)
 - **API 文件**： [Swagger UI](http://localhost:8080/swagger-ui/index.html)
 - **專案看板**：
 
   - [GitHub](https://github.com/lipohong/stan-blog)
-  - [Gitlab Projects](https://gitlab.stanli.site/stanli/stan-blog)
 
 - **問題回報**：
 
   - [GitHub Issues](https://github.com/lipohong/stan-blog/issues)
-  - [Gitlab Issues](https://gitlab.stanli.site/stanli/stan-blog/-/issues)
